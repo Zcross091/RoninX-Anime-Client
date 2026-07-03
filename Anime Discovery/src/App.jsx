@@ -186,7 +186,9 @@ function App() {
 
   return (
     <div className="app-container">
-      <header className="header">
+      {!selectedAnime && (
+        <>
+          <header className="header">
         <div className="logo" style={{cursor: 'pointer'}} onClick={() => setActiveTab('discover')}>Fanime</div>
         <nav className="main-nav">
           <button 
@@ -301,44 +303,22 @@ function App() {
           </section>
         )}
       </main>
+        </>
+      )}
 
-      {/* Premium Video Player Modal */}
+      {/* Premium Video Player Page */}
       {selectedAnime && (
-        <div className="player-overlay" onClick={closePlayer}>
-          <div className="player-container" onClick={(e) => e.stopPropagation()}>
-            <div className="player-header">
-              <h2>{selectedAnime.title} {activeEpisode ? `- Episode ${activeEpisode}` : ''}</h2>
-              <button className="close-btn" onClick={closePlayer}>✕</button>
-            </div>
-            
-            {isPlaying ? (
-              <div className="video-wrapper" style={{ display: 'flex', flexDirection: 'column' }}>
-                <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', padding: '1rem', background: 'rgba(0,0,0,0.5)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                  {availableStreams['http-sub'] && (
-                    <button 
-                      className={`ep-btn ${activeStreamFormat === 'http-sub' ? 'active' : ''}`}
-                      onClick={() => setActiveStreamFormat('http-sub')}
-                    >
-                      HTTP (Sub)
-                    </button>
-                  )}
-                  {availableStreams['http-dub'] && (
-                    <button 
-                      className={`ep-btn ${activeStreamFormat === 'http-dub' ? 'active' : ''}`}
-                      onClick={() => setActiveStreamFormat('http-dub')}
-                    >
-                      HTTP (Dub)
-                    </button>
-                  )}
-                  {availableStreams['torrent'] && (
-                    <button 
-                      className={`ep-btn ${activeStreamFormat === 'torrent' ? 'active' : ''}`}
-                      onClick={() => setActiveStreamFormat('torrent')}
-                    >
-                      P2P Torrent
-                    </button>
-                  )}
-                </div>
+        <div className="player-page">
+          <div className="player-header">
+            <button className="nav-btn active" onClick={closePlayer} style={{ background: 'var(--accent-color)', color: '#fff' }}>
+              ← Back to Discover
+            </button>
+            <h2>{selectedAnime.title} {activeEpisode ? `- Episode ${activeEpisode}` : ''}</h2>
+          </div>
+          
+          {isPlaying ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div className="video-wrapper">
                 
                 <div style={{ flex: 1, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 {isLoadingStream ? (
@@ -395,17 +375,47 @@ function App() {
                 ) : activeStreamFormat && activeStreamFormat.startsWith('http') ? (
                   <>
                     <iframe src={availableStreams[activeStreamFormat]} allowFullScreen allow="autoplay; fullscreen" title="Anime Player" style={{ width: '100%', height: '100%', border: 'none' }}></iframe>
-                    {availableStreams['torrent'] && (
-                      <div style={{position: 'absolute', bottom: '10px', right: '10px', zIndex: 10}}>
-                        <a href={availableStreams['torrent']} target="_blank" rel="noopener noreferrer" className="magnet-btn" style={{fontSize: '0.9rem', padding: '0.5rem 1rem', width: 'auto', borderRadius: '50px', background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)'}}>
-                          ⬇️ DL Torrent
-                        </a>
-                      </div>
-                    )}
                   </>
                 ) : null}
-                </div>
               </div>
+              </div>
+
+              {/* Server Switchers & Download Button row below video */}
+              <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '1rem', padding: '1rem', background: 'rgba(20,20,20,0.8)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                {availableStreams['http-sub'] && (
+                  <button 
+                    className={`ep-btn ${activeStreamFormat === 'http-sub' ? 'active' : ''}`}
+                    onClick={() => setActiveStreamFormat('http-sub')}
+                  >
+                    HTTP (Sub)
+                  </button>
+                )}
+                {availableStreams['http-dub'] && (
+                  <button 
+                    className={`ep-btn ${activeStreamFormat === 'http-dub' ? 'active' : ''}`}
+                    onClick={() => setActiveStreamFormat('http-dub')}
+                  >
+                    HTTP (Dub)
+                  </button>
+                )}
+                {availableStreams['torrent'] && (
+                  <button 
+                    className={`ep-btn ${activeStreamFormat === 'torrent' ? 'active' : ''}`}
+                    onClick={() => setActiveStreamFormat('torrent')}
+                  >
+                    P2P Torrent
+                  </button>
+                )}
+                
+                <div style={{ flex: 1 }}></div>
+                
+                {availableStreams['torrent'] && (
+                  <a href={availableStreams['torrent']} target="_blank" rel="noopener noreferrer" className="magnet-btn" style={{fontSize: '0.9rem', padding: '0.8rem 1.5rem', width: 'auto', borderRadius: '12px', background: 'rgba(255, 255, 255, 0.1)', color: '#fff', border: '1px solid rgba(255, 255, 255, 0.2)', textDecoration: 'none'}}>
+                    ⬇️ DL Torrent
+                  </a>
+                )}
+              </div>
+            </div>
             ) : (
               <div style={{display: 'flex', gap: '2rem', padding: '2rem', background: '#0a0a0a'}}>
                  <img src={selectedAnime.image} alt={selectedAnime.title} style={{width: '200px', borderRadius: '12px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)'}} />
@@ -451,7 +461,6 @@ function App() {
               ))}
             </div>
           </div>
-        </div>
       )}
     </div>
   );
