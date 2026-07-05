@@ -419,7 +419,7 @@ function App() {
                 )}
 
                 {/* 3. Luxurious Cinematic Anime Lists */}
-                <div className="container mx-auto px-10 md:px-16 -mt-20 relative z-10 space-y-40">
+                <div className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-16 -mt-10 md:-mt-20 relative z-10 space-y-12 md:space-y-24">
                   <AnimeRow title="Top Airing This Season" icon={<Flame className="text-accent" />} animeList={topAiring} openAnime={openAnime} />
                   <AnimeRow title="Epic Action & Adventure" icon={<Sparkles className="text-accent" />} animeList={actionAnime} openAnime={openAnime} />
                   <AnimeRow title="Trending Romance" icon={<Flame className="text-accent" />} animeList={romanceAnime} openAnime={openAnime} />
@@ -558,46 +558,44 @@ function AnimeRow({ title, icon, animeList, openAnime }) {
   if (!animeList || animeList.length === 0) return null;
   return (
     <section>
-      <div className="flex items-center gap-5 mb-12">
-        <div className="w-2 h-10 bg-accent rounded-full shadow-[0_0_15px_var(--color-accent)]" />
-        <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3 mb-5">
+        <div className="w-1.5 h-7 bg-accent rounded-full shadow-[0_0_12px_var(--color-accent)]" />
+        <div className="flex items-center gap-3">
           {icon}
-          <h2 className="text-3xl font-black tracking-tight text-white drop-shadow-md">{title}</h2>
+          <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white">{title}</h2>
         </div>
       </div>
       
-      <div className="flex overflow-x-auto gap-8 pb-12 hide-scrollbar -mx-10 px-10 sm:mx-0 sm:px-0">
+      <div className="flex overflow-x-auto gap-3 pb-6 hide-scrollbar -mx-4 px-4 sm:-mx-6 sm:px-6">
         {animeList.map((anime, idx) => (
           <div 
             key={idx} 
             onClick={() => openAnime(anime)}
-            className="group relative flex-none w-[240px] sm:w-[280px] md:w-[320px] cursor-pointer"
+            className="group relative flex-none cursor-pointer"
+            style={{ width: 'calc(50vw - 1.5rem)' }}
           >
-            <div className="relative aspect-[2/3] w-full overflow-hidden rounded-2xl bg-surface border border-white/5 group-hover:border-accent/50 transition-all duration-700 shadow-2xl shadow-black/60 group-hover:shadow-[0_0_40px_rgba(230,52,98,0.2)]">
+            <div className="relative aspect-[2/3] w-full overflow-hidden rounded-xl bg-surface border border-white/5 group-hover:border-accent/50 transition-all duration-500 shadow-xl shadow-black/60 group-hover:shadow-[0_0_24px_rgba(230,52,98,0.25)]">
               <img 
                 src={anime.image} 
                 alt={anime.title} 
-                className="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent opacity-70 group-hover:opacity-90 transition-opacity duration-700" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80" />
               
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-700">
-                <div className="bg-accent p-6 rounded-full shadow-[0_0_40px_rgba(230,52,98,0.6)] backdrop-blur-lg transform translate-y-8 group-hover:translate-y-0 transition-all duration-700">
-                  <Play size={32} fill="white" className="ml-1" />
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-400">
+                <div className="bg-accent p-3 rounded-full shadow-[0_0_20px_rgba(230,52,98,0.6)] backdrop-blur-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-400">
+                  <Play size={18} fill="white" className="ml-0.5" />
                 </div>
               </div>
             </div>
 
-            <div className="mt-5 px-2">
-              <h3 className="text-[15px] font-bold text-zinc-100 line-clamp-2 leading-snug group-hover:text-accent transition-colors">
+            <div className="mt-2 px-0.5">
+              <h3 className="text-[12px] sm:text-[13px] font-bold text-zinc-100 line-clamp-2 leading-snug group-hover:text-accent transition-colors">
                 {anime.title}
               </h3>
-              <div className="flex items-center gap-3 mt-3 text-sm font-bold text-zinc-500 tracking-wide">
-                <span className="flex items-center gap-1.5 text-accent">
-                  <span className="text-[17px] drop-shadow-[0_0_8px_var(--color-accent)]">★</span>
-                  {anime.score}
-                </span>
-                <span className="w-1.5 h-1.5 rounded-full bg-zinc-700" />
+              <div className="flex items-center gap-2 mt-1.5 text-[11px] font-bold text-zinc-500">
+                <span className="text-accent">★ {anime.score}</span>
+                <span className="w-1 h-1 rounded-full bg-zinc-700" />
                 <span>{anime.ep_count} Eps</span>
               </div>
             </div>
