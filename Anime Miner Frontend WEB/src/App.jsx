@@ -571,8 +571,7 @@ function AnimeRow({ title, icon, animeList, openAnime }) {
           <div 
             key={idx} 
             onClick={() => openAnime(anime)}
-            className="group relative flex-none cursor-pointer"
-            style={{ width: 'calc(50vw - 1.5rem)' }}
+            className="group relative flex-none cursor-pointer anime-card"
           >
             <div className="relative aspect-[2/3] w-full overflow-hidden rounded-xl bg-surface border border-white/5 group-hover:border-accent/50 transition-all duration-500 shadow-xl shadow-black/60 group-hover:shadow-[0_0_24px_rgba(230,52,98,0.25)]">
               <img 
