@@ -215,13 +215,13 @@ function App() {
       // Different sources (AniList vs miner) may store titles differently.
       // We try all common variants in one query to avoid mismatches.
       const buildVariants = (t) => {
-        const base = t.toLowerCase();
-        const withSpaces   = base.replace(/[^a-z0-9]+/g, ' ').trim();       // "one punch man"
-        const noSymbols    = base.replace(/[^a-z0-9\s]/g, '').replace(/\s+/g,' ').trim(); // same but explicit
-        const noSeason     = withSpaces.replace(/\s*(season|part)\s*\d+\s*$/i, '').trim();
-        const withHyphens  = base.replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');        // "one-punch-man"
+        const base = t.toLowerCase();                                                         // "one-punch man"  ← exactly what miner stores
+        const withSpaces  = base.replace(/[^a-z0-9]+/g, ' ').trim();                        // "one punch man"
+        const noSymbols   = base.replace(/[^a-z0-9\s]/g, '').replace(/\s+/g,' ').trim();   // "one punch man"
+        const noSeason    = withSpaces.replace(/\s*(season|part)\s*\d+\s*$/i, '').trim();   // strips "Season 2" etc
+        const withHyphens = withSpaces.replace(/\s+/g, '-');                                 // "one-punch-man"
 
-        const subs = [...new Set([withSpaces, noSymbols, noSeason, withHyphens])];
+        const subs = [...new Set([base, withSpaces, noSymbols, noSeason, withHyphens])];
         const all  = [...subs, ...subs.map(s => `${s} dub`)];
         return all;
       };
