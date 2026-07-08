@@ -66,6 +66,9 @@ function App() {
   const [selectedGenre, setSelectedGenre] = useState(null);
   const [genreAnime, setGenreAnime] = useState([]);
   const [isLoadingGenre, setIsLoadingGenre] = useState(false);
+  const [scheduleTab, setScheduleTab] = useState('airing');
+  const [scheduleAnime, setScheduleAnime] = useState([]);
+  const [isLoadingSchedule, setIsLoadingSchedule] = useState(false);
   const [watchHistory, setWatchHistory] = useState(() => {
     const saved = localStorage.getItem('animeWatchHistory');
     return saved ? JSON.parse(saved) : [];
@@ -467,6 +470,99 @@ function App() {
       setIsLoadingGenre(false);
     }
   };
+  const handleScheduleTabChange = async (tab) => {
+    setScheduleTab(tab);
+    setIsLoadingSchedule(true);
+    setScheduleAnime([]);
+
+    let query = '';
+    let variables = {};
+
+    if (tab === 'airing') {
+      query = `
+        query {
+          Page (page: 1, perPage: 24) {
+            media (status: RELEASING, type: ANIME, sort: POPULARITY_DESC) {
+              title { english romaji }
+              coverImage { large }
+              episodes
+              averageScore
+              description
+            }
+          }
+        }
+      `;
+    } else if (tab === 'upcoming') {
+      query = `
+        query {
+          Page (page: 1, perPage: 24) {
+            media (status: NOT_YET_RELEASED, type: ANIME, sort: POPULARITY_DESC) {
+              title { english romaji }
+              coverImage { large }
+              episodes
+              averageScore
+              description
+            }
+          }
+        }
+      `;
+    } else if (tab === 'tv') {
+      query = `
+        query {
+          Page (page: 1, perPage: 24) {
+            media (format: TV, type: ANIME, sort: POPULARITY_DESC) {
+              title { english romaji }
+              coverImage { large }
+              episodes
+              averageScore
+              description
+            }
+          }
+        }
+      `;
+    } else if (tab === 'movie') {
+      query = `
+        query {
+          Page (page: 1, perPage: 24) {
+            media (format: MOVIE, type: ANIME, sort: POPULARITY_DESC) {
+              title { english romaji }
+              coverImage { large }
+              episodes
+              averageScore
+              description
+            }
+          }
+        }
+      `;
+    }
+
+    try {
+      const res = await fetch('https://graphql.anilist.co', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({ query, variables })
+      });
+      const result = await res.json();
+      const mediaList = result?.data?.Page?.media;
+      if (mediaList) {
+        const mapped = mediaList.map(media => ({
+          title: media.title.english || media.title.romaji,
+          image: media.coverImage.large,
+          ep_count: media.episodes || 12,
+          score: media.averageScore ? (media.averageScore / 10).toFixed(1) : 'N/A',
+          synopsis: media.description ? media.description.replace(/<[^>]*>/g, '') : 'No synopsis available.'
+        }));
+        setScheduleAnime(mapped);
+      }
+    } catch (e) {
+      console.error("Failed to fetch schedule data:", e);
+    } finally {
+      setIsLoadingSchedule(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-base text-white pb-48 font-sans">
@@ -481,7 +577,7 @@ function App() {
                   <button className={`bg-transparent border-none cursor-pointer transition-colors ${activeTab === 'discover' ? 'text-accent' : 'hover:text-white'}`} onClick={() => setActiveTab('discover')}>Home</button>
                   <button className={`bg-transparent border-none cursor-pointer transition-colors ${activeTab === 'mylist' ? 'text-accent' : 'hover:text-white'}`} onClick={() => setActiveTab('mylist')}>My List</button>
                   <button className={`bg-transparent border-none cursor-pointer transition-colors ${activeTab === 'browse' ? 'text-accent' : 'hover:text-white'}`} onClick={() => { setActiveTab('browse'); setSelectedGenre(null); }}>Browse</button>
-                  <button className="bg-transparent border-none cursor-pointer hover:text-white transition-colors">Schedule</button>
+                  <button className={`bg-transparent border-none cursor-pointer transition-colors ${activeTab === 'schedule' ? 'text-accent' : 'hover:text-white'}`} onClick={() => { setActiveTab('schedule'); handleScheduleTabChange('airing'); }}>Schedule</button>
                 </div>
               </div>
               
@@ -617,6 +713,68 @@ function App() {
                       ))}
                     </div>
                   </>
+                )}
+              </div>
+            ) : activeTab === 'schedule' ? (
+              <div className="container mx-auto px-10 md:px-16 pt-40 pb-20">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+                  <div className="flex items-center gap-5">
+                    <div className="w-2 h-10 bg-accent rounded-full shadow-[0_0_15px_var(--color-accent)]" />
+                    <h2 className="text-4xl font-black tracking-tight text-white drop-shadow-md">Anime Lists & Schedule</h2>
+                  </div>
+                  
+                  {/* Sub-tab selection */}
+                  <div className="flex flex-wrap items-center gap-3 bg-white/5 border border-white/10 rounded-2xl p-1.5 backdrop-blur-md">
+                    {[
+                      { id: 'airing', label: 'Top Airing' },
+                      { id: 'upcoming', label: 'Top Upcoming' },
+                      { id: 'tv', label: 'TV Shows' },
+                      { id: 'movie', label: 'Movies' }
+                    ].map(sub => (
+                      <button
+                        key={sub.id}
+                        onClick={() => handleScheduleTabChange(sub.id)}
+                        className={`px-5 py-2.5 rounded-xl font-bold text-[14px] transition-all border-none cursor-pointer ${scheduleTab === sub.id ? 'bg-accent text-white shadow-lg shadow-accent/20' : 'text-zinc-400 hover:text-white bg-transparent'}`}
+                      >
+                        {sub.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {isLoadingSchedule ? (
+                  <div className="text-xl text-zinc-400 animate-pulse font-bold flex items-center gap-3">
+                    <Loader2 size={24} className="animate-spin text-accent" />
+                    Loading list...
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-8">
+                    {scheduleAnime.map((anime, idx) => (
+                      <div 
+                        key={idx} 
+                        onClick={() => openAnime(anime)}
+                        className="group relative cursor-pointer"
+                      >
+                        <div className="relative aspect-[2/3] w-full overflow-hidden rounded-2xl bg-surface border border-white/5 group-hover:border-accent/50 transition-all duration-500 shadow-2xl shadow-black/60 group-hover:shadow-[0_0_24px_rgba(230,52,98,0.25)]">
+                          <img src={anime.image} alt={anime.title} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent opacity-85 group-hover:opacity-95 transition-opacity duration-500" />
+                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-400">
+                            <div className="bg-accent p-4 rounded-full shadow-[0_0_20px_rgba(230,52,98,0.6)] backdrop-blur-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-400">
+                              <Play size={20} fill="white" className="ml-0.5" />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="mt-4 px-1">
+                          <h3 className="text-sm font-bold text-zinc-100 line-clamp-2 leading-snug group-hover:text-accent transition-colors">{anime.title}</h3>
+                          <div className="flex items-center gap-2 mt-2 text-xs font-bold text-zinc-500">
+                            <span className="text-accent">★ {anime.score}</span>
+                            <span className="w-1 h-1 rounded-full bg-zinc-700" />
+                            <span>{anime.ep_count} Eps</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </div>
             ) : activeTab === 'mylist' ? (
