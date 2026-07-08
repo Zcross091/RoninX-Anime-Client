@@ -19,6 +19,12 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 const BASE_URL = "https://gogoanime.or.at";
 const CACHE_FILE = './global_cache.json';
+const isCI = Boolean(process.env.CI);
+const headlessMode = process.env.PUPPETEER_HEADLESS === 'true'
+    ? true
+    : process.env.PUPPETEER_HEADLESS === 'false'
+        ? false
+        : isCI;
 
 // Master Override Switch: Set to true if you want to force-mine everything from scratch
 const IGNORE_CACHE = false;
@@ -36,7 +42,7 @@ async function runDumpMiner() {
     console.log("🚀 Starting OFFENSIVE HTTP Dump Miner (Gogoanime.or.at)...");
 
     const browser = await puppeteer.launch({
-        headless: false,
+        headless: headlessMode,
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
