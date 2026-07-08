@@ -16,6 +16,12 @@ function saveCache() {
 puppeteer.use(StealthPlugin());
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 const GOGO_URL = "https://gogoanime.or.at";
+const isCI = Boolean(process.env.CI);
+const headlessMode = process.env.PUPPETEER_HEADLESS === 'true'
+    ? true
+    : process.env.PUPPETEER_HEADLESS === 'false'
+        ? false
+        : isCI;
 
 const searchQuery = process.argv[2];
 
@@ -118,7 +124,17 @@ async function scrapeAnimePage(browser, animeUrl, ignoreCache = false) {
 
 async function mineHttp() {
     console.log(`🚀 Starting ADVANCED HTTP Stream Miner (Gogoanime.or.at)...`);
-    const browser = await puppeteer.launch({ headless: false, args: ['--window-size=800,600'] });
+    const browser = await puppeteer.launch({
+        headless: headlessMode,
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-accelerated-2d-canvas',
+            '--disable-gpu',
+            '--window-size=800,600'
+        ]
+    });
     
     if (searchQuery) {
         console.log(`\n🔍 MANUAL SEARCH MODE: "${searchQuery}"`);
