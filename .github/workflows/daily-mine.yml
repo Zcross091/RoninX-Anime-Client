@@ -33,5 +33,5 @@ jobs:
           CI: true
           PUPPETEER_HEADLESS: true
         run: |
-          cd 'Anime Miner Frontend WEB'
+          cd 'anime-miner'
           node miner_http.js
