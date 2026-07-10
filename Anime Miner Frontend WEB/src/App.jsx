@@ -1714,7 +1714,7 @@ function App() {
                     ✕ <span>Close</span>
                   </button>
                 </div>
-                <div className="controls-right hidden sm:flex">
+                <div className="controls-right flex">
                   <button className="control-toggle">
                     Auto Play <span style={{color: 'var(--color-accent)'}}>Off</span>
                   </button>
