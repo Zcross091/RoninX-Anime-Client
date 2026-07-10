@@ -22,11 +22,12 @@ const buildVariants = (input) => {
     const withSpaces  = base.replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim();
     const noSymbols   = base.replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, ' ').trim();
     const noSpaces    = withSpaces.replace(/\s+/g, '');
-    const noSeason    = withSpaces.replace(/\s*(season|part)\s*\d+\s*$/i, '').trim();
+    const noSeason    = withSpaces.replace(/\s*(season|part|tv|cour)\s*\d*\s*$/i, '').trim();
     const withHyphens = withSpaces.replace(/\s+/g, '-');
     const baseHyphenated = base.replace(/\s+/g, '-');
+    const pureAlphaNumeric = base.replace(/[^a-z0-9]/g, '');
 
-    const subs = [base, withSpaces, noSymbols, noSpaces, noSeason, withHyphens, baseHyphenated];
+    const subs = [base, withSpaces, noSymbols, noSpaces, noSeason, withHyphens, baseHyphenated, pureAlphaNumeric];
     allVariants.push(...subs, ...subs.map(s => `${s} dub`));
   });
 
@@ -88,6 +89,7 @@ function App() {
   const [activeEpRange, setActiveEpRange] = useState(0);
   
   const [availableStreams, setAvailableStreams] = useState({});
+  const [relatedSeasons, setRelatedSeasons] = useState([]);
   const [activeStreamFormat, setActiveStreamFormat] = useState(null);
   const [theaterMode, setTheaterMode] = useState(false);
   
@@ -149,6 +151,61 @@ function App() {
   const [topAiring, setTopAiring] = useState([]);
   const [actionAnime, setActionAnime] = useState([]);
   const [romanceAnime, setRomanceAnime] = useState([]);
+  const [recommendedAnime, setRecommendedAnime] = useState([]);
+
+  useEffect(() => {
+    const fetchRecommendations = async () => {
+      if (!watchHistory || watchHistory.length === 0) return;
+      try {
+        const lastWatched = watchHistory[0].title;
+        const query = `
+          query ($search: String) {
+            Media(search: $search, type: ANIME) {
+              recommendations(sort: RATING_DESC, perPage: 15) {
+                edges {
+                  node {
+                    mediaRecommendation {
+                      title { romaji english }
+                      coverImage { large }
+                      episodes
+                      averageScore
+                      description
+                    }
+                  }
+                }
+              }
+            }
+          }
+        `;
+        const res = await fetch('https://graphql.anilist.co', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query, variables: { search: lastWatched } })
+        });
+        const json = await res.json();
+        const recs = json?.data?.Media?.recommendations?.edges || [];
+        
+        const mappedRecs = recs
+          .filter(edge => edge?.node?.mediaRecommendation)
+          .map(edge => {
+            const media = edge.node.mediaRecommendation;
+            return {
+              title: media.title.english || media.title.romaji,
+              originalTitle: media.title.romaji,
+              image: media.coverImage.large,
+              ep_count: media.episodes || 12,
+              score: media.averageScore ? (media.averageScore / 10).toFixed(1) : 'N/A',
+              synopsis: media.description ? media.description.replace(/<[^>]*>/g, '') : 'No synopsis available.'
+            };
+          });
+          
+        setRecommendedAnime(mappedRecs);
+      } catch (err) {
+        console.error("Failed to fetch recommendations:", err);
+      }
+    };
+    fetchRecommendations();
+  }, [watchHistory]);
 
   const [scrolled, setScrolled] = useState(false);
 
@@ -207,6 +264,7 @@ function App() {
               trending: Page (page: 1, perPage: 15) {
                 media (type: ANIME, sort: TRENDING_DESC) {
                   title { english romaji }
+                  synonyms
                   coverImage { large }
                   bannerImage
                   episodes
@@ -217,6 +275,7 @@ function App() {
               action: Page (page: 1, perPage: 15) {
                 media (genre: "Action", type: ANIME, sort: POPULARITY_DESC) {
                   title { english romaji }
+                  synonyms
                   coverImage { large }
                   episodes
                   averageScore
@@ -226,6 +285,7 @@ function App() {
               romance: Page (page: 1, perPage: 15) {
                 media (genre: "Romance", type: ANIME, sort: POPULARITY_DESC) {
                   title { english romaji }
+                  synonyms
                   coverImage { large }
                   episodes
                   averageScore
@@ -247,6 +307,7 @@ function App() {
           const mapAni = media => ({
             title: media.title.english || media.title.romaji,
             originalTitle: media.title.romaji,
+            synonyms: media.synonyms || [],
             image: media.coverImage.large,
             banner: media.bannerImage || null,
             ep_count: media.episodes || 12,
@@ -276,6 +337,7 @@ function App() {
   const mapJikanAnime = (anime) => ({
     title: anime.title_english || anime.title,
     originalTitle: anime.title,
+    synonyms: anime.title_synonyms || [],
     image: anime.images.jpg.large_image_url,
     banner: null,
     ep_count: anime.episodes || 12,
@@ -382,27 +444,68 @@ function App() {
     let baseEps = Array.from({length: anime.ep_count || 12}, (_, i) => i + 1);
     setAvailableEpisodes(baseEps);
     
-    // Fetch from AniList for accurate ongoing episode counts
+    // Fetch from AniList for accurate ongoing episode counts and related seasons
     let anilistEpCount = 0;
     try {
+        const query = `
+        { 
+          Media(search: "${anime.title.replace(/"/g, '\\"')}", type: ANIME) { 
+            episodes 
+            nextAiringEpisode { episode } 
+            relations {
+              edges {
+                relationType(version: 2)
+                node {
+                  type
+                  title { english romaji }
+                  synonyms
+                  coverImage { large }
+                  episodes
+                  averageScore
+                  description
+                }
+              }
+            }
+          } 
+        }`;
         const aniRes = await fetch('https://graphql.anilist.co', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                query: '{ Media(search: "' + anime.title.replace(/"/g, '\\"') + '", type: ANIME) { episodes nextAiringEpisode { episode } } }'
-            })
+            body: JSON.stringify({ query })
         });
         const aniData = await aniRes.json();
         const media = aniData?.data?.Media;
         if (media) {
             anilistEpCount = media.episodes || (media.nextAiringEpisode ? media.nextAiringEpisode.episode - 1 : 0);
+            
+            if (media.relations && media.relations.edges) {
+              const seasons = media.relations.edges
+                .filter(edge => edge.node.type === 'ANIME' && ['PREQUEL', 'SEQUEL', 'ALTERNATIVE', 'SPIN_OFF'].includes(edge.relationType))
+                .map(edge => {
+                  const rNode = edge.node;
+                  return {
+                    title: rNode.title.english || rNode.title.romaji,
+                    originalTitle: rNode.title.romaji,
+                    synonyms: rNode.synonyms || [],
+                    image: rNode.coverImage?.large,
+                    ep_count: rNode.episodes || 12,
+                    score: rNode.averageScore ? (rNode.averageScore / 10).toFixed(1) : 'N/A',
+                    synopsis: rNode.description ? rNode.description.replace(/<[^>]*>/g, '') : 'No synopsis available.',
+                    relation: edge.relationType
+                  };
+                });
+              setRelatedSeasons(seasons);
+            } else {
+              setRelatedSeasons([]);
+            }
         }
     } catch (e) {
         console.error("AniList fetch failed", e);
+        setRelatedSeasons([]);
     }
 
     // Fetch from Supabase
-    const searchVariants = buildVariants([anime.title, anime.originalTitle].filter(Boolean));
+    const searchVariants = buildVariants([anime.title, anime.originalTitle, ...(anime.synonyms || [])].filter(Boolean));
     const { data } = await supabase
       .from('anime_links')
       .select('episode')
@@ -493,7 +596,7 @@ function App() {
     setDownloadMagnetUrl(null);
 
     try {
-      const searchVariants = buildVariants([anime.title, anime.originalTitle].filter(Boolean));
+      const searchVariants = buildVariants([anime.title, anime.originalTitle, ...(anime.synonyms || [])].filter(Boolean));
       const fallbackTitle = anime.originalTitle || anime.title;
 
       let dbResList = [];
@@ -1103,7 +1206,7 @@ function App() {
                       <div 
                         key={idx} 
                         onClick={() => openAnime(anime)}
-                        className="group relative flex-none w-[240px] sm:w-[280px] md:w-[320px] cursor-pointer mb-8"
+                        className="group relative flex-none w-[150px] sm:w-[180px] md:w-[200px] cursor-pointer mb-8"
                       >
                         <div className="relative aspect-[2/3] w-full overflow-hidden rounded-lg bg-surface border border-white/5 group-hover:border-accent/50 transition-all duration-700 shadow-2xl shadow-black/60 group-hover:shadow-[0_0_40px_rgba(196,32,44,0.2)]">
                           <img src={anime.image} alt={anime.title} className="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110" />
@@ -1420,12 +1523,15 @@ function App() {
 
                 {/* 3. Luxurious Cinematic Anime Lists */}
                 <div className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-16 -mt-10 md:-mt-20 relative z-10 space-y-12 md:space-y-24">
-                  <AnimeRow title="Top Airing This Season" icon={<Flame className="text-accent" />} animeList={topAiring} openAnime={openAnime} />
-                  <AnimeRow title="Epic Action & Adventure" icon={<Sparkles className="text-accent" />} animeList={actionAnime} openAnime={openAnime} />
-                  <AnimeRow title="Trending Romance" icon={<Flame className="text-accent" />} animeList={romanceAnime} openAnime={openAnime} />
                   {watchHistory.length > 0 && (
                      <AnimeRow title="Continue Watching" icon={<Clock className="text-accent" />} animeList={watchHistory} openAnime={openAnime} />
                   )}
+                  {recommendedAnime.length > 0 && (
+                     <AnimeRow title="Recommended for You" icon={<Sparkles className="text-accent" />} animeList={recommendedAnime} openAnime={openAnime} />
+                  )}
+                  <AnimeRow title="Top Airing This Season" icon={<Flame className="text-accent" />} animeList={topAiring} openAnime={openAnime} />
+                  <AnimeRow title="Epic Action & Adventure" icon={<Sparkles className="text-accent" />} animeList={actionAnime} openAnime={openAnime} />
+                  <AnimeRow title="Trending Romance" icon={<Flame className="text-accent" />} animeList={romanceAnime} openAnime={openAnime} />
                 </div>
               </>
             )}
@@ -1540,6 +1646,25 @@ function App() {
                       </button>
                     );
                   })}
+                </div>
+              )}
+              
+              {/* Seasons & Related Dropdown */}
+              {relatedSeasons.length > 0 && (
+                <div className="server-bar mt-3 border-t border-white/5 pt-3">
+                  <span className="server-bar-label">Related</span>
+                  <div className="flex flex-wrap gap-2">
+                    {relatedSeasons.map((season, idx) => (
+                      <button
+                        key={idx}
+                        className="ep-btn text-[11px] px-2 py-1 flex items-center gap-1.5 opacity-80 hover:opacity-100 hover:text-accent transition-all"
+                        onClick={() => openAnime(season)}
+                      >
+                        <Play size={10} />
+                        {season.relation}: {season.title}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
