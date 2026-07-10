@@ -1598,12 +1598,75 @@ function App() {
             </div>
           </div>
 
-          {/* ── Main Content: Video + Sidebar ── */}
+          {/* ── Main Content: 3-Column Layout ── */}
           <div className="player-body">
 
-            {/* ── Left: Video Column ── */}
-            <div className="player-left">
+            {/* ── Left Sidebar: Episodes ── */}
+            <div className="player-sidebar-left">
+              <div className="sidebar-header">
+                <span>Episodes</span>
+                <div className="flex items-center gap-1.5">
+                  <button 
+                    onClick={playPrevEpisode}
+                    disabled={!activeEpisode || availableEpisodes.indexOf(activeEpisode) <= 0}
+                    className="p-1.5 rounded bg-white/5 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed text-white transition-all flex items-center justify-center border-none cursor-pointer"
+                  >
+                    <ChevronLeft size={14} />
+                  </button>
+                  <button 
+                    onClick={playNextEpisode}
+                    disabled={!activeEpisode || availableEpisodes.indexOf(activeEpisode) >= availableEpisodes.length - 1}
+                    className="p-1.5 rounded bg-white/5 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed text-white transition-all flex items-center justify-center border-none cursor-pointer"
+                  >
+                    <ChevronRight size={14} />
+                  </button>
+                  {availableEpisodes.length > 100 && (
+                    <select
+                      value={activeEpRange}
+                      onChange={e => setActiveEpRange(Number(e.target.value))}
+                      className="range-select ml-1"
+                    >
+                      {Array.from({ length: Math.ceil(availableEpisodes.length / 100) }).map((_, idx) => (
+                        <option key={idx} value={idx}>{idx * 100 + 1}–{Math.min((idx + 1) * 100, availableEpisodes.length)}</option>
+                      ))}
+                    </select>
+                  )}
+                </div>
+              </div>
 
+              <div className="episode-list">
+                {availableEpisodes.slice(activeEpRange * 100, (activeEpRange + 1) * 100).map(ep => (
+                  <button
+                    key={ep}
+                    className={`ep-list-item ${ep === activeEpisode ? 'active' : ''}`}
+                    onClick={() => handleEpisodeChange(ep)}
+                  >
+                    <span className="ep-num">{ep}</span>
+                    <span>Episode {ep}</span>
+                  </button>
+                ))}
+              </div>
+
+              <div className="sidebar-header" style={{borderTop:'1px solid rgba(255,255,255,0.05)', borderBottom:'none'}}>
+                <span>Jump:</span>
+                <input
+                  type="number"
+                  min="1"
+                  placeholder="e.g. 110"
+                  className="bg-black/50 border border-white/10 rounded px-2 py-1 text-white outline-none w-24 text-xs"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && e.target.value) {
+                      handleEpisodeChange(parseInt(e.target.value));
+                      e.target.value = '';
+                    }
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* ── Center Column: Video & Server Controls ── */}
+            <div className="player-center">
+              
               {/* Video Box */}
               <div className="video-wrapper shadow-2xl">
                 {isLoadingStream ? (
@@ -1637,136 +1700,160 @@ function App() {
                 ) : activeStreamFormat && availableStreams[activeStreamFormat]?.startsWith('http') ? (
                   <iframe src={availableStreams[activeStreamFormat]} allowFullScreen allow="autoplay; fullscreen" title="Anime Player" />
                 ) : (
-                  // Not playing yet — show anime info
-                  <div className="anime-info-panel" style={{width:'100%',background:'transparent',padding:'1rem 0'}}>
-                    <img src={selectedAnime.image} alt={selectedAnime.title} />
-                    <div className="info-text flex flex-col justify-center">
-                      <h3>{selectedAnime.title}</h3>
-                      <div className="flex flex-wrap items-center gap-3 mb-3" style={{fontSize:'0.85rem',color:'#a1a1aa',fontWeight:700}}>
-                        <Seal score={selectedAnime.score || 'N/A'} />
-                        <span>{selectedAnime.ep_count} Eps</span>
-                      </div>
-                      <p className="mb-4">{selectedAnime.synopsis || 'Select an episode to begin streaming.'}</p>
-                      <div>
-                        <button
-                          onClick={() => toggleWatchlist(selectedAnime)}
-                          className={`flex items-center gap-2 border font-bold text-[13px] px-4 py-2 rounded-lg cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] ${isInWatchlist(selectedAnime) ? 'bg-accent/20 border-accent/40 text-accent font-extrabold shadow-[0_0_15px_rgba(196,32,44,0.15)]' : 'bg-white/5 border-white/10 hover:border-white/20 hover:bg-white/10 text-white'}`}
-                        >
-                          <span className="text-[15px] font-black">{isInWatchlist(selectedAnime) ? '✓' : '+'}</span>
-                          {isInWatchlist(selectedAnime) ? 'In List' : 'Add to List'}
-                        </button>
-                      </div>
-                    </div>
+                  // Not playing yet — show placeholder
+                  <div className="p2p-state">
+                    <h3 style={{color:'#fff'}}>Select an episode to begin streaming.</h3>
                   </div>
                 )}
               </div>
 
-              {/* Server Switcher — only when streams exist */}
+              {/* Player Controls Bar */}
+              <div className="player-controls-bar">
+                <div className="controls-left">
+                  <button className="control-toggle" onClick={() => setTheaterMode(t => !t)}>
+                    {theaterMode ? '⊡' : '⛶'} <span>{theaterMode ? 'Collapse' : 'Expand'}</span>
+                  </button>
+                  <button className="control-toggle">
+                    💡 <span>Light</span> On
+                  </button>
+                  <button className="control-toggle" onClick={closePlayer}>
+                    ✕ <span>Close</span>
+                  </button>
+                </div>
+                <div className="controls-right hidden sm:flex">
+                  <button className="control-toggle">
+                    Auto Play <span style={{color: 'var(--color-accent)'}}>Off</span>
+                  </button>
+                  <button className="control-toggle">
+                    Auto Next <span style={{color: 'var(--color-accent)'}}>Off</span>
+                  </button>
+                  <button className="control-toggle">
+                    Auto Skip Intro <span style={{color: 'var(--color-accent)'}}>Off</span>
+                  </button>
+                  <div className="flex items-center gap-2 ml-4">
+                    <button onClick={playPrevEpisode} className="bg-transparent border-none text-white cursor-pointer hover:text-accent p-1"><ChevronLeft size={18} /></button>
+                    <button onClick={playNextEpisode} className="bg-transparent border-none text-white cursor-pointer hover:text-accent p-1"><ChevronRight size={18} /></button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Server Switcher Panel */}
               {Object.keys(availableStreams).length > 0 && (
-                <div className="server-bar">
-                  <span className="server-bar-label">Servers</span>
-                  {Object.entries(availableStreams).map(([key, url], idx) => {
-                    if (!url) return null;
-                    let label;
-                    if (key === 'torrent') label = <><HardDriveDownload size={13} /> P2P</>;
-                    else if (key.startsWith('dub-')) label = `Dub ${key.split('-')[1]}`;
-                    else label = `Server ${key.split('-')[1]}`;
-                    return (
-                      <button
-                        key={key}
-                        className={`ep-btn flex items-center gap-1 ${activeStreamFormat === key ? 'active' : key === 'torrent' ? 'text-accent' : ''}`}
-                        onClick={() => setActiveStreamFormat(key)}
-                        style={{width:'auto', padding:'0.3rem 0.75rem'}}
-                      >
-                        {label}
-                      </button>
-                    );
-                  })}
+                <div className="server-switcher-panel">
+                  <div className="server-switcher-left">
+                    <p>You are watching</p>
+                    <h4>Episode {activeEpisode}</h4>
+                    <p style={{marginTop:'0.5rem'}}>If current server doesn't work please try other servers.</p>
+                  </div>
+                  <div className="server-switcher-right">
+                    
+                    {/* Separate SUB and DUB automatically based on key */}
+                    {['SUB', 'DUB'].map(category => {
+                      const categoryStreams = Object.entries(availableStreams).filter(([key]) => {
+                        if (category === 'DUB') return key.startsWith('dub-');
+                        return !key.startsWith('dub-') && key !== 'torrent';
+                      });
+                      
+                      if (categoryStreams.length === 0) return null;
+
+                      return (
+                        <div className="server-group" key={category}>
+                          <div className="server-group-label">
+                            {category === 'SUB' ? 'CC' : '🎤'} {category}
+                          </div>
+                          <div className="server-buttons">
+                            {categoryStreams.map(([key, url]) => {
+                              if (!url) return null;
+                              let label = key.replace('dub-', 'Server ');
+                              if (key.startsWith('server-')) label = key.replace('server-', 'Server ');
+
+                              return (
+                                <button
+                                  key={key}
+                                  className={`server-btn ${activeStreamFormat === key ? 'active' : ''}`}
+                                  onClick={() => setActiveStreamFormat(key)}
+                                >
+                                  {label}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })}
+
+                    {/* Show P2P Separately if available */}
+                    {availableStreams['torrent'] && (
+                       <div className="server-group">
+                         <div className="server-group-label">
+                           <HardDriveDownload size={14} /> P2P
+                         </div>
+                         <div className="server-buttons">
+                           <button
+                             className={`server-btn text-accent border border-accent/30 ${activeStreamFormat === 'torrent' ? 'active' : ''}`}
+                             onClick={() => setActiveStreamFormat('torrent')}
+                           >
+                             Decentralized Torrents
+                           </button>
+                         </div>
+                       </div>
+                    )}
+                  </div>
                 </div>
               )}
-              
+
               {/* Seasons & Related Dropdown */}
               {relatedSeasons.length > 0 && (
-                <div className="server-bar mt-3 border-t border-white/5 pt-3">
-                  <span className="server-bar-label">Related</span>
-                  <div className="flex flex-wrap gap-2">
-                    {relatedSeasons.map((season, idx) => (
-                      <button
-                        key={idx}
-                        className="ep-btn text-[11px] px-2 py-1 flex items-center gap-1.5 opacity-80 hover:opacity-100 hover:text-accent transition-all"
-                        onClick={() => openAnime(season)}
-                      >
-                        <Play size={10} />
-                        {season.relation}: {season.title}
-                      </button>
-                    ))}
+                <div className="server-switcher-panel" style={{marginTop:0}}>
+                  <div className="server-switcher-right">
+                    <div className="server-group">
+                      <div className="server-group-label">Related</div>
+                      <div className="server-buttons">
+                        {relatedSeasons.map((season, idx) => (
+                          <button
+                            key={idx}
+                            className="server-btn text-[11px]"
+                            onClick={() => openAnime(season)}
+                          >
+                            {season.relation}: {season.title}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* ── Right: Episode Sidebar ── */}
-            <div className="player-sidebar">
-              <div className="sidebar-header">
-                <span>Episodes</span>
-                <div className="flex items-center gap-1.5">
-                  <button 
-                    onClick={playPrevEpisode}
-                    disabled={!activeEpisode || availableEpisodes.indexOf(activeEpisode) <= 0}
-                    className="p-1.5 rounded bg-white/5 border border-white/10 hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-white/5 disabled:cursor-not-allowed text-white cursor-pointer transition-all hover:scale-105 active:scale-95 flex items-center justify-center"
-                    title="Previous Episode"
-                  >
-                    <ChevronLeft size={14} />
-                  </button>
-                  <button 
-                    onClick={playNextEpisode}
-                    disabled={!activeEpisode || availableEpisodes.indexOf(activeEpisode) >= availableEpisodes.length - 1}
-                    className="p-1.5 rounded bg-white/5 border border-white/10 hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-white/5 disabled:cursor-not-allowed text-white cursor-pointer transition-all hover:scale-105 active:scale-95 flex items-center justify-center"
-                    title="Next Episode"
-                  >
-                    <ChevronRight size={14} />
-                  </button>
-                  {availableEpisodes.length > 100 && (
-                    <select
-                      value={activeEpRange}
-                      onChange={e => setActiveEpRange(Number(e.target.value))}
-                      className="range-select ml-1"
-                    >
-                      {Array.from({ length: Math.ceil(availableEpisodes.length / 100) }).map((_, idx) => (
-                        <option key={idx} value={idx}>{idx * 100 + 1}–{Math.min((idx + 1) * 100, availableEpisodes.length)}</option>
-                      ))}
-                    </select>
-                  )}
-                </div>
+            {/* ── Right Sidebar: Anime Info ── */}
+            <div className="player-sidebar-right">
+              <img src={selectedAnime.image} alt={selectedAnime.title} className="sidebar-right-cover" />
+              <h3 className="sidebar-right-title">{selectedAnime.title}</h3>
+              
+              <div className="sidebar-right-meta">
+                <span className="sidebar-right-badge">HD</span>
+                <span className="sidebar-right-badge pink">Ep {selectedAnime.ep_count}</span>
+                <span className="sidebar-right-badge">TV</span>
+                <span className="flex items-center gap-1"><Seal score={selectedAnime.score || 'N/A'} /></span>
               </div>
+              
+              <p className="sidebar-right-synopsis">
+                {selectedAnime.synopsis || 'No synopsis available.'}
+              </p>
+              
+              <p className="sidebar-right-synopsis mt-4" style={{fontSize:'0.75rem'}}>
+                Ronin Anime is the best site to watch <strong>{selectedAnime.title}</strong> SUB online, or you can even watch <strong>{selectedAnime.title}</strong> DUB in HD quality.
+              </p>
 
-              <div className="episode-grid">
-                {availableEpisodes.slice(activeEpRange * 100, (activeEpRange + 1) * 100).map(ep => (
-                  <button
-                    key={ep}
-                    className={`ep-btn ${ep === activeEpisode ? 'active' : ''}`}
-                    onClick={() => handleEpisodeChange(ep)}
-                  >
-                    {ep}
-                  </button>
-                ))}
-              </div>
-
-              <div className="missing-ep-row">
-                <span>Jump:</span>
-                <input
-                  type="number"
-                  min="1"
-                  placeholder="e.g. 1100"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && e.target.value) {
-                      handleEpisodeChange(parseInt(e.target.value));
-                      e.target.value = '';
-                    }
-                  }}
-                />
-              </div>
+              <button
+                onClick={() => toggleWatchlist(selectedAnime)}
+                className={`flex items-center justify-center gap-2 border font-bold text-[13px] px-4 py-3 rounded-lg cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] w-full mt-4 ${isInWatchlist(selectedAnime) ? 'bg-accent border-accent text-white shadow-[0_0_15px_rgba(196,32,44,0.3)]' : 'bg-white/5 border-white/10 hover:border-white/20 hover:bg-white/10 text-white'}`}
+              >
+                <span className="text-[15px] font-black">{isInWatchlist(selectedAnime) ? '✓' : '+'}</span>
+                {isInWatchlist(selectedAnime) ? 'In Watchlist' : 'Add to Watchlist'}
+              </button>
             </div>
+
           </div>
         </div>
       )}
