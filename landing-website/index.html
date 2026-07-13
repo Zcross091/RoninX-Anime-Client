@@ -90,14 +90,22 @@
         header {
             position: fixed;
             top: 0; left: 0; right: 0;
-            padding: 20px 40px;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            justify-content: center;
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border-color);
             z-index: 1000;
+            background: rgba(3, 3, 3, 0.8);
+        }
+
+        .header-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 1400px;
+            padding: 20px 40px;
         }
 
         .logo {
@@ -458,16 +466,18 @@
     <div class="ambient-glow"></div>
 
     <header>
-        <div class="logo">
-            <span class="logo-icon"></span>
-            RONIN<span class="text-red font-display">X</span>
+        <div class="header-inner">
+            <div class="logo">
+                <span class="logo-icon"></span>
+                RONIN<span class="text-red font-display">X</span>
+            </div>
+            <nav class="nav-links font-mono uppercase">
+                <a href="#features">Features</a>
+                <a href="#showcase">Interface</a>
+                <a href="https://github.com/Zcross091/RoninX-Anime-Client" target="_blank">Source</a>
+            </nav>
+            <a href="#download" class="btn-primary">Download</a>
         </div>
-        <nav class="nav-links font-mono uppercase">
-            <a href="#features">Features</a>
-            <a href="#showcase">Interface</a>
-            <a href="https://github.com/Zcross091/RoninX-Anime-Client" target="_blank">Source</a>
-        </nav>
-        <a href="#download" class="btn-primary">Download</a>
     </header>
 
     <section class="hero">
