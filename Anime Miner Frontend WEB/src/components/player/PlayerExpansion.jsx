@@ -1,21 +1,43 @@
-import React from 'react';
-import { Play } from 'lucide-react';
+import React, { useState } from 'react';
+import { Play, Share2, Check } from 'lucide-react';
+import logoImg from '../../assets/logo.png';
 
 export function PlayerExpansion({
   animeCharacters,
   animeRecommendations,
   openAnime,
 }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleShare = () => {
+    navigator.clipboard.writeText(window.location.href);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <div className="max-w-[1200px] w-full mx-auto px-4 pb-20 pt-10">
       {/* Share Anime */}
-      <div className="flex items-center gap-4 pb-8 mb-8 border-b border-white/5">
-        <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-accent">
-            <img src="/logo.png" alt="Avatar" className="w-full h-full object-cover" />
+      <div
+        onClick={handleShare}
+        className="flex items-center justify-between p-4 mb-8 bg-white/[0.02] hover:bg-white/[0.06] border border-white/5 rounded-2xl cursor-pointer group transition-all duration-300 active:scale-98 select-none"
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-accent transition-transform duration-300 group-hover:rotate-12">
+            <img src={logoImg} alt="Avatar" className="w-full h-full object-cover" />
+          </div>
+          <div>
+            <h4 className="text-accent font-bold text-lg m-0 flex items-center gap-2">
+              Share Anime
+              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full transition-all duration-300 ${copied ? 'bg-emerald-500/20 text-emerald-400' : 'bg-white/5 text-white/40 group-hover:text-accent'}`}>
+                {copied ? 'Copied!' : 'Click to copy'}
+              </span>
+            </h4>
+            <p className="text-white/60 text-sm m-0">Spread the word about RONIN with your friends</p>
+          </div>
         </div>
-        <div>
-          <h4 className="text-accent font-bold text-lg m-0">Share Anime</h4>
-          <p className="text-white/60 text-sm m-0">to your friends</p>
+        <div className={`p-3 rounded-xl border transition-all duration-300 ${copied ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-white/5 border-white/10 text-white/60 group-hover:text-accent group-hover:border-accent/40'}`}>
+          {copied ? <Check className="w-5 h-5" /> : <Share2 className="w-5 h-5" />}
         </div>
       </div>
 
