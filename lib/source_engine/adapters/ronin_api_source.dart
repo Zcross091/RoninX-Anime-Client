@@ -73,9 +73,7 @@ class RoninApiSource extends AnimeSource {
   @override
   Future<List<VideoServer>> getServers(String episodeId) async {
     return [
-      VideoServer(id: 'server1', name: 'Server 1'),
-      VideoServer(id: 'server2', name: 'Server 2 (Mock)'),
-      VideoServer(id: 'server3', name: 'Server 3 (Mock)'),
+      VideoServer(id: 'ronin_db', name: 'Ronin Database'),
     ];
   }
 
@@ -86,23 +84,35 @@ class RoninApiSource extends AnimeSource {
 
     final query = Uri.encodeComponent(parts[0]);
     final episode = parts[1];
-    final serverId = server.id; 
 
     try {
-      final response = await http.get(Uri.parse('$baseUrl/api/$serverId/$query/$episode'));
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        if (data['results'] != null && data['results'].isNotEmpty) {
-          return (data['results'] as List).map((res) {
+      // 1. Check Supabase Cache First
+      final dbResponse = await http.get(Uri.parse('$baseUrl/api/db?title=$query&episode=$episode'));
+      if (dbResponse.statusCode == 200) {
+        final List<dynamic> dbData = json.decode(dbResponse.body);
+        if (dbData.isNotEmpty) {
+          log.i('Cache hit for $query episode $episode!');
+          return dbData.map((res) {
             return VideoStream(
               url: res['url'],
-              quality: res['source'] ?? 'Auto',
+              quality: res['type'] ?? 'Auto',
             );
           }).toList();
         }
       }
+
+      // 2. Cache Miss - Trigger Miner
+      log.i('Cache miss for $query episode $episode. Triggering GitHub Action Miner...');
+      await http.get(Uri.parse('$baseUrl/api/trigger-miner?title=$query&episode=$episode'));
+      
+      // 3. Inform the user
+      throw Exception('Episode not found in cache. The Ronin Miner has been triggered in the background! Please check back in a few minutes.');
+      
     } catch (e, st) {
       log.e('Failed to get sources from Ronin API', e, st);
+      if (e.toString().contains('Ronin Miner')) {
+        rethrow;
+      }
     }
     return [];
   }
