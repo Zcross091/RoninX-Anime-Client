@@ -1653,6 +1653,7 @@ function App() {
               setActiveStreamFormat={setActiveStreamFormat}
               relatedSeasons={relatedSeasons}
               openAnime={openAnime}
+              nextAiringEpisode={nextAiringEpisode}
             />
 
             {/* ── Right Sidebar: Anime Info ── */}
