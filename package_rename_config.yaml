@@ -1,0 +1,31 @@
+package_rename_config-production:
+  android:
+    app_name: "Ronin"
+    package_name: "com.animeplayer.ronin"
+
+  linux:
+    app_name: "Ronin"
+    package_name: "com.animeplayer.ronin"
+    exe_name: "ronin"
+
+  windows:
+    app_name: "Ronin"
+    organization: "animeplayer"
+    copyright_notice: "Copyright © 2026"
+    exe_name: "ronin"
+
+package_rename_config-development:
+  android:
+    app_name: "ShonenX Dev"
+    package_name: "com.roshancodespace.shonenx.dev"
+
+  linux:
+    app_name: "ShonenX Dev"
+    package_name: "com.roshancodespace.shonenx.dev"
+    exe_name: "shonenx-dev"
+
+  windows:
+    app_name: "ShonenX Dev"
+    organization: "roshancodespace"
+    copyright_notice: "Copyright © 2026"
+    exe_name: "shonenx-dev"
