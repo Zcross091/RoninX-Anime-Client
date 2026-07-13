@@ -40,6 +40,9 @@ on:
 permissions:
   contents: write
 
+env:
+  FLUTTER_VERSION: 3.35.7
+
 jobs:
   resolve-release-tag:
     runs-on: ubuntu-latest
@@ -125,7 +128,6 @@ jobs:
         with:
           submodules: recursive
 
-
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -134,7 +136,7 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: 3.35.7
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
 
       - name: Create env file
@@ -150,25 +152,63 @@ jobs:
           }
           EOF
 
-      - name: Fallback to backup repository for missing dependencies
+      # NOTE: This fallback only helps if the missing thing is genuinely absent
+      # from RoninX-Anime-Client and present in Yahya098/ShonenX at the same
+      # relative path. It cannot fix a file that was never written/committed
+      # anywhere. Treat build failures citing a missing lib/ file as a signal
+      # to fix the source in RoninX-Anime-Client directly, not to keep patching
+      # this fallback.
+      - name: Verify required source files / fall back to backup repo
         shell: bash
         run: |
-          if [ ! -d "packages/anymex_extension_bridge/lib" ] || [ ! -d "packages/commentum_client/lib" ]; then
-            echo "Dependencies missing! Fetching from backup repository Yahya098/ShonenX..."
+          missing=0
+          for f in \
+            "packages/anymex_extension_bridge/lib" \
+            "packages/commentum_client/lib" \
+            "lib/features/extensions/presentation/widgets/runtime_setup_sheet.dart"
+          do
+            if [ ! -e "$f" ]; then
+              echo "MISSING: $f"
+              missing=1
+            fi
+          done
+
+          if [ "$missing" -eq 1 ]; then
+            echo "One or more required files/dirs are missing. Attempting backup repo fetch..."
             git clone --recursive https://github.com/Yahya098/ShonenX.git /tmp/backup_repo || true
-            cp -r -n /tmp/backup_repo/packages/* packages/ || true
-            cp -r -n /tmp/backup_repo/lib/source_engine/inbuilt_sources lib/source_engine/ || true
+            cp -r -n /tmp/backup_repo/packages/* packages/ 2>/dev/null || true
+            cp -rf /tmp/backup_repo/lib/source_engine/inbuilt_sources lib/source_engine/ 2>/dev/null || true
+            cp -rf /tmp/backup_repo/lib/features/extensions/presentation/widgets/runtime_setup_sheet.dart \
+              lib/features/extensions/presentation/widgets/ 2>/dev/null || true
+
+            # Re-check after fallback; fail fast with a clear message instead of
+            # a confusing Dart compile error deep in the build step.
+            still_missing=0
+            for f in \
+              "packages/anymex_extension_bridge/lib" \
+              "packages/commentum_client/lib" \
+              "lib/features/extensions/presentation/widgets/runtime_setup_sheet.dart"
+            do
+              if [ ! -e "$f" ]; then
+                echo "STILL MISSING after fallback: $f"
+                still_missing=1
+              fi
+            done
+            if [ "$still_missing" -eq 1 ]; then
+              echo "::error::Required source files are missing and were not recovered from the backup repo. Fix RoninX-Anime-Client directly."
+              exit 1
+            fi
           else
-            echo "Dependencies exist locally, skipping backup repo."
+            echo "All required source files present."
           fi
 
-      - name: Get Dependencies
-        run: find . -name "pubspec.lock" -type f -delete && flutter pub upgrade
+      - name: Get dependencies
+        run: flutter pub upgrade
 
       - name: Build APKs
         run: flutter build apk --release --split-per-abi --dart-define-from-file=keys.json
 
-      - name: Upload Android Artifacts
+      - name: Upload Android artifacts
         uses: actions/upload-artifact@v4
         with:
           name: android-apks
@@ -180,7 +220,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Install dependencies
+      - name: Install system dependencies
         run: |
           sudo add-apt-repository universe
           sudo apt-get update
@@ -190,10 +230,9 @@ jobs:
         with:
           submodules: recursive
 
-
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: 3.35.7
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
 
       - name: Create env file
@@ -209,28 +248,58 @@ jobs:
           }
           EOF
 
-      - name: Enable Linux config
+      - name: Enable Linux desktop config
         run: flutter config --enable-linux-desktop
-      
-      - name: Fallback to backup repository for missing dependencies
+
+      - name: Verify required source files / fall back to backup repo
         shell: bash
         run: |
-          if [ ! -d "packages/anymex_extension_bridge/lib" ] || [ ! -d "packages/commentum_client/lib" ]; then
-            echo "Dependencies missing! Fetching from backup repository Yahya098/ShonenX..."
+          missing=0
+          for f in \
+            "packages/anymex_extension_bridge/lib" \
+            "packages/commentum_client/lib" \
+            "lib/features/extensions/presentation/widgets/runtime_setup_sheet.dart"
+          do
+            if [ ! -e "$f" ]; then
+              echo "MISSING: $f"
+              missing=1
+            fi
+          done
+
+          if [ "$missing" -eq 1 ]; then
+            echo "One or more required files/dirs are missing. Attempting backup repo fetch..."
             git clone --recursive https://github.com/Yahya098/ShonenX.git /tmp/backup_repo || true
-            cp -r -n /tmp/backup_repo/packages/* packages/ || true
-            cp -r -n /tmp/backup_repo/lib/source_engine/inbuilt_sources lib/source_engine/ || true
+            cp -r -n /tmp/backup_repo/packages/* packages/ 2>/dev/null || true
+            cp -rf /tmp/backup_repo/lib/source_engine/inbuilt_sources lib/source_engine/ 2>/dev/null || true
+            cp -rf /tmp/backup_repo/lib/features/extensions/presentation/widgets/runtime_setup_sheet.dart \
+              lib/features/extensions/presentation/widgets/ 2>/dev/null || true
+
+            still_missing=0
+            for f in \
+              "packages/anymex_extension_bridge/lib" \
+              "packages/commentum_client/lib" \
+              "lib/features/extensions/presentation/widgets/runtime_setup_sheet.dart"
+            do
+              if [ ! -e "$f" ]; then
+                echo "STILL MISSING after fallback: $f"
+                still_missing=1
+              fi
+            done
+            if [ "$still_missing" -eq 1 ]; then
+              echo "::error::Required source files are missing and were not recovered from the backup repo. Fix RoninX-Anime-Client directly."
+              exit 1
+            fi
           else
-            echo "Dependencies exist locally, skipping backup repo."
+            echo "All required source files present."
           fi
 
-      - name: Get Dependencies
-        run: find . -name "pubspec.lock" -type f -delete && flutter pub upgrade
+      - name: Get dependencies
+        run: flutter pub upgrade
 
       - name: Build Linux app
         run: flutter build linux --release --dart-define-from-file=keys.json
-      
-      - name: Upload Linux Artifacts
+
+      - name: Upload Linux artifacts
         uses: actions/upload-artifact@v4
         with:
           name: linux-bundle
@@ -246,13 +315,12 @@ jobs:
         with:
           submodules: recursive
 
-
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: 3.35.7
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
 
-      - name: Enable Windows config
+      - name: Enable Windows desktop config
         run: flutter config --enable-windows-desktop
 
       - name: Create env file
@@ -269,33 +337,70 @@ jobs:
           }
           EOF
 
-      - name: Fallback to backup repository for missing dependencies
+      - name: Verify required source files / fall back to backup repo
         shell: bash
         run: |
-          if [ ! -d "packages/anymex_extension_bridge/lib" ] || [ ! -d "packages/commentum_client/lib" ]; then
-            echo "Dependencies missing! Fetching from backup repository Yahya098/ShonenX..."
+          missing=0
+          for f in \
+            "packages/anymex_extension_bridge/lib" \
+            "packages/commentum_client/lib" \
+            "lib/features/extensions/presentation/widgets/runtime_setup_sheet.dart"
+          do
+            if [ ! -e "$f" ]; then
+              echo "MISSING: $f"
+              missing=1
+            fi
+          done
+
+          if [ "$missing" -eq 1 ]; then
+            echo "One or more required files/dirs are missing. Attempting backup repo fetch..."
             git clone --recursive https://github.com/Yahya098/ShonenX.git /tmp/backup_repo || true
-            cp -r -n /tmp/backup_repo/packages/* packages/ || true
-            cp -r -n /tmp/backup_repo/lib/source_engine/inbuilt_sources lib/source_engine/ || true
+            cp -r -n /tmp/backup_repo/packages/* packages/ 2>/dev/null || true
+            cp -rf /tmp/backup_repo/lib/source_engine/inbuilt_sources lib/source_engine/ 2>/dev/null || true
+            cp -rf /tmp/backup_repo/lib/features/extensions/presentation/widgets/runtime_setup_sheet.dart \
+              lib/features/extensions/presentation/widgets/ 2>/dev/null || true
+
+            still_missing=0
+            for f in \
+              "packages/anymex_extension_bridge/lib" \
+              "packages/commentum_client/lib" \
+              "lib/features/extensions/presentation/widgets/runtime_setup_sheet.dart"
+            do
+              if [ ! -e "$f" ]; then
+                echo "STILL MISSING after fallback: $f"
+                still_missing=1
+              fi
+            done
+            if [ "$still_missing" -eq 1 ]; then
+              echo "::error::Required source files are missing and were not recovered from the backup repo. Fix RoninX-Anime-Client directly."
+              exit 1
+            fi
           else
-            echo "Dependencies exist locally, skipping backup repo."
+            echo "All required source files present."
           fi
 
-      - name: Get Dependencies
+      - name: Get dependencies
+        shell: bash
         run: flutter pub upgrade
 
       - name: Build Windows app
         shell: bash
         run: |
-          flutter build windows --release --dart-define-from-file=keys.json || {
-            echo "First build failed (likely due to media_kit libmpv download race condition). Retrying..."
+          set +e
+          flutter build windows --release --dart-define-from-file=keys.json
+          status=$?
+          if [ $status -ne 0 ]; then
+            echo "First Windows build attempt failed (exit $status)."
+            echo "Retrying once, in case this is the known media_kit/libmpv download race condition."
             flutter build windows --release --dart-define-from-file=keys.json
-          }
+            status=$?
+          fi
+          exit $status
 
       - name: Build installer (InnoBundle)
         run: dart run inno_bundle --release --no-app
 
-      - name: Upload Windows Artifacts
+      - name: Upload Windows artifacts
         uses: actions/upload-artifact@v4
         with:
           name: windows-installer
@@ -304,7 +409,7 @@ jobs:
   create-release:
     needs: [resolve-release-tag, build-android, build-linux, build-windows]
     runs-on: ubuntu-latest
-    
+
     if: always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
 
     steps:
@@ -336,7 +441,7 @@ jobs:
           cd artifacts
           zip -r RoninX-linux.zip linux
 
-      - name: Generate Release Notes
+      - name: Generate release notes
         id: release_notes
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -388,7 +493,9 @@ jobs:
                 -d "$PAYLOAD"
             }
 
-            for MODEL in "gemini-2.5-flash" "gemini-3.5-flash" "gemini-2.5-pro" "gemini-1.5-flash"; do
+            # Only real, current Gemini model IDs. Remove/replace as needed
+            # once new models are released.
+            for MODEL in "gemini-2.5-flash" "gemini-2.5-pro" "gemini-1.5-flash"; do
               echo "Trying Gemini model: $MODEL..."
               RESPONSE=$(call_gemini "$MODEL")
               NOTES=$(echo "$RESPONSE" | jq -r '.candidates[0].content.parts[0].text // empty')
