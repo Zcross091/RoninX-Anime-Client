@@ -22,7 +22,8 @@ dependencies:
       url: https://github.com/roshancodespace/flutter_web_auth.git
       path: flutter_web_auth_2
   commentum_client:
-    path: packages/commentum_client
+    git:
+      url: https://github.com/roshancodespace/commentum_client.git
   media_kit:
     git:
       url: https://github.com/Predidit/media-kit.git
