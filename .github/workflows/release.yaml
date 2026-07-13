@@ -150,6 +150,18 @@ jobs:
           }
           EOF
 
+      - name: Fallback to backup repository for missing dependencies
+        shell: bash
+        run: |
+          if [ ! -d "packages/anymex_extension_bridge/lib" ] || [ ! -d "packages/commentum_client/lib" ]; then
+            echo "Dependencies missing! Fetching from backup repository Yahya098/ShonenX..."
+            git clone --recursive https://github.com/Yahya098/ShonenX.git /tmp/backup_repo || true
+            cp -r -n /tmp/backup_repo/packages/* packages/ || true
+            cp -r -n /tmp/backup_repo/lib/source_engine/inbuilt_sources lib/source_engine/ || true
+          else
+            echo "Dependencies exist locally, skipping backup repo."
+          fi
+
       - name: Get Dependencies
         run: find . -name "pubspec.lock" -type f -delete && flutter pub upgrade
 
@@ -200,6 +212,18 @@ jobs:
       - name: Enable Linux config
         run: flutter config --enable-linux-desktop
       
+      - name: Fallback to backup repository for missing dependencies
+        shell: bash
+        run: |
+          if [ ! -d "packages/anymex_extension_bridge/lib" ] || [ ! -d "packages/commentum_client/lib" ]; then
+            echo "Dependencies missing! Fetching from backup repository Yahya098/ShonenX..."
+            git clone --recursive https://github.com/Yahya098/ShonenX.git /tmp/backup_repo || true
+            cp -r -n /tmp/backup_repo/packages/* packages/ || true
+            cp -r -n /tmp/backup_repo/lib/source_engine/inbuilt_sources lib/source_engine/ || true
+          else
+            echo "Dependencies exist locally, skipping backup repo."
+          fi
+
       - name: Get Dependencies
         run: find . -name "pubspec.lock" -type f -delete && flutter pub upgrade
 
@@ -244,6 +268,18 @@ jobs:
             "RELEASE_REPO": "Zcross091/RoninX-Anime-Client"
           }
           EOF
+
+      - name: Fallback to backup repository for missing dependencies
+        shell: bash
+        run: |
+          if [ ! -d "packages/anymex_extension_bridge/lib" ] || [ ! -d "packages/commentum_client/lib" ]; then
+            echo "Dependencies missing! Fetching from backup repository Yahya098/ShonenX..."
+            git clone --recursive https://github.com/Yahya098/ShonenX.git /tmp/backup_repo || true
+            cp -r -n /tmp/backup_repo/packages/* packages/ || true
+            cp -r -n /tmp/backup_repo/lib/source_engine/inbuilt_sources lib/source_engine/ || true
+          else
+            echo "Dependencies exist locally, skipping backup repo."
+          fi
 
       - name: Get Dependencies
         run: flutter pub upgrade
