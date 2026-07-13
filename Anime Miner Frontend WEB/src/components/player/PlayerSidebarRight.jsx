@@ -1,10 +1,57 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Seal } from '../ui/Seal';
+
+function AiringCountdown({ nextAiringEpisode }) {
+  if (!nextAiringEpisode) return null;
+
+  const [timeLeft, setTimeLeft] = useState('');
+
+  useEffect(() => {
+    const calculateTimeLeft = () => {
+      const now = Math.floor(Date.now() / 1000);
+      const diff = nextAiringEpisode.airingAt - now;
+
+      if (diff <= 0) {
+        setTimeLeft('Airing now / Aired');
+        return;
+      }
+
+      const days = Math.floor(diff / (24 * 3600));
+      const hours = Math.floor((diff % (24 * 3600)) / 3600);
+      const minutes = Math.floor((diff % 3600) / 60);
+      const seconds = diff % 60;
+
+      let parts = [];
+      if (days > 0) parts.push(`${days}d`);
+      if (hours > 0 || days > 0) parts.push(`${hours}h`);
+      if (minutes > 0 || hours > 0 || days > 0) parts.push(`${minutes}m`);
+      parts.push(`${seconds}s`);
+
+      setTimeLeft(parts.join(' '));
+    };
+
+    calculateTimeLeft();
+    const interval = setInterval(calculateTimeLeft, 1000);
+    return () => clearInterval(interval);
+  }, [nextAiringEpisode]);
+
+  return (
+    <div className="bg-accent/10 border border-accent/20 rounded-xl p-3.5 text-center my-4 font-bold shadow-[0_0_15px_rgba(196,32,44,0.05)]">
+      <div className="text-[10px] text-zinc-500 uppercase tracking-widest mb-1">
+        Next Episode {nextAiringEpisode.episode} Releases In
+      </div>
+      <div className="text-[16px] text-accent font-display font-black tracking-wider uppercase animate-pulse">
+        {timeLeft}
+      </div>
+    </div>
+  );
+}
 
 export function PlayerSidebarRight({
   selectedAnime,
   isInWatchlist,
   toggleWatchlist,
+  nextAiringEpisode,
 }) {
   return (
     <div className="player-sidebar-right">
@@ -18,6 +65,8 @@ export function PlayerSidebarRight({
         <span className="flex items-center gap-1"><Seal score={selectedAnime.score || 'N/A'} /></span>
       </div>
       
+      {nextAiringEpisode && <AiringCountdown nextAiringEpisode={nextAiringEpisode} />}
+
       <p className="sidebar-right-synopsis">
         {selectedAnime.synopsis || 'No synopsis available.'}
       </p>
