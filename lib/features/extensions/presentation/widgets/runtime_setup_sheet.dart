@@ -48,7 +48,7 @@ class _RuntimeSetupSheetState extends ConsumerState<RuntimeSetupSheet> {
       if (bridge.AnymeXRuntimeBridge.controller.isReady.value) {
         final extManager = Get.find<bridge.ExtensionManager>();
         await extManager.onRuntimeBridgeInitialization(force: false);
-        ref.invalidate(extensionManagerProvider);
+        // ref.invalidate(extensionManagerProvider);
         ref.invalidate(availableAnimeSourcesProvider);
         ref.invalidate(availableMangaSourcesProvider);
         if (mounted) setState(() {});
@@ -65,14 +65,14 @@ class _RuntimeSetupSheetState extends ConsumerState<RuntimeSetupSheet> {
       if (controller.isReady.value) {
         final extManager = Get.find<bridge.ExtensionManager>();
         await extManager.onRuntimeBridgeInitialization(force: true);
-        ref.invalidate(extensionManagerProvider);
+        // ref.invalidate(extensionManagerProvider);
         ref.invalidate(availableAnimeSourcesProvider);
         ref.invalidate(availableMangaSourcesProvider);
-        ref.read(enabledExtensionManagersProvider.notifier).enableAll([
+        /* ref.read(enabledExtensionManagersProvider.notifier).enableAll([
           'aniyomi',
           'cloudstream',
           'kotatsu',
-        ]);
+        ]); */
         if (mounted && force) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -108,7 +108,7 @@ class _RuntimeSetupSheetState extends ConsumerState<RuntimeSetupSheet> {
         if (success) {
           final extManager = Get.find<bridge.ExtensionManager>();
           await extManager.onRuntimeBridgeInitialization(force: true);
-          ref.invalidate(extensionManagerProvider);
+          // ref.invalidate(extensionManagerProvider);
           ref.invalidate(availableAnimeSourcesProvider);
           ref.invalidate(availableMangaSourcesProvider);
           widget.onComplete?.call();
@@ -354,7 +354,7 @@ class _RuntimeSetupSheetState extends ConsumerState<RuntimeSetupSheet> {
                               await extManager.onRuntimeBridgeInitialization(
                                 force: false,
                               );
-                              ref.invalidate(extensionManagerProvider);
+                              // ref.invalidate(extensionManagerProvider);
                               ref.invalidate(availableAnimeSourcesProvider);
                               ref.invalidate(availableMangaSourcesProvider);
                               widget.onComplete?.call();
