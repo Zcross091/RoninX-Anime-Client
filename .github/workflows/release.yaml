@@ -159,7 +159,7 @@ jobs:
             "MAL_CLIENT_ID": "${{ secrets.MAL_CLIENT_ID }}",
             "MAL_CLIENT_SECRET": "${{ secrets.MAL_CLIENT_SECRET }}",
             "COMMENTUM_API_URL": "${{ secrets.COMMENTUM_API_URL }}",
-            "RELEASE_REPO": "roshancodespace/ShonenX"
+            "RELEASE_REPO": "Zcross091/RoninX-Anime-Client"
           }
           EOF
 
@@ -208,7 +208,7 @@ jobs:
             "MAL_CLIENT_ID": "${{ secrets.MAL_CLIENT_ID }}",
             "MAL_CLIENT_SECRET": "${{ secrets.MAL_CLIENT_SECRET }}",
             "COMMENTUM_API_URL": "${{ secrets.COMMENTUM_API_URL }}",
-            "RELEASE_REPO": "roshancodespace/ShonenX"
+            "RELEASE_REPO": "Zcross091/RoninX-Anime-Client"
           }
           EOF
 
@@ -258,7 +258,7 @@ jobs:
             "MAL_CLIENT_ID": "${{ secrets.MAL_CLIENT_ID }}",
             "MAL_CLIENT_SECRET": "${{ secrets.MAL_CLIENT_SECRET }}",
             "COMMENTUM_API_URL": "${{ secrets.COMMENTUM_API_URL }}",
-            "RELEASE_REPO": "roshancodespace/ShonenX"
+            "RELEASE_REPO": "Zcross091/RoninX-Anime-Client"
           }
           EOF
 
@@ -314,7 +314,7 @@ jobs:
       - name: Zip Linux bundle
         run: |
           cd artifacts
-          zip -r ShonenX-linux.zip linux
+          zip -r RoninX-linux.zip linux
 
       - name: Generate Release Notes
         id: release_notes
@@ -410,7 +410,7 @@ jobs:
           body_path: release_notes.md
           files: |
             artifacts/android/*.apk
-            artifacts/ShonenX-linux.zip
+            artifacts/RoninX-linux.zip
             artifacts/windows/**/*.exe
             artifacts/windows/**/*.msi
         env:
