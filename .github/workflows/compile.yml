@@ -35,6 +35,48 @@ jobs:
           }
           EOF
 
+      - name: Verify required source files / fall back to backup repo
+        shell: bash
+        run: |
+          missing=0
+          for f in \
+            "packages/anymex_extension_bridge/lib" \
+            "packages/commentum_client/lib" \
+            "lib/features/extensions/presentation/widgets/runtime_setup_sheet.dart"
+          do
+            if [ ! -e "$f" ]; then
+              echo "MISSING: $f"
+              missing=1
+            fi
+          done
+
+          if [ "$missing" -eq 1 ]; then
+            echo "One or more required files/dirs are missing. Attempting backup repo fetch..."
+            git clone --recursive https://github.com/Yahya098/ShonenX.git /tmp/backup_repo || true
+            cp -r -n /tmp/backup_repo/packages/* packages/ 2>/dev/null || true
+            cp -rf /tmp/backup_repo/lib/source_engine/inbuilt_sources lib/source_engine/ 2>/dev/null || true
+            cp -rf /tmp/backup_repo/lib/features/extensions/presentation/widgets/runtime_setup_sheet.dart \
+              lib/features/extensions/presentation/widgets/ 2>/dev/null || true
+
+            still_missing=0
+            for f in \
+              "packages/anymex_extension_bridge/lib" \
+              "packages/commentum_client/lib" \
+              "lib/features/extensions/presentation/widgets/runtime_setup_sheet.dart"
+            do
+              if [ ! -e "$f" ]; then
+                echo "STILL MISSING after fallback: $f"
+                still_missing=1
+              fi
+            done
+            if [ "$still_missing" -eq 1 ]; then
+              echo "::error::Required source files are missing and were not recovered from the backup repo."
+              exit 1
+            fi
+          else
+            echo "All required source files present."
+          fi
+
       - name: Get dependencies
         run: flutter pub get
 
@@ -126,6 +168,48 @@ jobs:
             "RELEASE_REPO": "Zcross091/RoninX-Anime-Client"
           }
           EOF
+
+      - name: Verify required source files / fall back to backup repo
+        shell: bash
+        run: |
+          missing=0
+          for f in \
+            "packages/anymex_extension_bridge/lib" \
+            "packages/commentum_client/lib" \
+            "lib/features/extensions/presentation/widgets/runtime_setup_sheet.dart"
+          do
+            if [ ! -e "$f" ]; then
+              echo "MISSING: $f"
+              missing=1
+            fi
+          done
+
+          if [ "$missing" -eq 1 ]; then
+            echo "One or more required files/dirs are missing. Attempting backup repo fetch..."
+            git clone --recursive https://github.com/Yahya098/ShonenX.git /tmp/backup_repo || true
+            cp -r -n /tmp/backup_repo/packages/* packages/ 2>/dev/null || true
+            cp -rf /tmp/backup_repo/lib/source_engine/inbuilt_sources lib/source_engine/ 2>/dev/null || true
+            cp -rf /tmp/backup_repo/lib/features/extensions/presentation/widgets/runtime_setup_sheet.dart \
+              lib/features/extensions/presentation/widgets/ 2>/dev/null || true
+
+            still_missing=0
+            for f in \
+              "packages/anymex_extension_bridge/lib" \
+              "packages/commentum_client/lib" \
+              "lib/features/extensions/presentation/widgets/runtime_setup_sheet.dart"
+            do
+              if [ ! -e "$f" ]; then
+                echo "STILL MISSING after fallback: $f"
+                still_missing=1
+              fi
+            done
+            if [ "$still_missing" -eq 1 ]; then
+              echo "::error::Required source files are missing and were not recovered from the backup repo."
+              exit 1
+            fi
+          else
+            echo "All required source files present."
+          fi
 
       - name: Get dependencies
         shell: bash
