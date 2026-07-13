@@ -8,6 +8,7 @@
 
 [![Flutter](https://img.shields.io/badge/Flutter-≥3.8.1-02569B?logo=flutter)](https://flutter.dev/)
 [![Dart](https://img.shields.io/badge/Dart-≥3.8.1-0175C2?logo=dart)](https://dart.dev)
+[![Discord](https://img.shields.io/badge/Discord-Join_RoninX_API_Server-7289da?logo=discord&logoColor=white)](https://discord.gg/c2ZD8yEs4D)
 
 **The official frontend client for the Ronin API.**
 
