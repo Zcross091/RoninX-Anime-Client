@@ -454,42 +454,51 @@ body::before {
     order: 3;
   }
   .player-controls-bar {
-    font-size: 0.65rem;
-    padding: 0.5rem;
+    font-size: 0.75rem;
+    padding: 0.75rem 0.5rem;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 0.75rem;
+    justify-content: center;
   }
   .player-controls-bar .controls-left,
   .player-controls-bar .controls-right {
-    gap: 0.5rem;
+    gap: 0.75rem;
     flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
   }
   .server-switcher-panel {
-    flex-direction: row;
+    flex-direction: column;
     margin: 0 0.5rem 0.5rem 0.5rem;
-    border-radius: 4px;
+    border-radius: 6px;
   }
   .server-switcher-left {
-    width: 40%;
-    padding: 0.5rem;
+    width: 100%;
+    padding: 0.75rem;
   }
   .server-switcher-left h4 {
-    font-size: 0.75rem;
+    font-size: 1rem;
     margin-bottom: 0.1rem;
   }
   .server-switcher-left p {
-    font-size: 0.55rem;
+    font-size: 0.65rem;
   }
   .server-switcher-right {
-    padding: 0.5rem;
-    gap: 0.5rem;
+    padding: 0.75rem;
+    gap: 0.75rem;
   }
   .server-group-label {
-    font-size: 0.65rem;
+    font-size: 0.75rem;
+    width: 100%;
+  }
+  .server-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
   }
   .server-btn {
-    padding: 0.25rem 0.4rem;
-    font-size: 0.65rem;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.75rem;
   }
 }
 
