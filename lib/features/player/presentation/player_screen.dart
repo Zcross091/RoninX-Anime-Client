@@ -252,7 +252,7 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
     });
   }
 
-  void _toggleEpisodePanel() {
+  void _handlePop(
     bool didPop,
     VideoEngine engine,
     PlayerController controller,
