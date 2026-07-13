@@ -7,7 +7,6 @@ import 'package:shonenx/shared/widgets/app_bottom_sheet.dart';
 import 'package:shonenx/shared/providers/theme_prefs_provider.dart';
 import 'package:shonenx/features/auth/providers/auth_provider.dart';
 import 'package:shonenx/features/discovery/presentation/widgets/tabs/about_tab.dart';
-import 'package:shonenx/features/comments/presentation/widgets/comments_tab.dart';
 import 'package:shonenx/features/discovery/presentation/widgets/tabs/episodes_tab.dart';
 import 'package:shonenx/features/discovery/providers/details_provider.dart';
 import 'package:shonenx/features/downloads/domain/models/download_task.dart';
@@ -85,9 +84,7 @@ class _DetailsScreenState extends ConsumerState<DetailsScreen>
         setState(() => _pullProgress = 0.0);
       }
       if (shouldTrigger) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _showCommentsSheet(context, widget.media);
-        });
+        // Removed comment trigger
       }
     }
     return false;
@@ -333,10 +330,6 @@ class _DetailsScreenState extends ConsumerState<DetailsScreen>
                   ),
                   actions: [
                     const _DownloadAppBarButton(),
-                    _CommentsAppBarButton(
-                      media: displayMedia,
-                      uiRoundness: uiRoundness,
-                    ),
                     const SizedBox(width: 4),
                     _TrackerAppBarButton(
                       media: displayMedia,
@@ -357,69 +350,6 @@ class _DetailsScreenState extends ConsumerState<DetailsScreen>
                 ],
               ),
             ),
-            Positioned(
-              top: MediaQuery.paddingOf(context).top + 12,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: AnimatedSlide(
-                  duration: const Duration(milliseconds: 200),
-                  offset: Offset(0, _pullProgress > 0.05 ? 0.0 : -3.0),
-                  child: AnimatedOpacity(
-                    duration: const Duration(milliseconds: 150),
-                    opacity: _pullProgress > 0.05 ? 1.0 : 0.0,
-                    child: IgnorePointer(
-                      child: Container(
-                        width: 54,
-                        height: 54,
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.surfaceContainerHighest,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.2),
-                              blurRadius: 12,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            SizedBox(
-                              width: 40,
-                              height: 40,
-                              child: CircularProgressIndicator(
-                                value: _pullProgress,
-                                strokeWidth: 3.5,
-                                backgroundColor: theme
-                                    .colorScheme
-                                    .onSurfaceVariant
-                                    .withValues(alpha: 0.2),
-                                valueColor: AlwaysStoppedAnimation(
-                                  _pullProgress >= 1.0
-                                      ? theme.colorScheme.primary
-                                      : theme.colorScheme.onSurface,
-                                ),
-                              ),
-                            ),
-                            Icon(
-                              _pullProgress >= 1.0
-                                  ? Icons.forum_rounded
-                                  : Icons.chat_bubble_outline_rounded,
-                              color: _pullProgress >= 1.0
-                                  ? theme.colorScheme.primary
-                                  : theme.colorScheme.onSurface,
-                              size: 22,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
           ],
         ),
       ),
@@ -438,9 +368,6 @@ class _DetailsScreenState extends ConsumerState<DetailsScreen>
                 break;
               case LogicalKeyboardKey.digit2:
                 _tabController.animateTo(1);
-                break;
-              case LogicalKeyboardKey.digit3:
-                _showCommentsSheet(context, displayMedia);
                 break;
             }
           },
@@ -687,41 +614,3 @@ class _DownloadAppBarButton extends ConsumerWidget {
   }
 }
 
-class _CommentsAppBarButton extends StatelessWidget {
-  final UnifiedMedia media;
-  final double uiRoundness;
-
-  const _CommentsAppBarButton({required this.media, required this.uiRoundness});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.only(right: 2),
-      child: IconButton.filledTonal(
-        tooltip: 'Discussion',
-        style: IconButton.styleFrom(
-          backgroundColor: theme.colorScheme.secondaryContainer,
-          foregroundColor: theme.colorScheme.onSecondaryContainer,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(uiRoundness),
-          ),
-        ),
-        icon: const Icon(Icons.forum_rounded, size: 18),
-        onPressed: () => _showCommentsSheet(context, media),
-      ),
-    );
-  }
-}
-
-void _showCommentsSheet(BuildContext context, UnifiedMedia media) {
-  AppBottomSheet.show(
-    context: context,
-    title: 'Discussion',
-    contentPadding: EdgeInsets.zero,
-    child: SizedBox(
-      height: MediaQuery.of(context).size.height * 0.78,
-      child: CommentsTabWidget(media: media),
-    ),
-  );
-}

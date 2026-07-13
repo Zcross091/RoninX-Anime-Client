@@ -24,7 +24,7 @@ import 'package:shonenx/source_engine/source_engine_provider.dart';
 import 'package:shonenx/source_engine/models/source_setting.dart';
 import 'package:shonenx/features/settings/presentation/source_settings_sheet.dart';
 import 'package:shonenx/features/history/providers/watch_history_provider.dart';
-import 'package:shonenx/features/comments/presentation/widgets/comments_tab.dart';
+import 'package:shonenx/features/history/providers/watch_history_provider.dart';
 
 class EpisodesTabWidget extends ConsumerWidget {
   final UnifiedMedia media;
@@ -136,28 +136,6 @@ class EpisodesTabWidget extends ConsumerWidget {
               return [
                 IconButton(
                   visualDensity: VisualDensity.compact,
-                  tooltip: 'Discussion',
-                  onPressed: () {
-                    AppBottomSheet.show(
-                      context: episodeActionsContext,
-                      title:
-                          '${media.type == MediaType.MANGA ? 'Chapter' : 'Episode'} $epNum Discussion',
-                      contentPadding: EdgeInsets.zero,
-                      child: SizedBox(
-                        height:
-                            MediaQuery.of(episodeActionsContext).size.height *
-                            0.78,
-                        child: CommentsTabWidget(
-                          media: media,
-                          initialEpisodeNumber: epNum,
-                        ),
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.chat_bubble_outline_rounded, size: 18),
-                ),
-                IconButton(
-                  visualDensity: VisualDensity.compact,
                   onPressed: () {
                     AppBottomSheet.show(
                       context: episodeActionsContext,
@@ -166,30 +144,6 @@ class EpisodesTabWidget extends ConsumerWidget {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          ListTile(
-                            title: const Text('Discussion'),
-                            leading: const Icon(Icons.forum_rounded),
-                            onTap: () {
-                              episodeActionsContext.pop();
-                              AppBottomSheet.show(
-                                context: episodeActionsContext,
-                                title:
-                                    '${media.type == MediaType.MANGA ? 'Chapter' : 'Episode'} $epNum Discussion',
-                                contentPadding: EdgeInsets.zero,
-                                child: SizedBox(
-                                  height:
-                                      MediaQuery.of(
-                                        episodeActionsContext,
-                                      ).size.height *
-                                      0.78,
-                                  child: CommentsTabWidget(
-                                    media: media,
-                                    initialEpisodeNumber: epNum,
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
                           ListTile(
                             title: const Text('Download'),
                             leading: const Icon(Icons.download),
