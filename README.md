@@ -79,6 +79,29 @@ This is a frontend application for the Ronin API. The app itself does not host, 
 
 ---
 
+## RONINX PROPRIETARY LICENSE & LEGAL DISCLAIMER
+
+1. PROPRIETARY SOFTWARE
+This repository and the RoninX Anime Client software ("RoninX") are private, proprietary code. No permission is granted to reproduce, distribute, or modify this software without explicit authorization from the author.
+
+2. NATURE OF THE SOFTWARE (SEARCH ENGINE INDEXER)
+RoninX operates strictly as a search engine and indexer, akin to Google or YouTube. 
+- It DOES NOT host, upload, store, or distribute any copyrighted media files.
+- It DOES NOT contain servers full of anime, manga, or video streams.
+- It merely acts as a client-side web crawler/browser that aggregates and indexes links provided by public, third-party sources on the internet.
+
+3. DMCA POLICY & LEGAL WARNING
+Because RoninX does not host any media files, it is physically and legally impossible for this repository to infringe upon copyrights regarding media distribution. 
+
+If you are a copyright holder looking to file a DMCA takedown notice, be advised:
+ANY DMCA TAKEDOWN NOTICES DIRECTED AT THIS REPOSITORY WILL BE CONSIDERED INVALID, FRAUDULENT, AND LEGALLY BASELESS UNDER 17 U.S.C. § 512(f).
+
+We will aggressively contest any false DMCA claims filed against this repository. Misdirected DMCA notices that target our indexer rather than the actual host of the allegedly infringing material may result in counter-claims for damages and attorneys' fees. If you have an issue with specific media, you must direct your complaints to the third-party platforms that actually host and stream the video files.
+
+We are not your lawyers, we are not your hosts, and we will not comply with legally invalid takedown requests aimed at a search tool.
+
+---
+
 <div align="center">
 
 **Made for the Ronin Ecosystem.**
