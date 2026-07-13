@@ -73,7 +73,7 @@ To activate the theme:
 
 ---
 
-## ⚖️ LEGA DISCLAIMER
+## ⚖️ LEGAL DISCLAIMER
 
 This is a frontend application for the Ronin API. The app itself does not host, upload, or own any of the media displayed. All metadata (covers, synopses, schedules) is pulled from public APIs like AniList and MyAnimeList. Video streams are served directly via the connected backend API.
 
