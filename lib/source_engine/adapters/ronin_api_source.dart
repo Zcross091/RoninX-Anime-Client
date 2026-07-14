@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:roninx/core/utils/app_logger.dart';
 import 'package:roninx/shared/models/unified_episode.dart';
 import 'package:roninx/shared/models/unified_media.dart';
@@ -92,12 +94,35 @@ class RoninApiSource extends AnimeSource {
         final List<dynamic> dbData = json.decode(dbResponse.body);
         if (dbData.isNotEmpty) {
           log.i('Cache hit for $query episode $episode!');
-          return dbData.map((res) {
-            return VideoStream(
-              url: res['url'],
-              quality: res['type'] ?? 'Auto',
-            );
-          }).toList();
+          
+          final List<VideoStream> streams = [];
+          for (final res in dbData) {
+            String url = res['url'];
+            final type = res['type'] ?? 'Auto';
+            
+            if (type == 'http') {
+              try {
+                // Check if it's an m3u8 directly
+                if (!url.contains('.m3u8')) {
+                  log.i('Extracting M3U8 from iframe: $url');
+                  final extractedUrl = await _extractM3u8WithWebview(url);
+                  if (extractedUrl != null) {
+                    url = extractedUrl;
+                  } else {
+                    log.w('Failed to extract M3U8 from $url');
+                  }
+                }
+              } catch (e) {
+                log.e('Error during M3U8 extraction', e);
+              }
+            }
+            
+            streams.add(VideoStream(
+              url: url,
+              quality: type,
+            ));
+          }
+          return streams;
         }
       }
 
@@ -115,5 +140,45 @@ class RoninApiSource extends AnimeSource {
       }
     }
     return [];
+  }
+
+  Future<String?> _extractM3u8WithWebview(String url) async {
+    final completer = Completer<String?>();
+    HeadlessInAppWebView? headlessWebView;
+    Timer? timeout;
+
+    headlessWebView = HeadlessInAppWebView(
+      initialUrlRequest: URLRequest(url: WebUri(url)),
+      initialSettings: InAppWebViewSettings(
+        javaScriptEnabled: true,
+        useShouldInterceptRequest: true,
+        mediaPlaybackRequiresUserGesture: false,
+      ),
+      shouldInterceptRequest: (controller, request) async {
+        final reqUrl = request.url.toString();
+        if (reqUrl.contains('.m3u8')) {
+          if (!completer.isCompleted) {
+            completer.complete(reqUrl);
+          }
+        }
+        return null;
+      },
+    );
+
+    timeout = Timer(const Duration(seconds: 15), () {
+      if (!completer.isCompleted) completer.complete(null);
+    });
+
+    try {
+      await headlessWebView.run();
+    } catch (_) {}
+
+    final m3u8Url = await completer.future;
+    timeout.cancel();
+    try {
+      await headlessWebView.dispose();
+    } catch (_) {}
+    
+    return m3u8Url;
   }
 }
