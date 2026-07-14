@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../shared/providers/anime_provider.dart';
 import '../../../shared/models/anime.dart';
+import '../../../shared/providers/sync_providers.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -42,7 +43,7 @@ class HomeScreen extends ConsumerWidget {
             ],
           ),
           SliverToBoxAdapter(
-            child: _buildHeroCarousel(ref),
+            child: _buildHeroCarousel(context, ref),
           ),
           _buildSection(ref, 'Trending Now', 'airing'),
           _buildSection(ref, 'Top Airing', 'upcoming'),
@@ -93,7 +94,7 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeroCarousel(WidgetRef ref) {
+  Widget _buildHeroCarousel(BuildContext context, WidgetRef ref) {
     final trending = ref.watch(animeListProvider('airing'));
 
     return trending.when(

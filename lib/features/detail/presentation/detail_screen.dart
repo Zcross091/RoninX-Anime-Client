@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../shared/providers/anime_provider.dart';
+import '../../../shared/providers/sync_providers.dart';
 
 class DetailScreen extends ConsumerWidget {
   final String id;
@@ -25,7 +26,8 @@ class DetailScreen extends ConsumerWidget {
                 background: CachedNetworkImage(
                   imageUrl: anime.poster ?? '',
                   fit: BoxFit.cover,
-                  colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.3), BlendMode.darken),
+                  color: Colors.black.withOpacity(0.3),
+                  colorBlendMode: BlendMode.darken,
                 ),
               ),
             ),
