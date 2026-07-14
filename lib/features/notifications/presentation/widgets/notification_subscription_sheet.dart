@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:shonenx/features/discovery/presentation/widgets/sheets/manual_tracker_match_sheet.dart';
-import 'package:shonenx/features/discovery/providers/discovery_prefs_provider.dart';
-import 'package:shonenx/features/discovery/providers/matched_media_provider.dart';
-import 'package:shonenx/features/discovery/providers/media_preference_provider.dart';
-import 'package:shonenx/features/notifications/domain/models/airing_schedule.dart';
-import 'package:shonenx/features/notifications/domain/models/notification_subscription.dart';
-import 'package:shonenx/features/notifications/providers/airing_data_repository_provider.dart';
-import 'package:shonenx/features/notifications/providers/notification_subscriptions_provider.dart';
-import 'package:shonenx/features/tracking/domain/models/tracker_type.dart';
-import 'package:shonenx/features/tracking/engine/remote_tracker.dart';
-import 'package:shonenx/features/tracking/providers/tracker_registry.dart';
-import 'package:shonenx/shared/models/unified_media.dart';
-import 'package:shonenx/shared/widgets/app_bottom_sheet.dart';
+import 'package:roninx/features/discovery/presentation/widgets/sheets/manual_tracker_match_sheet.dart';
+import 'package:roninx/features/discovery/providers/discovery_prefs_provider.dart';
+import 'package:roninx/features/discovery/providers/matched_media_provider.dart';
+import 'package:roninx/features/discovery/providers/media_preference_provider.dart';
+import 'package:roninx/features/notifications/domain/models/airing_schedule.dart';
+import 'package:roninx/features/notifications/domain/models/notification_subscription.dart';
+import 'package:roninx/features/notifications/providers/airing_data_repository_provider.dart';
+import 'package:roninx/features/notifications/providers/notification_subscriptions_provider.dart';
+import 'package:roninx/features/tracking/domain/models/tracker_type.dart';
+import 'package:roninx/features/tracking/engine/remote_tracker.dart';
+import 'package:roninx/features/tracking/providers/tracker_registry.dart';
+import 'package:roninx/shared/models/unified_media.dart';
+import 'package:roninx/shared/widgets/app_bottom_sheet.dart';
 
 final _sheetScheduleProvider = FutureProvider.autoDispose
     .family<List<AiringSchedule>, UnifiedMedia>((ref, media) async {

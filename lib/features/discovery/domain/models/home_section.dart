@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'package:shonenx/features/tracking/domain/models/tracked_status.dart';
-import 'package:shonenx/features/tracking/domain/models/tracker_type.dart';
-import 'package:shonenx/shared/models/unified_media.dart';
+import 'package:roninx/features/tracking/domain/models/tracked_status.dart';
+import 'package:roninx/features/tracking/domain/models/tracker_type.dart';
+import 'package:roninx/shared/models/unified_media.dart';
 
 enum HomeSectionType {
   trending,

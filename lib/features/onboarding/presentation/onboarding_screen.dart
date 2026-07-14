@@ -6,18 +6,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:shonenx/shared/providers/theme_prefs_provider.dart';
-import 'package:shonenx/features/auth/providers/auth_provider.dart';
-import 'package:shonenx/features/onboarding/providers/onboarding_provider.dart';
-import 'package:shonenx/features/tracking/domain/models/tracker_type.dart';
-import 'package:shonenx/features/tracking/engine/remote_tracker.dart';
-import 'package:shonenx/features/tracking/providers/tracker_registry.dart';
-import 'package:shonenx/source_engine/providers/inbuilt_sources_provider.dart';
-import 'package:shonenx/shared/widgets/permission_sheet.dart';
-import 'package:shonenx/shared/widgets/svg_icon.dart';
-import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart'
-    as bridge;
-import 'package:shonenx/features/extensions/presentation/widgets/runtime_setup_sheet.dart';
+import 'package:roninx/shared/providers/theme_prefs_provider.dart';
+import 'package:roninx/features/auth/providers/auth_provider.dart';
+import 'package:roninx/features/onboarding/providers/onboarding_provider.dart';
+import 'package:roninx/features/tracking/domain/models/tracker_type.dart';
+import 'package:roninx/features/tracking/engine/remote_tracker.dart';
+import 'package:roninx/features/tracking/providers/tracker_registry.dart';
+import 'package:roninx/source_engine/providers/inbuilt_sources_provider.dart';
+import 'package:roninx/shared/widgets/permission_sheet.dart';
+import 'package:roninx/shared/widgets/svg_icon.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
@@ -32,7 +29,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   // FIXED: Added kIsWeb check to prevent UnsupportedError on Web
   bool get _isMobile => !kIsWeb && (Platform.isAndroid || Platform.isIOS);
-  int get _totalPages => _isMobile ? 5 : 4;
+  int get _totalPages => _isMobile ? 4 : 3;
 
   void _nextPage() {
     // FIXED: Use actual PageController position instead of lagging _currentIndex state to prevent animation jitter on rapid taps
@@ -88,7 +85,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       _buildWelcomePage(theme, cs),
                       _buildThemePage(theme, cs),
                       _buildTrackersPage(theme, cs),
-                      _buildExtensionsPage(theme, cs),
                       if (_isMobile) _buildNotificationsPage(theme, cs),
                     ],
                   ),
@@ -160,7 +156,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   Widget _buildWelcomePage(ThemeData theme, ColorScheme cs) {
     return _buildPageLayout(
-      title: 'Welcome to ShonenX',
+      title: 'Welcome to RoninX',
       description:
           'Your premium, ad-free gateway to discovering and tracking the best anime and manga.',
       customIcon: SvgIcon(
@@ -198,7 +194,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             const SizedBox(width: 16),
             FilledButton.icon(
               onPressed: () => launchUrl(
-                Uri.parse('https://github.com/roshancodespace/shonenx'),
+                Uri.parse('https://github.com/roshancodespace/RoninX'),
                 mode: LaunchMode.externalApplication,
               ),
               icon: const SvgIcon(
@@ -367,108 +363,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     );
   }
 
-  Widget _buildExtensionsPage(ThemeData theme, ColorScheme cs) {
-    final inbuiltCount = ref.watch(inbuiltAnimeSourcesProvider).length;
-    final isRuntimeReady = bridge.AnymeXRuntimeBridge.controller.isReady.value;
-
-    final String description;
-    if (inbuiltCount > 0) {
-      description =
-          'ShonenX includes $inbuiltCount inbuilt source(s) out of the box. You can significantly expand your library using community-built extensions.';
-    } else {
-      description =
-          'ShonenX relies on powerful community-built extensions to fetch content. You can install extensions later in settings to start watching.';
-    }
-
-    return _buildPageLayout(
-      title: 'Sources & Extensions',
-      description: description,
-      icon: Icons.extension_rounded,
-      theme: theme,
-      cs: cs,
-      customWidget: Padding(
-        padding: const EdgeInsets.only(top: 16),
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: cs.surfaceContainerHighest.withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(Icons.info_outline, color: cs.primary, size: 20),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Extension Ecosystems',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: cs.primary,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '• External Runtime Engines: Connect to Mangayomi, Aniyomi, CloudStream, Kotatsu, and Sora via the extension runtime bridge.\n• Inbuilt Sources: ShonenX also comes with custom native sources directly integrated into the app.\n\nNote: ShonenX uses a minimal customized fork of AnymeXExtensionRuntimeBridge originally created by RyanYuuki.',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: cs.onSurfaceVariant,
-                      height: 1.4,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.maxFinite,
-              child: OutlinedButton.icon(
-                onPressed: () => setState(() {
-                  showRuntimeSetupSheet(
-                    context,
-                    ref,
-                    onComplete: () {
-                      if (mounted) setState(() {});
-                    },
-                  );
-                }),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 12,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-                icon: Icon(
-                  isRuntimeReady
-                      ? Icons.check_circle_rounded
-                      : Icons.download_rounded,
-                  color: isRuntimeReady ? Colors.green : cs.primary,
-                ),
-                label: Text(
-                  isRuntimeReady
-                      ? 'Runtime Bridge Installed'
-                      : 'Setup Aniyomi & CloudStream',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: isRuntimeReady ? Colors.green : cs.primary,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildNotificationsPage(ThemeData theme, ColorScheme cs) {
     return _buildPageLayout(
       title: 'Stay Updated',
@@ -486,7 +380,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               permission: Permission.notification,
               title: 'Allow Notifications',
               description:
-                  'ShonenX needs notification access to keep you updated.',
+                  'RoninX needs notification access to keep you updated.',
               rationale:
                   'This allows the app to show background download progress and notify you when new episodes of your tracked anime are released.',
             );
@@ -498,7 +392,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 permission: Permission.scheduleExactAlarm,
                 title: 'Exact Alarms',
                 description:
-                    'Allow ShonenX to schedule precise notifications for release reminders.',
+                    'Allow RoninX to schedule precise notifications for release reminders.',
                 rationale:
                     'Android restricts background tasks. Exact alarm permission ensures you receive notifications at the exact minute an episode airs, rather than hours later.',
               );

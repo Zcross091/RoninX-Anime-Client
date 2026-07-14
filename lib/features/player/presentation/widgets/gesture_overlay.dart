@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 import 'package:volume_controller/volume_controller.dart';
-import 'package:shonenx/features/player/providers/player_prefs_provider.dart';
+import 'package:roninx/features/player/providers/player_prefs_provider.dart';
 
 class PlayerGestureOverlay extends ConsumerStatefulWidget {
   final VoidCallback onToggleControls;

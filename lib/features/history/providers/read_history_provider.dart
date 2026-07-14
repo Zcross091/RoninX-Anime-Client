@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/shared/providers/database_provider.dart';
-import 'package:shonenx/features/history/data/read_history_repository.dart';
-import 'package:shonenx/features/history/domain/models/read_history_entry.dart';
+import 'package:roninx/shared/providers/database_provider.dart';
+import 'package:roninx/features/history/data/read_history_repository.dart';
+import 'package:roninx/features/history/domain/models/read_history_entry.dart';
 
 final readHistoryRepositoryProvider = Provider<ReadHistoryRepository>((ref) {
   final isar = ref.watch(databaseProvider);

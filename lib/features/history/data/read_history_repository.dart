@@ -1,5 +1,5 @@
 import 'package:isar_community/isar.dart';
-import 'package:shonenx/features/history/domain/models/read_history_entry.dart';
+import 'package:roninx/features/history/domain/models/read_history_entry.dart';
 
 class ReadHistoryRepository {
   final Isar _isar;

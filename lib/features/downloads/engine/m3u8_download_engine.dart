@@ -7,9 +7,9 @@ import 'dart:typed_data';
 import 'package:encrypt/encrypt.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
-import 'package:shonenx/features/downloads/domain/models/download_task.dart';
-import 'package:shonenx/features/downloads/engine/download_engine.dart';
-import 'package:shonenx/features/downloads/providers/download_prefs_provider.dart';
+import 'package:roninx/features/downloads/domain/models/download_task.dart';
+import 'package:roninx/features/downloads/engine/download_engine.dart';
+import 'package:roninx/features/downloads/providers/download_prefs_provider.dart';
 
 class M3U8DownloadEngine implements DownloadEngine {
   final DownloadTask task;

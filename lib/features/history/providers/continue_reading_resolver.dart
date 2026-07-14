@@ -1,13 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/core/utils/extensions.dart';
-import 'package:shonenx/features/discovery/providers/episodes_provider.dart';
-import 'package:shonenx/features/discovery/providers/matched_media_provider.dart';
-import 'package:shonenx/features/discovery/providers/media_preference_provider.dart';
-import 'package:shonenx/features/history/domain/models/read_history_entry.dart';
-import 'package:shonenx/features/reader/domain/reader_mode.dart';
-import 'package:shonenx/shared/models/unified_episode.dart';
-import 'package:shonenx/shared/models/unified_media.dart';
-import 'package:shonenx/source_engine/source_registry.dart';
+import 'package:roninx/core/utils/extensions.dart';
+import 'package:roninx/features/discovery/providers/episodes_provider.dart';
+import 'package:roninx/features/discovery/providers/matched_media_provider.dart';
+import 'package:roninx/features/discovery/providers/media_preference_provider.dart';
+import 'package:roninx/features/history/domain/models/read_history_entry.dart';
+import 'package:roninx/features/reader/domain/reader_mode.dart';
+import 'package:roninx/shared/models/unified_episode.dart';
+import 'package:roninx/shared/models/unified_media.dart';
+import 'package:roninx/source_engine/source_registry.dart';
 
 final continueReadingResolverProvider = Provider(
   (ref) => ContinueReadingResolver(ref),

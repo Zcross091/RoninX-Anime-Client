@@ -2,9 +2,9 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/features/player/domain/gesture_prefs.dart';
-import 'package:shonenx/features/player/providers/player_prefs_provider.dart';
-import 'package:shonenx/shared/widgets/app_bottom_sheet.dart';
+import 'package:roninx/features/player/domain/gesture_prefs.dart';
+import 'package:roninx/features/player/providers/player_prefs_provider.dart';
+import 'package:roninx/shared/widgets/app_bottom_sheet.dart';
 
 class GestureSettingsSheet extends ConsumerWidget {
   const GestureSettingsSheet({super.key});

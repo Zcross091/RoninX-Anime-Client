@@ -1,12 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/features/tracking/domain/models/tracker_type.dart';
-import 'package:shonenx/source_engine/models/source_info.dart';
-import 'package:shonenx/source_engine/providers/anime_source.dart';
-import 'package:shonenx/source_engine/providers/manga_source.dart';
-import 'package:shonenx/source_engine/adapters/ronin_api_source.dart';
-import 'package:shonenx/features/tracking/engine/remote_tracker.dart';
-import 'package:shonenx/features/tracking/providers/tracker_registry.dart';
-import 'package:shonenx/features/discovery/providers/discovery_prefs_provider.dart';
+import 'package:roninx/features/tracking/domain/models/tracker_type.dart';
+import 'package:roninx/source_engine/models/source_info.dart';
+import 'package:roninx/source_engine/providers/anime_source.dart';
+import 'package:roninx/source_engine/providers/manga_source.dart';
+import 'package:roninx/source_engine/adapters/ronin_api_source.dart';
+import 'package:roninx/features/tracking/engine/remote_tracker.dart';
+import 'package:roninx/features/tracking/providers/tracker_registry.dart';
+import 'package:roninx/features/discovery/providers/discovery_prefs_provider.dart';
 
 final metadataSourceProvider = Provider<RemoteTracker>((ref) {
   final prefs = ref.watch(discoveryPrefsProvider);

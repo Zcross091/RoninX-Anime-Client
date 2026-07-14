@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shonenx/features/settings/presentation/widgets/settings_ui_components.dart';
-import 'package:shonenx/shared/widgets/app_scaffold.dart';
+import 'package:roninx/features/settings/presentation/widgets/settings_ui_components.dart';
+import 'package:roninx/shared/widgets/app_scaffold.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -36,14 +36,7 @@ class SettingsScreen extends ConsumerWidget {
                 subtitle: 'Reading mode, background, scale',
                 onTap: () => context.push('/settings/reader'),
               ),
-              SettingsNavTile(
-                icon: Icons.extension_outlined,
-                title: 'Extensions',
-                subtitle: 'External runtime engines & native sources',
-                onTap: () => context.push('/settings/extensions'),
-                onLongPress: () =>
-                    context.push('/settings/remote_config_editor'),
-              ),
+
               SettingsNavTile(
                 icon: Icons.download_outlined,
                 title: 'Downloads',

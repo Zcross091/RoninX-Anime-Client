@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/core/services/notification_service.dart';
+import 'package:roninx/core/services/notification_service.dart';
 
 typedef NotificationConfig = ({
   String type,

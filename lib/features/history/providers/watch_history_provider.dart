@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/shared/providers/database_provider.dart';
-import 'package:shonenx/features/history/data/watch_history_repository.dart';
-import 'package:shonenx/features/history/domain/models/watch_history_entry.dart';
+import 'package:roninx/shared/providers/database_provider.dart';
+import 'package:roninx/features/history/data/watch_history_repository.dart';
+import 'package:roninx/features/history/domain/models/watch_history_entry.dart';
 
 final watchHistoryRepositoryProvider = Provider<WatchHistoryRepository>((ref) {
   final isar = ref.watch(databaseProvider);

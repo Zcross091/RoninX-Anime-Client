@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:shonenx/core/utils/env.dart';
-import 'package:shonenx/shared/widgets/app_bottom_sheet.dart';
+import 'package:roninx/core/utils/env.dart';
+import 'package:roninx/shared/widgets/app_bottom_sheet.dart';
 
 class LinuxUpdateWidget extends StatelessWidget {
   const LinuxUpdateWidget({super.key});
@@ -28,7 +28,7 @@ class LinuxUpdateWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          'Run our interactive TUI installer in your terminal to update ShonenX, configure desktop entries, or manage shell shortcuts:',
+          'Run our interactive TUI installer in your terminal to update RoninX, configure desktop entries, or manage shell shortcuts:',
           style: theme.textTheme.bodyMedium?.copyWith(
             color: cs.onSurfaceVariant,
             height: 1.35,
@@ -79,7 +79,7 @@ class LinuxUpdateWidget extends StatelessWidget {
             _buildTag(context, 'Interactive Menu'),
             _buildTag(context, 'Auto Desktop Shortcuts'),
             _buildTag(context, 'Custom Forks & Icons'),
-            _buildTag(context, 'shonenx-manager Shortcut'),
+            _buildTag(context, 'RoninX-manager Shortcut'),
           ],
         ),
         const SizedBox(height: 8),

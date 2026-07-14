@@ -1,6 +1,6 @@
-import 'package:shonenx/shared/models/unified_episode.dart';
-import 'package:shonenx/shared/models/unified_media.dart';
-import 'package:shonenx/source_engine/models/source_info.dart';
+import 'package:roninx/shared/models/unified_episode.dart';
+import 'package:roninx/shared/models/unified_media.dart';
+import 'package:roninx/source_engine/models/source_info.dart';
 
 sealed class ReaderMode {
   const ReaderMode();

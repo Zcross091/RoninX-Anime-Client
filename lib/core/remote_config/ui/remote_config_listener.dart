@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/core/remote_config/providers/remote_config_provider.dart';
-import 'package:shonenx/core/remote_config/ui/remote_config_ui.dart';
+import 'package:roninx/core/remote_config/providers/remote_config_provider.dart';
+import 'package:roninx/core/remote_config/ui/remote_config_ui.dart';
 
 class RemoteConfigListener extends ConsumerWidget {
   final Widget child;

@@ -3,13 +3,13 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:isar_community/isar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shonenx/core/services/notification_service.dart';
-import 'package:shonenx/features/discovery/domain/media_preference.dart';
-import 'package:shonenx/features/history/domain/models/read_history_entry.dart';
-import 'package:shonenx/features/history/domain/models/watch_history_entry.dart';
-import 'package:shonenx/features/library/domain/models/library_entry.dart';
-import 'package:shonenx/features/notifications/domain/models/notification_subscription.dart';
-import 'package:shonenx/features/tracking/domain/isar_tracker_link.dart';
+import 'package:roninx/core/services/notification_service.dart';
+import 'package:roninx/features/discovery/domain/media_preference.dart';
+import 'package:roninx/features/history/domain/models/read_history_entry.dart';
+import 'package:roninx/features/history/domain/models/watch_history_entry.dart';
+import 'package:roninx/features/library/domain/models/library_entry.dart';
+import 'package:roninx/features/notifications/domain/models/notification_subscription.dart';
+import 'package:roninx/features/tracking/domain/isar_tracker_link.dart';
 
 enum BackupCategory {
   library('Library', 'Saved anime & manga with status & progress'),

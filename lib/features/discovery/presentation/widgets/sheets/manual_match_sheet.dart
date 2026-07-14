@@ -3,12 +3,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shonenx/features/discovery/providers/episodes_provider.dart';
-import 'package:shonenx/features/discovery/providers/matched_media_provider.dart';
-import 'package:shonenx/features/discovery/providers/media_preference_provider.dart';
-import 'package:shonenx/shared/models/unified_media.dart';
-import 'package:shonenx/shared/widgets/app_bottom_sheet.dart';
-import 'package:shonenx/source_engine/source_engine_provider.dart';
+import 'package:roninx/features/discovery/providers/episodes_provider.dart';
+import 'package:roninx/features/discovery/providers/matched_media_provider.dart';
+import 'package:roninx/features/discovery/providers/media_preference_provider.dart';
+import 'package:roninx/shared/models/unified_media.dart';
+import 'package:roninx/shared/widgets/app_bottom_sheet.dart';
+import 'package:roninx/source_engine/source_engine_provider.dart';
 
 class ManualMatchSheet extends ConsumerStatefulWidget {
   final String mediaTitle;

@@ -1,5 +1,5 @@
 import 'package:isar_community/isar.dart';
-import 'package:shonenx/shared/models/unified_media.dart';
+import 'package:roninx/shared/models/unified_media.dart';
 
 part 'library_entry.g.dart';
 

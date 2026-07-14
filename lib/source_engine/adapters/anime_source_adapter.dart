@@ -1,10 +1,10 @@
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart'
     as bridge;
-import 'package:shonenx/core/utils/app_logger.dart';
-import 'package:shonenx/shared/models/unified_episode.dart';
-import 'package:shonenx/shared/models/video_server.dart';
-import 'package:shonenx/shared/models/video_stream.dart';
-import 'package:shonenx/source_engine/providers/anime_source.dart';
+import 'package:roninx/core/utils/app_logger.dart';
+import 'package:roninx/shared/models/unified_episode.dart';
+import 'package:roninx/shared/models/video_server.dart';
+import 'package:roninx/shared/models/video_stream.dart';
+import 'package:roninx/source_engine/providers/anime_source.dart';
 import 'base_source_adapter.dart';
 
 class AnimeSourceAdapter extends BaseSourceAdapter implements AnimeSource {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/features/player/providers/player_prefs_provider.dart';
-import 'package:shonenx/shared/widgets/app_dialog.dart';
+import 'package:roninx/features/player/providers/player_prefs_provider.dart';
+import 'package:roninx/shared/widgets/app_dialog.dart';
 
 class KeyboardShortcutsSheet extends ConsumerWidget {
   const KeyboardShortcutsSheet({super.key});

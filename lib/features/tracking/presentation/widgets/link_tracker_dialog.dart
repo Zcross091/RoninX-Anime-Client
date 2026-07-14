@@ -3,12 +3,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shonenx/features/tracking/domain/isar_tracker_link.dart';
-import 'package:shonenx/features/tracking/engine/remote_tracker.dart';
-import 'package:shonenx/features/tracking/providers/tracker_link_provider.dart';
-import 'package:shonenx/shared/models/unified_media.dart';
-import 'package:shonenx/shared/widgets/app_bottom_sheet.dart';
-import 'package:shonenx/source_engine/models/tracker_search_result.dart';
+import 'package:roninx/features/tracking/domain/isar_tracker_link.dart';
+import 'package:roninx/features/tracking/engine/remote_tracker.dart';
+import 'package:roninx/features/tracking/providers/tracker_link_provider.dart';
+import 'package:roninx/shared/models/unified_media.dart';
+import 'package:roninx/shared/widgets/app_bottom_sheet.dart';
+import 'package:roninx/source_engine/models/tracker_search_result.dart';
 
 class LinkTrackerSheet extends ConsumerStatefulWidget {
   final String primaryMediaId;

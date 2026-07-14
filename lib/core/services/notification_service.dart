@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:shonenx/core/utils/app_logger.dart';
+import 'package:roninx/core/utils/app_logger.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -52,11 +52,11 @@ class NotificationService {
 
       const android = AndroidInitializationSettings('@mipmap/ic_launcher_monochrome');
       const windows = WindowsInitializationSettings(
-        appName: 'ShonenX',
-        appUserModelId: 'com.example.shonenx',
+        appName: 'RoninX',
+        appUserModelId: 'com.example.RoninX',
         guid: '123e4567-e89b-12d3-a456-426614174000',
       );
-      const linux = LinuxInitializationSettings(defaultActionName: 'ShonenX');
+      const linux = LinuxInitializationSettings(defaultActionName: 'RoninX');
 
       const settings = InitializationSettings(
         android: android,

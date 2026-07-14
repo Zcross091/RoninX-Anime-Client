@@ -1,4 +1,4 @@
-import 'package:shonenx/shared/models/unified_chapter.dart';
+import 'package:roninx/shared/models/unified_chapter.dart';
 
 class UnifiedEpisode {
   final String id;

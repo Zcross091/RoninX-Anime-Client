@@ -1,15 +1,15 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/features/player/domain/aniskip_prefs.dart';
-import 'package:shonenx/features/player/presentation/widgets/media_kit/media_kit_settings.dart';
-import 'package:shonenx/features/player/providers/aniskip_prefs_provider.dart';
-import 'package:shonenx/features/player/providers/player_prefs_provider.dart';
-import 'package:shonenx/features/settings/presentation/widgets/gesture_settings_sheet.dart';
-import 'package:shonenx/features/settings/presentation/widgets/subtitle_settings_sheet.dart';
-import 'package:shonenx/features/settings/presentation/widgets/settings_ui_components.dart';
-import 'package:shonenx/shared/models/video_server.dart';
-import 'package:shonenx/shared/widgets/app_scaffold.dart';
+import 'package:roninx/features/player/domain/aniskip_prefs.dart';
+import 'package:roninx/features/player/presentation/widgets/media_kit/media_kit_settings.dart';
+import 'package:roninx/features/player/providers/aniskip_prefs_provider.dart';
+import 'package:roninx/features/player/providers/player_prefs_provider.dart';
+import 'package:roninx/features/settings/presentation/widgets/gesture_settings_sheet.dart';
+import 'package:roninx/features/settings/presentation/widgets/subtitle_settings_sheet.dart';
+import 'package:roninx/features/settings/presentation/widgets/settings_ui_components.dart';
+import 'package:roninx/shared/models/video_server.dart';
+import 'package:roninx/shared/widgets/app_scaffold.dart';
 
 class PlayerSettingsScreen extends ConsumerWidget {
   const PlayerSettingsScreen({super.key});

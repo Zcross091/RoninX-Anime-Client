@@ -1,15 +1,15 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/shared/providers/database_provider.dart';
-import 'package:shonenx/features/tracking/domain/models/tracker_type.dart';
-import 'package:shonenx/features/tracking/engine/trackers/local/local_tracker.dart';
-import 'package:shonenx/features/tracking/engine/trackers/mal/mal_tracker.dart';
-import 'package:shonenx/features/tracking/engine/tracking_service.dart';
-import 'package:shonenx/features/tracking/engine/trackers/anilist/anilist_tracker.dart';
-import 'package:shonenx/features/tracking/engine/trackers/kitsu/kitsu_tracker.dart';
-import 'package:shonenx/features/tracking/providers/tracking_prefs_provider.dart';
+import 'package:roninx/shared/providers/database_provider.dart';
+import 'package:roninx/features/tracking/domain/models/tracker_type.dart';
+import 'package:roninx/features/tracking/engine/trackers/local/local_tracker.dart';
+import 'package:roninx/features/tracking/engine/trackers/mal/mal_tracker.dart';
+import 'package:roninx/features/tracking/engine/tracking_service.dart';
+import 'package:roninx/features/tracking/engine/trackers/anilist/anilist_tracker.dart';
+import 'package:roninx/features/tracking/engine/trackers/kitsu/kitsu_tracker.dart';
+import 'package:roninx/features/tracking/providers/tracking_prefs_provider.dart';
 
-import 'package:shonenx/features/tracking/providers/tracker_profile_provider.dart';
-import 'package:shonenx/shared/models/unified_media.dart';
+import 'package:roninx/features/tracking/providers/tracker_profile_provider.dart';
+import 'package:roninx/shared/models/unified_media.dart';
 
 final availableTrackersProvider = Provider<List<TrackingService>>(
   (ref) => [

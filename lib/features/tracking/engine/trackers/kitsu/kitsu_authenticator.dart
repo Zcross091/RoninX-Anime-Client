@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:shonenx/core/network/auth/authenticator.dart';
-import 'package:shonenx/core/network/http_client.dart';
-import 'package:shonenx/core/router/app_router.dart';
-import 'package:shonenx/features/tracking/domain/models/tracker_type.dart';
+import 'package:roninx/core/network/auth/authenticator.dart';
+import 'package:roninx/core/network/http_client.dart';
+import 'package:roninx/core/router/app_router.dart';
+import 'package:roninx/features/tracking/domain/models/tracker_type.dart';
 
 class KitsuAuthenticator implements Authenticator {
   @override

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/features/library/presentation/widgets/library_filters.dart';
-import 'package:shonenx/features/library/presentation/widgets/library_grid.dart';
-import 'package:shonenx/features/library/providers/library_view_provider.dart';
-import 'package:shonenx/features/tracking/domain/models/tracker_type.dart';
-import 'package:shonenx/features/tracking/providers/tracker_profile_provider.dart';
-import 'package:shonenx/features/tracking/providers/tracking_prefs_provider.dart';
-import 'package:shonenx/shared/providers/navbar_action_provider.dart';
-import 'package:shonenx/shared/models/unified_media.dart';
-import 'package:shonenx/shared/widgets/app_scaffold.dart';
-import 'package:shonenx/shared/widgets/media_switcher_overlay.dart';
+import 'package:roninx/features/library/presentation/widgets/library_filters.dart';
+import 'package:roninx/features/library/presentation/widgets/library_grid.dart';
+import 'package:roninx/features/library/providers/library_view_provider.dart';
+import 'package:roninx/features/tracking/domain/models/tracker_type.dart';
+import 'package:roninx/features/tracking/providers/tracker_profile_provider.dart';
+import 'package:roninx/features/tracking/providers/tracking_prefs_provider.dart';
+import 'package:roninx/shared/providers/navbar_action_provider.dart';
+import 'package:roninx/shared/models/unified_media.dart';
+import 'package:roninx/shared/widgets/app_scaffold.dart';
+import 'package:roninx/shared/widgets/media_switcher_overlay.dart';
 
 class LibraryScreen extends ConsumerStatefulWidget {
   const LibraryScreen({super.key});

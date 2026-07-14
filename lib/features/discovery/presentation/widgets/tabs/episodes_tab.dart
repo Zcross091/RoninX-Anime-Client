@@ -3,28 +3,28 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-import 'package:shonenx/features/discovery/presentation/widgets/sheets/download_sheet.dart';
-import 'package:shonenx/features/discovery/presentation/widgets/episodes_panel/episode_list_panel.dart';
-import 'package:shonenx/features/discovery/presentation/widgets/sheets/manual_match_sheet.dart';
-import 'package:shonenx/features/discovery/providers/matched_media_provider.dart';
-import 'package:shonenx/features/discovery/providers/media_preference_provider.dart';
-import 'package:shonenx/features/history/providers/read_history_provider.dart';
-import 'package:shonenx/features/player/domain/player_mode.dart';
-import 'package:shonenx/features/reader/domain/reader_mode.dart';
-import 'package:shonenx/features/tracking/providers/media_tracking_provider.dart';
-import 'package:shonenx/features/tracking/providers/tracker_registry.dart';
-import 'package:shonenx/shared/models/unified_episode.dart';
-import 'package:shonenx/shared/models/unified_media.dart';
-import 'package:shonenx/features/discovery/providers/episodes_provider.dart';
-import 'package:shonenx/shared/widgets/app_bottom_sheet.dart';
-import 'package:shonenx/shared/widgets/staggered_fade_in.dart';
-import 'package:shonenx/source_engine/models/source_info.dart';
-import 'package:shonenx/source_engine/source_registry.dart';
-import 'package:shonenx/source_engine/source_engine_provider.dart';
-import 'package:shonenx/source_engine/models/source_setting.dart';
-import 'package:shonenx/features/settings/presentation/source_settings_sheet.dart';
-import 'package:shonenx/features/history/providers/watch_history_provider.dart';
-import 'package:shonenx/features/history/providers/watch_history_provider.dart';
+import 'package:roninx/features/discovery/presentation/widgets/sheets/download_sheet.dart';
+import 'package:roninx/features/discovery/presentation/widgets/episodes_panel/episode_list_panel.dart';
+import 'package:roninx/features/discovery/presentation/widgets/sheets/manual_match_sheet.dart';
+import 'package:roninx/features/discovery/providers/matched_media_provider.dart';
+import 'package:roninx/features/discovery/providers/media_preference_provider.dart';
+import 'package:roninx/features/history/providers/read_history_provider.dart';
+import 'package:roninx/features/player/domain/player_mode.dart';
+import 'package:roninx/features/reader/domain/reader_mode.dart';
+import 'package:roninx/features/tracking/providers/media_tracking_provider.dart';
+import 'package:roninx/features/tracking/providers/tracker_registry.dart';
+import 'package:roninx/shared/models/unified_episode.dart';
+import 'package:roninx/shared/models/unified_media.dart';
+import 'package:roninx/features/discovery/providers/episodes_provider.dart';
+import 'package:roninx/shared/widgets/app_bottom_sheet.dart';
+import 'package:roninx/shared/widgets/staggered_fade_in.dart';
+import 'package:roninx/source_engine/models/source_info.dart';
+import 'package:roninx/source_engine/source_registry.dart';
+import 'package:roninx/source_engine/source_engine_provider.dart';
+import 'package:roninx/source_engine/models/source_setting.dart';
+import 'package:roninx/features/settings/presentation/source_settings_sheet.dart';
+import 'package:roninx/features/history/providers/watch_history_provider.dart';
+import 'package:roninx/features/history/providers/watch_history_provider.dart';
 
 class EpisodesTabWidget extends ConsumerWidget {
   final UnifiedMedia media;
@@ -47,7 +47,7 @@ class EpisodesTabWidget extends ConsumerWidget {
     final sources = sourcesAsync.value ?? [];
 
     if (sources.isEmpty) {
-      return _NoExtensionsPlaceholder(mediaType: media.type);
+      return _NoSourcesPlaceholder(mediaType: media.type);
     }
 
     final primaryTracker = ref.watch(primaryTrackerProvider);
@@ -878,9 +878,9 @@ class _HeaderButton extends StatelessWidget {
   }
 }
 
-class _NoExtensionsPlaceholder extends StatelessWidget {
+class _NoSourcesPlaceholder extends StatelessWidget {
   final MediaType mediaType;
-  const _NoExtensionsPlaceholder({required this.mediaType});
+  const _NoSourcesPlaceholder({required this.mediaType});
 
   @override
   Widget build(BuildContext context) {
@@ -901,14 +901,14 @@ class _NoExtensionsPlaceholder extends StatelessWidget {
                 color: cs.primaryContainer,
               ),
               child: Icon(
-                Icons.extension_off_rounded,
+                Icons.warning_rounded,
                 size: 30,
                 color: cs.onPrimaryContainer,
               ),
             ),
             const SizedBox(height: 18),
             Text(
-              'No extensions installed',
+              'No sources available',
               textAlign: TextAlign.center,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
@@ -917,26 +917,11 @@ class _NoExtensionsPlaceholder extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               mediaType == MediaType.MANGA
-                  ? 'Install an extension to start reading chapters.'
-                  : 'Install an extension to start streaming episodes.',
+                  ? 'No source could provide chapters for this manga.'
+                  : 'No source could provide episodes for this anime.',
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: cs.onSurfaceVariant.withValues(alpha: 0.75),
-              ),
-            ),
-            const SizedBox(height: 22),
-            FilledButton.icon(
-              onPressed: () => context.push('/settings/extensions'),
-              icon: const Icon(Icons.extension_rounded),
-              label: const Text('Get Extensions'),
-              style: FilledButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 18,
-                  vertical: 14,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(999),
-                ),
               ),
             ),
           ],

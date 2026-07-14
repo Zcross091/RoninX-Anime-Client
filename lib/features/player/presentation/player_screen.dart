@@ -10,21 +10,21 @@ import 'package:screenshot/screenshot.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:window_manager/window_manager.dart';
 
-import 'package:shonenx/features/discovery/presentation/widgets/episodes_panel/episode_list_panel.dart';
-import 'package:shonenx/features/player/domain/player_mode.dart';
-import 'package:shonenx/features/player/engine/video_engine.dart';
-import 'package:shonenx/features/player/presentation/widgets/bottom_controls.dart';
-import 'package:shonenx/features/player/presentation/widgets/center_controls.dart';
-import 'package:shonenx/features/player/presentation/widgets/custom_subtitle_overlay.dart';
-import 'package:shonenx/features/player/presentation/widgets/gesture_overlay.dart';
-import 'package:shonenx/features/player/presentation/widgets/keyboard_shortcuts_sheet.dart';
-import 'package:shonenx/features/player/presentation/widgets/player_keyboard_listener.dart';
-import 'package:shonenx/features/player/presentation/widgets/top_controls.dart';
-import 'package:shonenx/features/player/providers/aniskip_provider.dart';
-import 'package:shonenx/features/player/providers/player_controller.dart';
-import 'package:shonenx/features/player/providers/player_prefs_provider.dart';
-import 'package:shonenx/features/player/providers/video_engine_provider.dart';
-import 'package:shonenx/shared/widgets/app_bottom_sheet.dart';
+import 'package:roninx/features/discovery/presentation/widgets/episodes_panel/episode_list_panel.dart';
+import 'package:roninx/features/player/domain/player_mode.dart';
+import 'package:roninx/features/player/engine/video_engine.dart';
+import 'package:roninx/features/player/presentation/widgets/bottom_controls.dart';
+import 'package:roninx/features/player/presentation/widgets/center_controls.dart';
+import 'package:roninx/features/player/presentation/widgets/custom_subtitle_overlay.dart';
+import 'package:roninx/features/player/presentation/widgets/gesture_overlay.dart';
+import 'package:roninx/features/player/presentation/widgets/keyboard_shortcuts_sheet.dart';
+import 'package:roninx/features/player/presentation/widgets/player_keyboard_listener.dart';
+import 'package:roninx/features/player/presentation/widgets/top_controls.dart';
+import 'package:roninx/features/player/providers/aniskip_provider.dart';
+import 'package:roninx/features/player/providers/player_controller.dart';
+import 'package:roninx/features/player/providers/player_prefs_provider.dart';
+import 'package:roninx/features/player/providers/video_engine_provider.dart';
+import 'package:roninx/shared/widgets/app_bottom_sheet.dart';
 
 class PlayerScreen extends ConsumerStatefulWidget {
   final PlayerMode mode;

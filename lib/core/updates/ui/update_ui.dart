@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shonenx/core/updates/models/github_release.dart';
-import 'package:shonenx/core/updates/ui/linux_update_widget.dart';
-import 'package:shonenx/core/updates/ui/android_update_widget.dart';
-import 'package:shonenx/shared/widgets/app_bottom_sheet.dart';
+import 'package:roninx/core/updates/models/github_release.dart';
+import 'package:roninx/core/updates/ui/linux_update_widget.dart';
+import 'package:roninx/core/updates/ui/android_update_widget.dart';
+import 'package:roninx/shared/widgets/app_bottom_sheet.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class UpdateUI {

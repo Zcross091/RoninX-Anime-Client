@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/core/caching/cache_config.dart';
-import 'package:shonenx/core/caching/cache_manager.dart';
-import 'package:shonenx/core/caching/domain/cache_entry.dart';
-import 'package:shonenx/features/settings/presentation/widgets/settings_ui_components.dart';
-import 'package:shonenx/shared/widgets/app_scaffold.dart';
+import 'package:roninx/core/caching/cache_config.dart';
+import 'package:roninx/core/caching/cache_manager.dart';
+import 'package:roninx/core/caching/domain/cache_entry.dart';
+import 'package:roninx/features/settings/presentation/widgets/settings_ui_components.dart';
+import 'package:roninx/shared/widgets/app_scaffold.dart';
 
 class CacheSettingsScreen extends ConsumerStatefulWidget {
   const CacheSettingsScreen({super.key});

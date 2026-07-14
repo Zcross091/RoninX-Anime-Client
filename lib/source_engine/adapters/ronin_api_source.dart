@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:shonenx/core/utils/app_logger.dart';
-import 'package:shonenx/shared/models/unified_episode.dart';
-import 'package:shonenx/shared/models/unified_media.dart';
-import 'package:shonenx/shared/models/video_server.dart';
-import 'package:shonenx/shared/models/video_stream.dart';
-import 'package:shonenx/source_engine/models/source_info.dart';
-import 'package:shonenx/source_engine/providers/anime_source.dart';
+import 'package:roninx/core/utils/app_logger.dart';
+import 'package:roninx/shared/models/unified_episode.dart';
+import 'package:roninx/shared/models/unified_media.dart';
+import 'package:roninx/shared/models/video_server.dart';
+import 'package:roninx/shared/models/video_stream.dart';
+import 'package:roninx/source_engine/models/source_info.dart';
+import 'package:roninx/source_engine/providers/anime_source.dart';
 
 class RoninApiSource extends AnimeSource {
   static const String baseUrl = 'https://ronin-api-proxy.vercel.app';

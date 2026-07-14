@@ -1,18 +1,18 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/features/auth/providers/auth_provider.dart';
-import 'package:shonenx/features/tracking/engine/remote_tracker.dart';
-import 'package:shonenx/core/network/http_client.dart';
-import 'package:shonenx/features/library/domain/models/library_entry.dart';
-import 'package:shonenx/features/tracking/domain/models/tracked_list_item.dart';
-import 'package:shonenx/features/tracking/domain/models/tracked_status.dart';
-import 'package:shonenx/features/tracking/domain/models/tracker_profile.dart';
-import 'package:shonenx/features/tracking/domain/models/tracker_type.dart';
-import 'package:shonenx/features/tracking/engine/base_tracker.dart';
-import 'package:shonenx/features/tracking/engine/trackers/anilist/anilist_tracker_queries.dart';
-import 'package:shonenx/features/tracking/engine/trackers/anilist/anilist_authenticator.dart';
-import 'package:shonenx/shared/models/unified_media.dart';
-import 'package:shonenx/source_engine/models/tracker_search_result.dart';
-import 'package:shonenx/core/network/auth/authenticator.dart';
+import 'package:roninx/features/auth/providers/auth_provider.dart';
+import 'package:roninx/features/tracking/engine/remote_tracker.dart';
+import 'package:roninx/core/network/http_client.dart';
+import 'package:roninx/features/library/domain/models/library_entry.dart';
+import 'package:roninx/features/tracking/domain/models/tracked_list_item.dart';
+import 'package:roninx/features/tracking/domain/models/tracked_status.dart';
+import 'package:roninx/features/tracking/domain/models/tracker_profile.dart';
+import 'package:roninx/features/tracking/domain/models/tracker_type.dart';
+import 'package:roninx/features/tracking/engine/base_tracker.dart';
+import 'package:roninx/features/tracking/engine/trackers/anilist/anilist_tracker_queries.dart';
+import 'package:roninx/features/tracking/engine/trackers/anilist/anilist_authenticator.dart';
+import 'package:roninx/shared/models/unified_media.dart';
+import 'package:roninx/source_engine/models/tracker_search_result.dart';
+import 'package:roninx/core/network/auth/authenticator.dart';
 import 'anilist_metadata.dart';
 
 class AnilistTracker extends BaseTracker

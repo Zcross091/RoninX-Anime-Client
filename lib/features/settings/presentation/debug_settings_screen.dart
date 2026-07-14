@@ -3,10 +3,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shonenx/core/services/notification_service.dart';
-import 'package:shonenx/features/onboarding/providers/onboarding_provider.dart';
-import 'package:shonenx/features/settings/presentation/widgets/settings_ui_components.dart';
-import 'package:shonenx/shared/widgets/app_scaffold.dart';
+import 'package:roninx/core/services/notification_service.dart';
+import 'package:roninx/features/onboarding/providers/onboarding_provider.dart';
+import 'package:roninx/features/settings/presentation/widgets/settings_ui_components.dart';
+import 'package:roninx/shared/widgets/app_scaffold.dart';
 
 class DebugSettingsScreen extends ConsumerWidget {
   const DebugSettingsScreen({super.key});

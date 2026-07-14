@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/features/reader/domain/reader_mode.dart';
-import 'package:shonenx/source_engine/models/chapter_page.dart';
-import 'package:shonenx/source_engine/source_engine_provider.dart';
+import 'package:roninx/features/reader/domain/reader_mode.dart';
+import 'package:roninx/source_engine/models/chapter_page.dart';
+import 'package:roninx/source_engine/source_engine_provider.dart';
 
 class ReaderState {
   final List<ChapterPage> pages;

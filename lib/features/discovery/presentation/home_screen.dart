@@ -1,27 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shonenx/shared/providers/theme_prefs_provider.dart';
-import 'package:shonenx/shared/providers/ui_prefs_provider.dart';
-import 'package:shonenx/features/discovery/domain/models/home_section.dart';
-import 'package:shonenx/features/discovery/presentation/widgets/cards/media_card.dart';
-import 'package:shonenx/features/discovery/presentation/widgets/continue/continue_media_row.dart';
-import 'package:shonenx/features/discovery/presentation/widgets/rows/horizontal_section.dart';
-import 'package:shonenx/features/discovery/presentation/widgets/rows/library_row.dart';
-import 'package:shonenx/features/discovery/providers/discovery_prefs_provider.dart';
-import 'package:shonenx/features/discovery/presentation/widgets/sheets/discovery_mode_sheet.dart';
-import 'package:shonenx/features/discovery/providers/home_feed_provider.dart';
-import 'package:shonenx/features/discovery/providers/home_layout_provider.dart';
-import 'package:shonenx/features/library/providers/cloud_library_provider.dart';
-import 'package:shonenx/features/tracking/domain/models/tracker_type.dart';
-import 'package:shonenx/features/tracking/presentation/widgets/tracker_profile_sheet.dart';
-import 'package:shonenx/features/tracking/providers/tracker_profile_provider.dart';
-import 'package:shonenx/features/tracking/providers/tracker_registry.dart';
-import 'package:shonenx/source_engine/models/source_info.dart';
-import 'package:shonenx/source_engine/source_registry.dart';
-import 'package:shonenx/shared/models/unified_media.dart';
-import 'package:shonenx/shared/widgets/app_scaffold.dart';
-import 'package:shonenx/shared/widgets/tracker_avatar.dart';
+import 'package:roninx/shared/providers/theme_prefs_provider.dart';
+import 'package:roninx/shared/providers/ui_prefs_provider.dart';
+import 'package:roninx/features/discovery/domain/models/home_section.dart';
+import 'package:roninx/features/discovery/presentation/widgets/cards/media_card.dart';
+import 'package:roninx/features/discovery/presentation/widgets/continue/continue_media_row.dart';
+import 'package:roninx/features/discovery/presentation/widgets/rows/horizontal_section.dart';
+import 'package:roninx/features/discovery/presentation/widgets/rows/library_row.dart';
+import 'package:roninx/features/discovery/providers/discovery_prefs_provider.dart';
+import 'package:roninx/features/discovery/presentation/widgets/sheets/discovery_mode_sheet.dart';
+import 'package:roninx/features/discovery/providers/home_feed_provider.dart';
+import 'package:roninx/features/discovery/providers/home_layout_provider.dart';
+import 'package:roninx/features/library/providers/cloud_library_provider.dart';
+import 'package:roninx/features/tracking/domain/models/tracker_type.dart';
+import 'package:roninx/features/auth/presentation/widgets/ronin_profile_sheet.dart';
+import 'package:roninx/features/tracking/providers/tracker_profile_provider.dart';
+import 'package:roninx/features/tracking/providers/tracker_registry.dart';
+import 'package:roninx/source_engine/models/source_info.dart';
+import 'package:roninx/source_engine/source_registry.dart';
+import 'package:roninx/shared/models/unified_media.dart';
+import 'package:roninx/shared/widgets/app_scaffold.dart';
+import 'package:roninx/shared/widgets/tracker_avatar.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -77,9 +77,7 @@ class HomeScreen extends ConsumerWidget {
                               isScrollControlled: true,
                               useRootNavigator: true,
                               useSafeArea: true,
-                              builder: (_) => TrackerProfileSheet(
-                                trackerType: primaryTrackerType,
-                              ),
+                              builder: (_) => const RoninProfileSheet(),
                             ),
                             behavior: HitTestBehavior.opaque,
                             child: Row(

@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:shonenx/shared/models/video_stream.dart';
+import 'package:roninx/shared/models/video_stream.dart';
 
 abstract class VideoEngine {
   Future<void> initialize(VideoStream stream, {SubtitleTrack? subtitle, Duration? startAt});

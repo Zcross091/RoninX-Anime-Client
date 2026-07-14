@@ -2,10 +2,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shonenx/app_init.dart';
-import 'package:shonenx/features/onboarding/providers/onboarding_provider.dart';
-import 'package:shonenx/features/splash/presentation/splash_quotes.dart';
-import 'package:shonenx/shared/widgets/svg_icon.dart';
+import 'package:roninx/app_init.dart';
+import 'package:roninx/features/onboarding/providers/onboarding_provider.dart';
+import 'package:roninx/features/splash/presentation/splash_quotes.dart';
+import 'package:roninx/shared/widgets/svg_icon.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});

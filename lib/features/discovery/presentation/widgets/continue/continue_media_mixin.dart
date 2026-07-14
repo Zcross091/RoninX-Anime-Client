@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:shonenx/features/discovery/presentation/widgets/sheets/manual_match_sheet.dart';
-import 'package:shonenx/features/discovery/providers/matched_media_provider.dart';
-import 'package:shonenx/features/discovery/providers/media_preference_provider.dart';
-import 'package:shonenx/shared/models/unified_media.dart';
-import 'package:shonenx/shared/widgets/app_bottom_sheet.dart';
-import 'package:shonenx/source_engine/models/source_info.dart';
+import 'package:roninx/features/discovery/presentation/widgets/sheets/manual_match_sheet.dart';
+import 'package:roninx/features/discovery/providers/matched_media_provider.dart';
+import 'package:roninx/features/discovery/providers/media_preference_provider.dart';
+import 'package:roninx/shared/models/unified_media.dart';
+import 'package:roninx/shared/widgets/app_bottom_sheet.dart';
+import 'package:roninx/source_engine/models/source_info.dart';
 
 mixin ContinueMediaMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   bool isLoading = false;
@@ -77,15 +77,15 @@ mixin ContinueMediaMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
     final theme = Theme.of(sheetContext);
 
     return AppBottomSheet(
-      title: isNoSources ? 'No Extensions' : 'Source Missing',
+      title: 'Source Missing',
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
             isNoSources
-                ? 'You do not have any extensions installed for this media type. Please install an extension from settings to continue.'
-                : 'The extension you previously used for this is missing or could not find the content. Please select a new source to continue.',
+                ? 'You do not have any sources installed for this media type.'
+                : 'The source you previously used for this is missing or could not find the content. Please select a new source to continue.',
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.error,
             ),
@@ -100,7 +100,7 @@ mixin ContinueMediaMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
               availableSourcesProvider: availableSourcesProvider,
               onResumeRetry: onResumeRetry,
             ),
-            child: Text(isNoSources ? 'Go to Extensions' : 'Select New Source'),
+            child: const Text('Select New Source'),
           ),
         ],
       ),
@@ -118,7 +118,6 @@ mixin ContinueMediaMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
     Navigator.pop(sheetContext);
 
     if (isNoSources) {
-      context.push('/settings/extensions');
       return;
     }
 

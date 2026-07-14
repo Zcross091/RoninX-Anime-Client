@@ -1,9 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar_community/isar.dart';
-import 'package:shonenx/shared/providers/database_provider.dart';
-import 'package:shonenx/features/library/domain/models/library_entry.dart';
-import 'package:shonenx/features/tracking/domain/models/tracked_status.dart';
-import 'package:shonenx/shared/models/unified_media.dart';
+import 'package:roninx/shared/providers/database_provider.dart';
+import 'package:roninx/features/library/domain/models/library_entry.dart';
+import 'package:roninx/features/tracking/domain/models/tracked_status.dart';
+import 'package:roninx/shared/models/unified_media.dart';
 
 final libraryRepositoryProvider = Provider((ref) {
   final isar = ref.watch(databaseProvider);

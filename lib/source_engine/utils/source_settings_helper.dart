@@ -1,5 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shonenx/source_engine/providers/media_source.dart';
+import 'package:roninx/source_engine/providers/media_source.dart';
 
 extension MediaSourceSettingsHelper on MediaSource {
   T getSetting<T>(SharedPreferences storage, String key, T defaultValue) {

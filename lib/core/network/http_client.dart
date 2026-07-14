@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/core/caching/cache_manager.dart';
-import 'package:shonenx/core/caching/domain/cache_entry.dart';
+import 'package:roninx/core/caching/cache_manager.dart';
+import 'package:roninx/core/caching/domain/cache_entry.dart';
 
 class HttpResponse {
   final int statusCode;

@@ -7,18 +7,18 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:shonenx/shared/providers/ui_prefs_provider.dart';
-import 'package:shonenx/core/remote_config/providers/remote_config_provider.dart';
-import 'package:shonenx/core/remote_config/ui/remote_config_ui.dart';
-import 'package:shonenx/core/updates/services/update_service.dart';
-import 'package:shonenx/core/updates/ui/update_ui.dart';
-import 'package:shonenx/core/router/app_router.dart';
-import 'package:shonenx/core/utils/responsive.dart';
-import 'package:shonenx/features/downloads/domain/models/download_task.dart';
-import 'package:shonenx/features/downloads/providers/download_provider.dart';
-import 'package:shonenx/shared/widgets/app_scaffold.dart';
-import 'package:shonenx/shared/providers/navbar_action_provider.dart';
-import 'package:shonenx/app_init.dart';
+import 'package:roninx/shared/providers/ui_prefs_provider.dart';
+import 'package:roninx/core/remote_config/providers/remote_config_provider.dart';
+import 'package:roninx/core/remote_config/ui/remote_config_ui.dart';
+import 'package:roninx/core/updates/services/update_service.dart';
+import 'package:roninx/core/updates/ui/update_ui.dart';
+import 'package:roninx/core/router/app_router.dart';
+import 'package:roninx/core/utils/responsive.dart';
+import 'package:roninx/features/downloads/domain/models/download_task.dart';
+import 'package:roninx/features/downloads/providers/download_provider.dart';
+import 'package:roninx/shared/widgets/app_scaffold.dart';
+import 'package:roninx/shared/providers/navbar_action_provider.dart';
+import 'package:roninx/app_init.dart';
 
 final _navBreakpoints = ResponsiveBreakpoints.defaults.copyWith(
   heightNormal: 750,
@@ -87,7 +87,7 @@ class _ScaffoldWithNavBarState extends ConsumerState<ScaffoldWithNavBar> {
             scheme.contains('cloudstream') ||
             scheme == 'kotatsu' ||
             scheme == 'sora' ||
-            scheme == 'shonenx') &&
+            scheme == 'RoninX') &&
         (host == 'add-repo' ||
             host == 'add-repository' ||
             scheme == 'cloudstreamrepo' ||
@@ -127,7 +127,7 @@ class _ScaffoldWithNavBarState extends ConsumerState<ScaffoldWithNavBar> {
       } else if (scheme == 'sora') {
         managerId = 'sora';
         type = 'novel';
-      } else if (scheme == 'shonenx' && host == 'add-repo') {
+      } else if (scheme == 'RoninX' && host == 'add-repo') {
         managerId = uri.queryParameters['manager'] ?? 'aniyomi';
         type = uri.queryParameters['type'];
       }

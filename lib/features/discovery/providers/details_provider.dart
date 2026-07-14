@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/shared/models/unified_media.dart';
-import 'package:shonenx/source_engine/source_engine_provider.dart';
-import 'package:shonenx/source_engine/source_registry.dart';
+import 'package:roninx/shared/models/unified_media.dart';
+import 'package:roninx/source_engine/source_engine_provider.dart';
+import 'package:roninx/source_engine/source_registry.dart';
 
 class DetailsArgs {
   final String id;

@@ -4,9 +4,9 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shonenx/shared/models/component_layout.dart';
-import 'package:shonenx/shared/providers/storage_provider.dart';
-import 'package:shonenx/features/discovery/presentation/widgets/episodes_panel/episode_tiles.dart';
+import 'package:roninx/shared/models/component_layout.dart';
+import 'package:roninx/shared/providers/storage_provider.dart';
+import 'package:roninx/features/discovery/presentation/widgets/episodes_panel/episode_tiles.dart';
 
 class GlobalUI {
   static double uiScaleFactor = 1.0;

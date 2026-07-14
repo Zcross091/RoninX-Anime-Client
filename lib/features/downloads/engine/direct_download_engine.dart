@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:shonenx/features/downloads/domain/models/download_task.dart';
-import 'package:shonenx/features/downloads/engine/download_engine.dart';
+import 'package:roninx/features/downloads/domain/models/download_task.dart';
+import 'package:roninx/features/downloads/engine/download_engine.dart';
 
 class DirectDownloadEngine implements DownloadEngine {
   final DownloadTask task;

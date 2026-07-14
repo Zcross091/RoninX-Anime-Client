@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/shared/providers/ui_prefs_provider.dart';
-import 'package:shonenx/shared/providers/theme_prefs_provider.dart';
-import 'package:shonenx/features/discovery/presentation/widgets/continue/continue_watching_card.dart';
-import 'package:shonenx/features/discovery/presentation/widgets/continue/continue_reading_card.dart';
-import 'package:shonenx/features/discovery/presentation/widgets/episodes_panel/episode_tiles.dart';
-import 'package:shonenx/features/discovery/presentation/widgets/cards/media_card.dart';
-import 'package:shonenx/features/history/domain/models/watch_history_entry.dart';
-import 'package:shonenx/features/history/domain/models/read_history_entry.dart';
-import 'package:shonenx/features/settings/presentation/widgets/settings_ui_components.dart';
-import 'package:shonenx/shared/widgets/app_bottom_sheet.dart';
-import 'package:shonenx/shared/widgets/app_scaffold.dart';
+import 'package:roninx/shared/providers/ui_prefs_provider.dart';
+import 'package:roninx/shared/providers/theme_prefs_provider.dart';
+import 'package:roninx/features/discovery/presentation/widgets/continue/continue_watching_card.dart';
+import 'package:roninx/features/discovery/presentation/widgets/continue/continue_reading_card.dart';
+import 'package:roninx/features/discovery/presentation/widgets/episodes_panel/episode_tiles.dart';
+import 'package:roninx/features/discovery/presentation/widgets/cards/media_card.dart';
+import 'package:roninx/features/history/domain/models/watch_history_entry.dart';
+import 'package:roninx/features/history/domain/models/read_history_entry.dart';
+import 'package:roninx/features/settings/presentation/widgets/settings_ui_components.dart';
+import 'package:roninx/shared/widgets/app_bottom_sheet.dart';
+import 'package:roninx/shared/widgets/app_scaffold.dart';
 
 class UiSettingsScreen extends ConsumerWidget {
   const UiSettingsScreen({super.key});
@@ -259,7 +259,7 @@ class UiSettingsScreen extends ConsumerWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'ShonenX UI',
+                            'RoninX UI',
                             style: TextStyle(
                               color: cs.onSurface,
                               fontSize: 15,

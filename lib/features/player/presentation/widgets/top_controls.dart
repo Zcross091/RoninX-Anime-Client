@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/core/utils/formatting.dart';
-import 'package:shonenx/features/player/engine/video_engine.dart';
-import 'package:shonenx/features/player/presentation/widgets/keyboard_shortcuts_sheet.dart';
-import 'package:shonenx/features/player/providers/player_controller.dart';
-import 'package:shonenx/features/player/providers/video_engine_provider.dart';
-import 'package:shonenx/features/player/domain/player_mode.dart';
-import 'package:shonenx/features/settings/presentation/widgets/subtitle_settings_sheet.dart';
-import 'package:shonenx/shared/widgets/app_bottom_sheet.dart';
-import 'package:shonenx/shared/models/video_stream.dart';
+import 'package:roninx/core/utils/formatting.dart';
+import 'package:roninx/features/player/engine/video_engine.dart';
+import 'package:roninx/features/player/presentation/widgets/keyboard_shortcuts_sheet.dart';
+import 'package:roninx/features/player/providers/player_controller.dart';
+import 'package:roninx/features/player/providers/video_engine_provider.dart';
+import 'package:roninx/features/player/domain/player_mode.dart';
+import 'package:roninx/features/settings/presentation/widgets/subtitle_settings_sheet.dart';
+import 'package:roninx/shared/widgets/app_bottom_sheet.dart';
+import 'package:roninx/shared/models/video_stream.dart';
 
 class TopControls extends ConsumerWidget {
   final bool showControls;

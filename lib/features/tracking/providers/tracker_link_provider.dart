@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/shared/providers/database_provider.dart';
-import 'package:shonenx/features/tracking/domain/isar_tracker_link.dart';
-import 'package:shonenx/features/tracking/domain/models/tracker_type.dart';
+import 'package:roninx/shared/providers/database_provider.dart';
+import 'package:roninx/features/tracking/domain/isar_tracker_link.dart';
+import 'package:roninx/features/tracking/domain/models/tracker_type.dart';
 
 final trackerLinkProvider =
     AsyncNotifierProvider.family<

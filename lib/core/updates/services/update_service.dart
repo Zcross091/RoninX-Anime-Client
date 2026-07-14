@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shonenx/core/updates/models/github_release.dart';
-import 'package:shonenx/core/utils/app_logger.dart';
-import 'package:shonenx/core/utils/env.dart';
-import 'package:shonenx/shared/providers/storage_provider.dart';
+import 'package:roninx/core/updates/models/github_release.dart';
+import 'package:roninx/core/utils/app_logger.dart';
+import 'package:roninx/core/utils/env.dart';
+import 'package:roninx/shared/providers/storage_provider.dart';
 
 class UpdatePreferences {
   final bool includePrerelease;
@@ -105,7 +105,7 @@ class UpdateService {
         Uri.parse(apiUrl),
         headers: {
           'Accept': 'application/vnd.github.v3+json',
-          'User-Agent': 'ShonenX-App',
+          'User-Agent': 'RoninX-App',
         },
       );
 
@@ -236,7 +236,7 @@ class UpdateService {
         Uri.parse(apiUrl),
         headers: {
           'Accept': 'application/vnd.github.v3+json',
-          'User-Agent': 'ShonenX-App',
+          'User-Agent': 'RoninX-App',
         },
       );
       if (response.statusCode != 200) return [];

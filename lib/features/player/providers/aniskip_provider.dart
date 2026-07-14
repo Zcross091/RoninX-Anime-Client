@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/features/player/data/aniskip_service.dart';
-import 'package:shonenx/features/player/domain/aniskip_prefs.dart';
-import 'package:shonenx/features/player/providers/aniskip_prefs_provider.dart';
+import 'package:roninx/features/player/data/aniskip_service.dart';
+import 'package:roninx/features/player/domain/aniskip_prefs.dart';
+import 'package:roninx/features/player/providers/aniskip_prefs_provider.dart';
 
 class AniSkipArgs {
   final int? idMal;

@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shonenx/shared/providers/storage_provider.dart';
-import 'package:shonenx/features/discovery/domain/models/home_section.dart';
-import 'package:shonenx/shared/models/unified_media.dart';
+import 'package:roninx/shared/providers/storage_provider.dart';
+import 'package:roninx/features/discovery/domain/models/home_section.dart';
+import 'package:roninx/shared/models/unified_media.dart';
 
 class UserHomeLayoutNotifier extends Notifier<List<HomeSection>> {
   static const _dataKey = 'home_layout_data';

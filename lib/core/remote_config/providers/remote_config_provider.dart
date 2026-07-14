@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/shared/providers/storage_provider.dart';
-import 'package:shonenx/core/remote_config/models/remote_config.dart';
-import 'package:shonenx/core/remote_config/services/remote_config_service.dart';
+import 'package:roninx/shared/providers/storage_provider.dart';
+import 'package:roninx/core/remote_config/models/remote_config.dart';
+import 'package:roninx/core/remote_config/services/remote_config_service.dart';
 
 final remoteConfigServiceProvider = Provider<RemoteConfigService>((ref) {
   final prefs = ref.watch(sharedPreferencesProvider);

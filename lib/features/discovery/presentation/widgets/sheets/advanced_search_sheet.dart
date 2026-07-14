@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/features/discovery/providers/metadata_tags_provider.dart';
-import 'package:shonenx/shared/models/unified_media.dart';
-import 'package:shonenx/shared/widgets/app_bottom_sheet.dart';
+import 'package:roninx/features/discovery/providers/metadata_tags_provider.dart';
+import 'package:roninx/shared/models/unified_media.dart';
+import 'package:roninx/shared/widgets/app_bottom_sheet.dart';
 
 class AdvancedSearchSheet extends ConsumerStatefulWidget {
   final String initialQuery;

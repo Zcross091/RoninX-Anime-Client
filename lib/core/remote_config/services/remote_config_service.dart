@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shonenx/core/remote_config/models/remote_config.dart';
-import 'package:shonenx/core/utils/app_logger.dart';
+import 'package:roninx/core/remote_config/models/remote_config.dart';
+import 'package:roninx/core/utils/app_logger.dart';
 
 class RemoteConfigService {
   static const String _configUrl =
-      'https://raw.githubusercontent.com/roshancodespace/shonenx-config/refs/heads/main/remote_config.json';
+      'https://raw.githubusercontent.com/roshancodespace/RoninX-config/refs/heads/main/remote_config.json';
 
   static const String _cacheKey = 'remote_config_cache';
   static const String _seenAnnouncementsKey =

@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:shonenx/features/reader/providers/reader_prefs_provider.dart';
+import 'package:roninx/features/reader/providers/reader_prefs_provider.dart';
 
 class ReaderImage extends StatelessWidget {
   final String url;

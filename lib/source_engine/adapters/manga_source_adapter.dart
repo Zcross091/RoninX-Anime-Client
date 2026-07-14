@@ -1,9 +1,9 @@
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart'
     as bridge;
-import 'package:shonenx/core/utils/app_logger.dart';
-import 'package:shonenx/shared/models/unified_chapter.dart';
-import 'package:shonenx/source_engine/models/chapter_page.dart';
-import 'package:shonenx/source_engine/providers/manga_source.dart';
+import 'package:roninx/core/utils/app_logger.dart';
+import 'package:roninx/shared/models/unified_chapter.dart';
+import 'package:roninx/source_engine/models/chapter_page.dart';
+import 'package:roninx/source_engine/providers/manga_source.dart';
 import 'base_source_adapter.dart';
 
 class MangaSourceAdapter extends BaseSourceAdapter implements MangaSource {

@@ -1,9 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar_community/isar.dart';
-import 'package:shonenx/core/caching/cache_config.dart';
-import 'package:shonenx/core/caching/domain/cache_entry.dart';
-import 'package:shonenx/shared/providers/database_provider.dart';
-import 'package:shonenx/core/utils/app_logger.dart';
+import 'package:roninx/core/caching/cache_config.dart';
+import 'package:roninx/core/caching/domain/cache_entry.dart';
+import 'package:roninx/shared/providers/database_provider.dart';
+import 'package:roninx/core/utils/app_logger.dart';
 
 class CacheManager {
   final Isar _isar;

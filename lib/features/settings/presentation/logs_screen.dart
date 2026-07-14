@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:shonenx/core/utils/app_logger.dart';
-import 'package:shonenx/shared/widgets/app_scaffold.dart';
+import 'package:roninx/core/utils/app_logger.dart';
+import 'package:roninx/shared/widgets/app_scaffold.dart';
 
 class LogsScreen extends StatefulWidget {
   const LogsScreen({super.key});
@@ -49,7 +49,7 @@ class _LogsScreenState extends State<LogsScreen> {
     try {
       final path = await FilePicker.platform.saveFile(
         dialogTitle: 'Save App Logs',
-        fileName: 'shonenx_logs.txt',
+        fileName: 'RoninX_logs.txt',
         type: FileType.custom,
         allowedExtensions: ['txt'],
       );

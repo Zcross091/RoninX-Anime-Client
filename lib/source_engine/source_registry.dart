@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/source_engine/models/source_info.dart';
-import 'package:shonenx/shared/models/unified_media.dart';
+import 'package:roninx/source_engine/models/source_info.dart';
+import 'package:roninx/shared/models/unified_media.dart';
 
 final availableAnimeSourcesProvider = FutureProvider<List<SourceInfo>>((ref) async {
   return [

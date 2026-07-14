@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/shared/providers/ui_prefs_provider.dart';
-import 'package:shonenx/core/utils/responsive.dart';
-import 'package:shonenx/features/discovery/presentation/widgets/episodes_panel/episode_tiles.dart';
-import 'package:shonenx/features/discovery/providers/episodes_provider.dart';
-import 'package:shonenx/features/discovery/providers/matched_media_provider.dart';
-import 'package:shonenx/shared/models/unified_episode.dart';
-import 'package:shonenx/shared/models/unified_media.dart';
-import 'package:shonenx/shared/widgets/staggered_fade_in.dart';
-import 'package:shonenx/features/reader/providers/preferred_scanlator_provider.dart';
-import 'package:shonenx/features/discovery/presentation/widgets/sheets/batch_download_sheet.dart';
-import 'package:shonenx/source_engine/models/source_info.dart';
+import 'package:roninx/shared/providers/ui_prefs_provider.dart';
+import 'package:roninx/core/utils/responsive.dart';
+import 'package:roninx/features/discovery/presentation/widgets/episodes_panel/episode_tiles.dart';
+import 'package:roninx/features/discovery/providers/episodes_provider.dart';
+import 'package:roninx/features/discovery/providers/matched_media_provider.dart';
+import 'package:roninx/shared/models/unified_episode.dart';
+import 'package:roninx/shared/models/unified_media.dart';
+import 'package:roninx/shared/widgets/staggered_fade_in.dart';
+import 'package:roninx/features/reader/providers/preferred_scanlator_provider.dart';
+import 'package:roninx/features/discovery/presentation/widgets/sheets/batch_download_sheet.dart';
+import 'package:roninx/source_engine/models/source_info.dart';
 
 export 'episode_tiles.dart';
 

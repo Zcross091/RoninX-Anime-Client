@@ -1,4 +1,4 @@
-import 'package:shonenx/shared/providers/ui_prefs_provider.dart';
+import 'package:roninx/shared/providers/ui_prefs_provider.dart';
 
 abstract class CardConfig {
   const CardConfig();

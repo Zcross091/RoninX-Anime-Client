@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:shonenx/core/remote_config/models/remote_config.dart';
-import 'package:shonenx/shared/widgets/app_bottom_sheet.dart';
+import 'package:roninx/core/remote_config/models/remote_config.dart';
+import 'package:roninx/shared/widgets/app_bottom_sheet.dart';
 
 class RemoteConfigUI {
   static const String _releasesUrl =
-      'https://github.com/roshancodespace/shonenx/releases/latest';
+      'https://github.com/roshancodespace/RoninX/releases/latest';
 
   static Future<void> showUpdateSheet(
     BuildContext context, {

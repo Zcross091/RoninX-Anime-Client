@@ -1,4 +1,4 @@
-import 'package:shonenx/shared/models/unified_media.dart';
+import 'package:roninx/shared/models/unified_media.dart';
 
 enum SourceType { inbuilt, extension }
 

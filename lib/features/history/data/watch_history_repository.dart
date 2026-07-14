@@ -1,5 +1,6 @@
 import 'package:isar_community/isar.dart';
-import 'package:shonenx/features/history/domain/models/watch_history_entry.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:roninx/features/history/domain/models/watch_history_entry.dart';
 
 class WatchHistoryRepository {
   final Isar _isar;
@@ -12,6 +13,24 @@ class WatchHistoryRepository {
     await _isar.writeTxn(() async {
       await _isar.watchHistoryEntrys.put(entry);
     });
+
+    try {
+      final user = Supabase.instance.client.auth.currentUser;
+      if (user != null) {
+        await Supabase.instance.client.from('user_watch_history').upsert({
+          'user_id': user.id,
+          'anime_id': entry.animeId,
+          'episode_number': entry.episodeNumber,
+          'title': entry.animeTitle,
+          'image_url': entry.cover,
+          'progress': entry.positionInMilliseconds,
+          'duration': entry.durationInMilliseconds,
+          'last_updated': entry.lastUpdated.toIso8601String(),
+        });
+      }
+    } catch (e) {
+      // Ignore cloud sync failures silently to not interrupt local playback
+    }
   }
 
   Future<void> deleteEntry(int id) async {

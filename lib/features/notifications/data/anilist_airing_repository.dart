@@ -1,6 +1,6 @@
-import 'package:shonenx/core/network/http_client.dart';
-import 'package:shonenx/features/notifications/domain/models/airing_schedule.dart';
-import 'package:shonenx/features/notifications/data/airing_data_repository.dart';
+import 'package:roninx/core/network/http_client.dart';
+import 'package:roninx/features/notifications/domain/models/airing_schedule.dart';
+import 'package:roninx/features/notifications/data/airing_data_repository.dart';
 
 class AniListAiringRepository implements AiringDataRepository {
   final HTTP _http;

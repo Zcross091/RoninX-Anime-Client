@@ -1,12 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:shonenx/shared/models/component_layout.dart';
-import 'package:shonenx/shared/providers/ui_prefs_provider.dart';
-import 'package:shonenx/core/utils/focus_hover_detector.dart';
-import 'package:shonenx/shared/widgets/liquid_glass.dart';
-import 'package:shonenx/features/discovery/presentation/widgets/cards/experimental_liquid_card.dart';
+import 'package:roninx/shared/models/component_layout.dart';
+import 'package:roninx/shared/providers/ui_prefs_provider.dart';
+import 'package:roninx/core/utils/focus_hover_detector.dart';
+import 'package:roninx/shared/widgets/liquid_glass.dart';
+import 'package:roninx/features/discovery/presentation/widgets/cards/experimental_liquid_card.dart';
 
-import 'package:shonenx/shared/providers/theme_prefs_provider.dart';
+import 'package:roninx/shared/providers/theme_prefs_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MediaCard extends ConsumerWidget {

@@ -1,11 +1,11 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/features/player/engine/media_kit/media_kit_engine.dart';
-import 'package:shonenx/features/player/engine/video_engine.dart';
-import 'package:shonenx/features/player/engine/video_player/video_player_engine.dart';
-import 'package:shonenx/features/player/providers/media_kit_prefs_provider.dart';
-import 'package:shonenx/features/player/providers/player_prefs_provider.dart';
-import 'package:shonenx/shared/models/video_stream.dart';
+import 'package:roninx/features/player/engine/media_kit/media_kit_engine.dart';
+import 'package:roninx/features/player/engine/video_engine.dart';
+import 'package:roninx/features/player/engine/video_player/video_player_engine.dart';
+import 'package:roninx/features/player/providers/media_kit_prefs_provider.dart';
+import 'package:roninx/features/player/providers/player_prefs_provider.dart';
+import 'package:roninx/shared/models/video_stream.dart';
 
 class EngineState {
   final Duration position;

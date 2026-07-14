@@ -1,4 +1,4 @@
-import 'package:shonenx/features/downloads/domain/models/download_task.dart';
+import 'package:roninx/features/downloads/domain/models/download_task.dart';
 
 typedef OnProgressCallback =
     void Function({

@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/features/player/domain/aniskip_prefs.dart';
-import 'package:shonenx/features/player/engine/video_engine.dart';
-import 'package:shonenx/features/player/providers/video_engine_provider.dart';
+import 'package:roninx/features/player/domain/aniskip_prefs.dart';
+import 'package:roninx/features/player/engine/video_engine.dart';
+import 'package:roninx/features/player/providers/video_engine_provider.dart';
 
 class ProgressBar extends ConsumerWidget {
   final List<AniSkipStamp> aniSkips;

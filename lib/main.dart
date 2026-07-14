@@ -2,17 +2,17 @@ import 'dart:ui';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shonenx/app_init.dart';
-import 'package:shonenx/shared/providers/database_provider.dart';
-import 'package:shonenx/shared/providers/storage_provider.dart';
-import 'package:shonenx/shared/providers/theme_prefs_provider.dart';
-import 'package:shonenx/shared/providers/ui_prefs_provider.dart';
-import 'package:shonenx/core/router/app_router.dart';
+import 'package:roninx/app_init.dart';
+import 'package:roninx/shared/providers/database_provider.dart';
+import 'package:roninx/shared/providers/storage_provider.dart';
+import 'package:roninx/shared/providers/theme_prefs_provider.dart';
+import 'package:roninx/shared/providers/ui_prefs_provider.dart';
+import 'package:roninx/core/router/app_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/core/remote_config/ui/remote_config_listener.dart';
-import 'package:shonenx/core/theme/app_theme.dart';
-import 'package:shonenx/core/utils/app_logger.dart';
-import 'package:shonenx/shared/widgets/global_background.dart';
+import 'package:roninx/core/remote_config/ui/remote_config_listener.dart';
+import 'package:roninx/core/theme/app_theme.dart';
+import 'package:roninx/core/utils/app_logger.dart';
+import 'package:roninx/shared/widgets/global_background.dart';
 
 final _log = AppLogger.scope('Main');
 final _riverpodLog = AppLogger.scope('RiverpodObserver');
@@ -38,15 +38,15 @@ void main() async {
         databaseProvider.overrideWith((ref) => init.isar),
         sharedPreferencesProvider.overrideWith((ref) => sharedPreference),
       ],
-      child: const ShonenXApp(),
+      child: const RoninXApp(),
     ),
   );
 }
 
-class ShonenXApp extends ConsumerWidget {
-  const ShonenXApp({super.key});
+class RoninXApp extends ConsumerWidget {
+  const RoninXApp({super.key});
 
-  static final _log = AppLogger.scope(ShonenXApp);
+  static final _log = AppLogger.scope(RoninXApp);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -68,7 +68,7 @@ class ShonenXApp extends ConsumerWidget {
 
         return MaterialApp.router(
           debugShowCheckedModeBanner: false,
-          title: 'ShonenX',
+          title: 'RoninX',
           themeMode: themePrefs.themeMode,
           theme: lightTheme,
           darkTheme: darkTheme,

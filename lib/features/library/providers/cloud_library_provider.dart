@@ -1,11 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/features/library/domain/models/library_entry.dart';
-import 'package:shonenx/features/tracking/domain/models/tracked_status.dart';
-import 'package:shonenx/features/tracking/engine/tracking_service.dart';
-import 'package:shonenx/features/tracking/providers/tracker_registry.dart';
+import 'package:roninx/features/library/domain/models/library_entry.dart';
+import 'package:roninx/features/tracking/domain/models/tracked_status.dart';
+import 'package:roninx/features/tracking/engine/tracking_service.dart';
+import 'package:roninx/features/tracking/providers/tracker_registry.dart';
 
-import 'package:shonenx/features/tracking/domain/models/tracker_type.dart';
-import 'package:shonenx/shared/models/unified_media.dart';
+import 'package:roninx/features/tracking/domain/models/tracker_type.dart';
+import 'package:roninx/shared/models/unified_media.dart';
 
 typedef CloudLibraryParams = ({TrackedStatus status, TrackerType? trackerType, MediaType mediaType});
 

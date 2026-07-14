@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'package:shonenx/core/network/http_client.dart';
-import 'package:shonenx/core/utils/app_logger.dart';
-import 'package:shonenx/features/player/domain/aniskip_prefs.dart';
+import 'package:roninx/core/network/http_client.dart';
+import 'package:roninx/core/utils/app_logger.dart';
+import 'package:roninx/features/player/domain/aniskip_prefs.dart';
 
 class AniSkipService {
   static const _baseUrl = 'https://api.aniskip.com/v2/skip-times';

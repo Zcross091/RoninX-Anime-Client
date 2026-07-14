@@ -1,7 +1,7 @@
-import 'package:shonenx/shared/models/unified_episode.dart';
-import 'package:shonenx/shared/models/video_server.dart';
-import 'package:shonenx/shared/models/video_stream.dart';
-import 'package:shonenx/source_engine/providers/media_source.dart';
+import 'package:roninx/shared/models/unified_episode.dart';
+import 'package:roninx/shared/models/video_server.dart';
+import 'package:roninx/shared/models/video_stream.dart';
+import 'package:roninx/source_engine/providers/media_source.dart';
 
 abstract class AnimeSource extends MediaSource {
   Future<List<UnifiedEpisode>> getEpisodes(String animeId);

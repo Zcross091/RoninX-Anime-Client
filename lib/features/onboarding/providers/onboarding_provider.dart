@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/shared/providers/storage_provider.dart';
+import 'package:roninx/shared/providers/storage_provider.dart';
 
 class OnboardingNotifier extends Notifier<bool> {
   static const _key = 'onboarding_complete';

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:shonenx/core/network/http_client.dart';
+import 'package:roninx/core/network/http_client.dart';
 
 extension HttpX on HTTP {
   Future<bool> isHLS(String url, {Map<String, String>? headers}) async {

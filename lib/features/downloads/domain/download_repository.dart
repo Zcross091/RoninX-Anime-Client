@@ -1,5 +1,5 @@
 import 'package:isar_community/isar.dart';
-import 'package:shonenx/features/downloads/domain/models/download_task.dart';
+import 'package:roninx/features/downloads/domain/models/download_task.dart';
 
 class DownloadRepository {
   final Isar _isar;

@@ -1,10 +1,10 @@
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart'
     as bridge;
-import 'package:shonenx/core/utils/app_logger.dart';
-import 'package:shonenx/shared/models/unified_media.dart';
-import 'package:shonenx/source_engine/models/source_info.dart';
-import 'package:shonenx/source_engine/models/source_setting.dart';
-import 'package:shonenx/source_engine/providers/media_source.dart';
+import 'package:roninx/core/utils/app_logger.dart';
+import 'package:roninx/shared/models/unified_media.dart';
+import 'package:roninx/source_engine/models/source_info.dart';
+import 'package:roninx/source_engine/models/source_setting.dart';
+import 'package:roninx/source_engine/providers/media_source.dart';
 
 abstract class BaseSourceAdapter implements MediaSource {
   @override

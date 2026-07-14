@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shonenx/shared/providers/storage_provider.dart';
-import 'package:shonenx/features/player/domain/aniskip_prefs.dart';
+import 'package:roninx/shared/providers/storage_provider.dart';
+import 'package:roninx/features/player/domain/aniskip_prefs.dart';
 
 final aniskipPrefsProvider =
     NotifierProvider<AniskipPrefsNotifier, AniSkipPrefs>(

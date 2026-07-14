@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:shonenx/features/settings/presentation/reader_settings_screen.dart';
-import 'package:shonenx/shared/widgets/app_bottom_sheet.dart';
+import 'package:roninx/features/settings/presentation/reader_settings_screen.dart';
+import 'package:roninx/shared/widgets/app_bottom_sheet.dart';
 
 import 'reader_theme_info.dart';
 

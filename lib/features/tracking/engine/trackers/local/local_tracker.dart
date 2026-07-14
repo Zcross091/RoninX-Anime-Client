@@ -1,10 +1,10 @@
 import 'package:isar_community/isar.dart';
-import 'package:shonenx/features/library/domain/models/library_entry.dart';
-import 'package:shonenx/features/tracking/domain/models/tracked_list_item.dart';
-import 'package:shonenx/features/tracking/domain/models/tracked_status.dart';
-import 'package:shonenx/features/tracking/domain/models/tracker_type.dart';
-import 'package:shonenx/features/tracking/engine/tracking_service.dart';
-import 'package:shonenx/shared/models/unified_media.dart';
+import 'package:roninx/features/library/domain/models/library_entry.dart';
+import 'package:roninx/features/tracking/domain/models/tracked_list_item.dart';
+import 'package:roninx/features/tracking/domain/models/tracked_status.dart';
+import 'package:roninx/features/tracking/domain/models/tracker_type.dart';
+import 'package:roninx/features/tracking/engine/tracking_service.dart';
+import 'package:roninx/shared/models/unified_media.dart';
 
 class LocalTracker implements TrackingService {
   final Isar _isar;

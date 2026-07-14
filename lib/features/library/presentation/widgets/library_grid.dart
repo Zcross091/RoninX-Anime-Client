@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shonenx/shared/providers/ui_prefs_provider.dart';
-import 'package:shonenx/features/discovery/presentation/widgets/cards/media_card.dart';
-import 'package:shonenx/features/library/providers/cloud_library_provider.dart';
-import 'package:shonenx/features/library/providers/library_view_provider.dart';
-import 'package:shonenx/features/library/providers/local_library_provider.dart';
-import 'package:shonenx/features/tracking/domain/models/tracker_type.dart';
-import 'package:shonenx/features/tracking/providers/tracker_profile_provider.dart';
-import 'package:shonenx/features/tracking/providers/tracking_prefs_provider.dart';
-import 'package:shonenx/core/utils/responsive.dart';
+import 'package:roninx/shared/providers/ui_prefs_provider.dart';
+import 'package:roninx/features/discovery/presentation/widgets/cards/media_card.dart';
+import 'package:roninx/features/library/providers/cloud_library_provider.dart';
+import 'package:roninx/features/library/providers/library_view_provider.dart';
+import 'package:roninx/features/library/providers/local_library_provider.dart';
+import 'package:roninx/features/tracking/domain/models/tracker_type.dart';
+import 'package:roninx/features/tracking/providers/tracker_profile_provider.dart';
+import 'package:roninx/features/tracking/providers/tracking_prefs_provider.dart';
+import 'package:roninx/core/utils/responsive.dart';
 
 class LibraryGridWidget extends ConsumerWidget {
   const LibraryGridWidget({super.key});

@@ -4,8 +4,8 @@ import 'package:http/http.dart' as http;
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:shonenx/core/updates/models/github_release.dart';
-import 'package:shonenx/shared/widgets/app_bottom_sheet.dart';
+import 'package:roninx/core/updates/models/github_release.dart';
+import 'package:roninx/shared/widgets/app_bottom_sheet.dart';
 
 class AndroidUpdateWidget extends StatefulWidget {
   final GitHubRelease release;
@@ -88,7 +88,7 @@ class _AndroidUpdateWidgetState extends State<AndroidUpdateWidget> {
 
       final file = File('${dir.path}/${_bestAsset!.name}');
       final request = http.Request('GET', Uri.parse(_bestAsset!.downloadUrl));
-      request.headers['User-Agent'] = 'ShonenX-App';
+      request.headers['User-Agent'] = 'RoninX-App';
 
       final response = await http.Client().send(request);
       final totalBytes = response.contentLength ?? _bestAsset!.size;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/features/library/providers/library_view_provider.dart';
-import 'package:shonenx/features/tracking/domain/models/tracked_status.dart';
+import 'package:roninx/features/library/providers/library_view_provider.dart';
+import 'package:roninx/features/tracking/domain/models/tracked_status.dart';
 
 class LibraryFiltersWidget extends ConsumerWidget {
   const LibraryFiltersWidget({super.key});

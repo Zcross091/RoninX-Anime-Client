@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shonenx/shared/widgets/app_bottom_sheet.dart';
+import 'package:roninx/shared/widgets/app_bottom_sheet.dart';
 
 class ConfirmationBottomSheet extends StatelessWidget {
   final String title;

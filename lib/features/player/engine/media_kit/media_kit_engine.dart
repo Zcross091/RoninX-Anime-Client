@@ -4,15 +4,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
-import 'package:shonenx/features/player/domain/media_kit_prefs.dart';
-import 'package:shonenx/features/player/domain/subtitle_prefs.dart';
-import 'package:shonenx/features/player/engine/video_engine.dart';
-import 'package:shonenx/features/player/presentation/widgets/media_kit/media_kit_settings.dart';
-import 'package:shonenx/shared/models/video_stream.dart' as stream;
+import 'package:roninx/features/player/domain/media_kit_prefs.dart';
+import 'package:roninx/features/player/domain/subtitle_prefs.dart';
+import 'package:roninx/features/player/engine/video_engine.dart';
+import 'package:roninx/features/player/presentation/widgets/media_kit/media_kit_settings.dart';
+import 'package:roninx/shared/models/video_stream.dart' as stream;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/features/player/providers/video_engine_provider.dart';
-import 'package:shonenx/features/player/providers/subtitle_prefs_provider.dart';
+import 'package:roninx/features/player/providers/video_engine_provider.dart';
+import 'package:roninx/features/player/providers/subtitle_prefs_provider.dart';
 
 class MediaKitEngine implements VideoEngine {
   late final Player _player;

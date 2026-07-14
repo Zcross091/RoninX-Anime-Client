@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shonenx/core/utils/formatting.dart';
-import 'package:shonenx/shared/models/unified_episode.dart';
+import 'package:roninx/core/utils/formatting.dart';
+import 'package:roninx/shared/models/unified_episode.dart';
 
 class GroupedChapterTile extends StatefulWidget {
   final String title;

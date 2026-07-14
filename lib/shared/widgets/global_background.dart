@@ -3,8 +3,8 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/shared/providers/theme_prefs_provider.dart';
-import 'package:shonenx/shared/widgets/static_noise_overlay.dart';
+import 'package:roninx/shared/providers/theme_prefs_provider.dart';
+import 'package:roninx/shared/widgets/static_noise_overlay.dart';
 
 class GlobalBackground extends ConsumerWidget {
   final Widget child;

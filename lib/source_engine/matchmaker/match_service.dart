@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:shonenx/shared/models/unified_media.dart';
-import 'package:shonenx/source_engine/providers/media_source.dart';
+import 'package:roninx/shared/models/unified_media.dart';
+import 'package:roninx/source_engine/providers/media_source.dart';
 
 class MediaMatchService {
   final MediaSource _mediaSource;

@@ -2,10 +2,10 @@ import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:shonenx/core/utils/formatting.dart';
-import 'package:shonenx/core/utils/image_headers.dart';
-import 'package:shonenx/shared/models/unified_episode.dart';
-import 'package:shonenx/shared/models/unified_media.dart';
+import 'package:roninx/core/utils/formatting.dart';
+import 'package:roninx/core/utils/image_headers.dart';
+import 'package:roninx/shared/models/unified_episode.dart';
+import 'package:roninx/shared/models/unified_media.dart';
 
 enum EpisodeViewMode {
   classic("Classic"),

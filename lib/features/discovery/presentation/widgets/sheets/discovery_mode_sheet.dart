@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:shonenx/features/discovery/providers/discovery_prefs_provider.dart';
-import 'package:shonenx/features/settings/presentation/widgets/settings_ui_components.dart';
-import 'package:shonenx/features/tracking/engine/remote_tracker.dart';
-import 'package:shonenx/features/tracking/providers/tracker_registry.dart';
-import 'package:shonenx/shared/models/unified_media.dart';
-import 'package:shonenx/shared/widgets/app_bottom_sheet.dart';
-import 'package:shonenx/source_engine/models/source_info.dart';
-import 'package:shonenx/source_engine/source_registry.dart';
+import 'package:roninx/features/discovery/providers/discovery_prefs_provider.dart';
+import 'package:roninx/features/settings/presentation/widgets/settings_ui_components.dart';
+import 'package:roninx/features/tracking/engine/remote_tracker.dart';
+import 'package:roninx/features/tracking/providers/tracker_registry.dart';
+import 'package:roninx/shared/models/unified_media.dart';
+import 'package:roninx/shared/widgets/app_bottom_sheet.dart';
+import 'package:roninx/source_engine/models/source_info.dart';
+import 'package:roninx/source_engine/source_registry.dart';
 
 class DiscoveryModeSheet extends ConsumerWidget {
   const DiscoveryModeSheet({super.key});
@@ -139,14 +139,7 @@ class _SourceConfig extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        FilledButton.tonalIcon(
-          onPressed: () {
-            context.pop();
-            context.push('/settings/extensions');
-          },
-          icon: const Icon(Icons.extension_outlined),
-          label: const Text('Manage Extensions'),
-        ),
+
         const SizedBox(height: 18),
         Text(
           'ACTIVE SOURCES',
@@ -263,21 +256,7 @@ class _EmptySourcesState extends StatelessWidget {
           const SizedBox(height: 14),
           Text('No sources available', style: theme.textTheme.titleMedium),
           const SizedBox(height: 6),
-          Text(
-            'Install extensions to use Source Mode.',
-            textAlign: TextAlign.center,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(height: 18),
-          FilledButton(
-            onPressed: () {
-              context.pop();
-              context.push('/settings/extensions');
-            },
-            child: const Text('Browse Extensions'),
-          ),
+
         ],
       ),
     );

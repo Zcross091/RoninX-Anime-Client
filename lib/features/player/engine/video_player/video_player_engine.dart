@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:shonenx/core/network/http_client.dart';
-import 'package:shonenx/core/utils/http_x.dart';
-import 'package:shonenx/features/player/engine/video_engine.dart';
-import 'package:shonenx/shared/models/video_stream.dart';
+import 'package:roninx/core/network/http_client.dart';
+import 'package:roninx/core/utils/http_x.dart';
+import 'package:roninx/features/player/engine/video_engine.dart';
+import 'package:roninx/shared/models/video_stream.dart';
 import 'package:video_player/video_player.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/features/player/providers/video_engine_provider.dart';
+import 'package:roninx/features/player/providers/video_engine_provider.dart';
 
 class VideoPlayerEngine implements VideoEngine {
   VideoPlayerController? _controller;

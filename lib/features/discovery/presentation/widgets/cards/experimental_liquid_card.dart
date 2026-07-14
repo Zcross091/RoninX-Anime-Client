@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:liquid_glass_easy/liquid_glass_easy.dart';
-import 'package:shonenx/features/discovery/presentation/widgets/cards/media_card.dart';
-import 'package:shonenx/shared/models/component_layout.dart';
-import 'package:shonenx/shared/providers/ui_prefs_provider.dart';
+import 'package:roninx/features/discovery/presentation/widgets/cards/media_card.dart';
+import 'package:roninx/shared/models/component_layout.dart';
+import 'package:roninx/shared/providers/ui_prefs_provider.dart';
 
 class ExperimentalLiquidCard extends StatefulWidget {
   final MediaCard widget;

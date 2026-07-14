@@ -41,7 +41,7 @@ class AppLogger {
   static Future<void> init() async {
     try {
       final dir = await pp.getApplicationCacheDirectory();
-      final path = p.join(dir.path, 'ShonenX', 'app_logs.txt');
+      final path = p.join(dir.path, 'RoninX', 'app_logs.txt');
 
       _logFile = File(path);
       await _logFile!.create(recursive: true);

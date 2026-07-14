@@ -1,12 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/core/utils/responsive.dart';
-import 'package:shonenx/features/player/domain/subtitle_prefs.dart';
-import 'package:shonenx/features/player/providers/subtitle_prefs_provider.dart';
-import 'package:shonenx/features/settings/presentation/widgets/settings_ui_components.dart';
-import 'package:shonenx/shared/providers/ui_prefs_provider.dart';
-import 'package:shonenx/shared/widgets/app_bottom_sheet.dart';
+import 'package:roninx/core/utils/responsive.dart';
+import 'package:roninx/features/player/domain/subtitle_prefs.dart';
+import 'package:roninx/features/player/providers/subtitle_prefs_provider.dart';
+import 'package:roninx/features/settings/presentation/widgets/settings_ui_components.dart';
+import 'package:roninx/shared/providers/ui_prefs_provider.dart';
+import 'package:roninx/shared/widgets/app_bottom_sheet.dart';
 
 class SubtitleSettingsSheet extends ConsumerStatefulWidget {
   const SubtitleSettingsSheet({super.key});

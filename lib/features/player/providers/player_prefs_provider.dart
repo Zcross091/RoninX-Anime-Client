@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/shared/providers/storage_provider.dart';
-import 'package:shonenx/features/player/domain/aniskip_prefs.dart';
-import 'package:shonenx/features/player/domain/gesture_prefs.dart';
-import 'package:shonenx/shared/models/video_server.dart';
+import 'package:roninx/shared/providers/storage_provider.dart';
+import 'package:roninx/features/player/domain/aniskip_prefs.dart';
+import 'package:roninx/features/player/domain/gesture_prefs.dart';
+import 'package:roninx/shared/models/video_server.dart';
 
 enum PlayerType {
   mediakit,

@@ -1,5 +1,5 @@
-import 'package:shonenx/core/utils/app_logger.dart';
-import 'package:shonenx/features/tracking/engine/tracking_service.dart';
+import 'package:roninx/core/utils/app_logger.dart';
+import 'package:roninx/features/tracking/engine/tracking_service.dart';
 
 abstract class BaseTracker implements TrackingService {
   late final ScopedLogger _log = AppLogger.scope(type.displayName);

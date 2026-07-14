@@ -7,20 +7,20 @@ import 'package:path/path.dart' as p;
 import 'package:isar_community/isar.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:shonenx/core/caching/cache_manager.dart';
-import 'package:shonenx/core/caching/domain/cache_entry.dart';
-import 'package:shonenx/core/services/notification_service.dart';
-import 'package:shonenx/core/utils/app_logger.dart';
-import 'package:shonenx/features/discovery/domain/media_preference.dart';
-import 'package:shonenx/features/discovery/domain/media_source_preference.dart';
-import 'package:shonenx/features/downloads/domain/models/download_task.dart';
-import 'package:shonenx/features/history/domain/models/watch_history_entry.dart';
-import 'package:shonenx/features/history/domain/models/read_history_entry.dart';
-import 'package:shonenx/features/library/domain/models/library_entry.dart';
-import 'package:shonenx/features/notifications/domain/models/notification_subscription.dart';
-import 'package:shonenx/features/tracking/domain/isar_tracker_link.dart';
+import 'package:roninx/core/caching/cache_manager.dart';
+import 'package:roninx/core/caching/domain/cache_entry.dart';
+import 'package:roninx/core/services/notification_service.dart';
+import 'package:roninx/core/utils/app_logger.dart';
+import 'package:roninx/features/discovery/domain/media_preference.dart';
+import 'package:roninx/features/discovery/domain/media_source_preference.dart';
+import 'package:roninx/features/downloads/domain/models/download_task.dart';
+import 'package:roninx/features/history/domain/models/watch_history_entry.dart';
+import 'package:roninx/features/history/domain/models/read_history_entry.dart';
+import 'package:roninx/features/library/domain/models/library_entry.dart';
+import 'package:roninx/features/notifications/domain/models/notification_subscription.dart';
+import 'package:roninx/features/tracking/domain/isar_tracker_link.dart';
 import 'package:window_manager/window_manager.dart';
-
+import 'package:supabase_flutter/supabase_flutter.dart';
 class AppInit {
   static String? pendingDeepLink;
 
@@ -47,6 +47,13 @@ class AppInit {
 
     await _initNotifications();
     log.s('Notifications initialized');
+
+    await Supabase.initialize(
+      url: 'https://knmbpwlraitujnzdzbfv.supabase.co',
+      anonKey:
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtubWJwd2xyYWl0dWpuemR6YmZ2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4Mjg5OTczMCwiZXhwIjoyMDk4NDc1NzMwfQ.LpFoKTThntmj6_cLIs4XB0kjTOBgB5w1Xlf_vBqKWYo',
+    );
+    log.s('Supabase initialized');
 
     log.section('DONE');
 
@@ -100,7 +107,7 @@ class AppInit {
     final log = _log.child('_initDatabase');
 
     try {
-      final dir = await getDatabaseDirectory('ShonenX');
+      final dir = await getDatabaseDirectory('RoninX');
 
       isar = await Isar.open(
         [
@@ -120,7 +127,7 @@ class AppInit {
           // BridgeSettingsSchema,
         ],
         directory: dir.path,
-        name: 'shonenx_db',
+        name: 'RoninX_db',
       );
 
       // Perform migration from MediaSourcePreference to MediaPreference

@@ -4,21 +4,21 @@ import 'package:flutter/services.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/core/utils/formatting.dart';
+import 'package:roninx/core/utils/formatting.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:shonenx/features/discovery/presentation/widgets/episodes_panel/episode_list_panel.dart';
-import 'package:shonenx/features/player/domain/aniskip_prefs.dart';
-import 'package:shonenx/features/player/engine/video_engine.dart';
-import 'package:shonenx/features/player/domain/player_mode.dart';
-import 'package:shonenx/features/player/presentation/widgets/progress_bar.dart';
-import 'package:shonenx/features/player/providers/video_engine_provider.dart';
-import 'package:shonenx/features/player/providers/aniskip_prefs_provider.dart';
-import 'package:shonenx/features/player/providers/aniskip_provider.dart';
-import 'package:shonenx/features/player/providers/player_controller.dart';
-import 'package:shonenx/features/settings/presentation/widgets/subtitle_settings_sheet.dart';
-import 'package:shonenx/shared/models/video_server.dart';
-import 'package:shonenx/shared/models/video_stream.dart';
-import 'package:shonenx/shared/widgets/app_bottom_sheet.dart';
+import 'package:roninx/features/discovery/presentation/widgets/episodes_panel/episode_list_panel.dart';
+import 'package:roninx/features/player/domain/aniskip_prefs.dart';
+import 'package:roninx/features/player/engine/video_engine.dart';
+import 'package:roninx/features/player/domain/player_mode.dart';
+import 'package:roninx/features/player/presentation/widgets/progress_bar.dart';
+import 'package:roninx/features/player/providers/video_engine_provider.dart';
+import 'package:roninx/features/player/providers/aniskip_prefs_provider.dart';
+import 'package:roninx/features/player/providers/aniskip_provider.dart';
+import 'package:roninx/features/player/providers/player_controller.dart';
+import 'package:roninx/features/settings/presentation/widgets/subtitle_settings_sheet.dart';
+import 'package:roninx/shared/models/video_server.dart';
+import 'package:roninx/shared/models/video_stream.dart';
+import 'package:roninx/shared/widgets/app_bottom_sheet.dart';
 
 class BottomControls extends ConsumerStatefulWidget {
   final bool showControls;

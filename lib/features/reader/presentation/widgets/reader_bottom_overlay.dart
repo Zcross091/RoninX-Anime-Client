@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shonenx/shared/models/unified_episode.dart';
+import 'package:roninx/shared/models/unified_episode.dart';
 
 class ReaderBottomOverlay extends StatefulWidget {
   final int currentPage;

@@ -1,16 +1,16 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar_community/isar.dart';
 
-import 'package:shonenx/shared/providers/database_provider.dart';
-import 'package:shonenx/core/services/notification_service.dart';
-import 'package:shonenx/core/utils/app_logger.dart';
-import 'package:shonenx/features/discovery/domain/media_preference.dart';
-import 'package:shonenx/features/notifications/domain/models/notification_subscription.dart';
-import 'package:shonenx/features/notifications/providers/airing_data_repository_provider.dart';
-import 'package:shonenx/features/tracking/domain/models/tracker_type.dart';
-import 'package:shonenx/features/tracking/engine/remote_tracker.dart';
-import 'package:shonenx/features/tracking/providers/tracker_registry.dart';
-import 'package:shonenx/shared/models/unified_media.dart';
+import 'package:roninx/shared/providers/database_provider.dart';
+import 'package:roninx/core/services/notification_service.dart';
+import 'package:roninx/core/utils/app_logger.dart';
+import 'package:roninx/features/discovery/domain/media_preference.dart';
+import 'package:roninx/features/notifications/domain/models/notification_subscription.dart';
+import 'package:roninx/features/notifications/providers/airing_data_repository_provider.dart';
+import 'package:roninx/features/tracking/domain/models/tracker_type.dart';
+import 'package:roninx/features/tracking/engine/remote_tracker.dart';
+import 'package:roninx/features/tracking/providers/tracker_registry.dart';
+import 'package:roninx/shared/models/unified_media.dart';
 
 final notificationSubscriptionsProvider =
     NotifierProvider<

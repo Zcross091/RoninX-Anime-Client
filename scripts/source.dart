@@ -70,7 +70,7 @@ void main(List<String> args) {
 }
 
 void printUsage() {
-  print('ShonenX Source Boilerplate Generator');
+  print('RoninX Source Boilerplate Generator');
   print('Usage: ./scripts/source.dart -c|--create <type>:<source_name>');
   print('Example: ./scripts/source.dart -c anime:animepahe');
 }
@@ -109,12 +109,12 @@ String generateBoilerplate({
 }) {
   if (type == 'manga') {
     // Basic fallback for manga if requested in future
-    return '''import 'package:shonenx/shared/models/unified_chapter.dart';
-import 'package:shonenx/shared/models/unified_media.dart';
-import 'package:shonenx/source_engine/models/chapter_page.dart';
-import 'package:shonenx/source_engine/models/source_info.dart';
-import 'package:shonenx/source_engine/models/source_setting.dart';
-import 'package:shonenx/source_engine/providers/manga_source.dart';
+    return '''import 'package:roninx/shared/models/unified_chapter.dart';
+import 'package:roninx/shared/models/unified_media.dart';
+import 'package:roninx/source_engine/models/chapter_page.dart';
+import 'package:roninx/source_engine/models/source_info.dart';
+import 'package:roninx/source_engine/models/source_setting.dart';
+import 'package:roninx/source_engine/providers/manga_source.dart';
 
 class $className implements MangaSource {
   @override
@@ -146,13 +146,13 @@ class $className implements MangaSource {
 ''';
   }
 
-  return '''import 'package:shonenx/shared/models/unified_episode.dart';
-import 'package:shonenx/shared/models/unified_media.dart';
-import 'package:shonenx/shared/models/video_server.dart';
-import 'package:shonenx/shared/models/video_stream.dart';
-import 'package:shonenx/source_engine/models/source_info.dart';
-import 'package:shonenx/source_engine/models/source_setting.dart';
-import 'package:shonenx/source_engine/providers/anime_source.dart';
+  return '''import 'package:roninx/shared/models/unified_episode.dart';
+import 'package:roninx/shared/models/unified_media.dart';
+import 'package:roninx/shared/models/video_server.dart';
+import 'package:roninx/shared/models/video_stream.dart';
+import 'package:roninx/source_engine/models/source_info.dart';
+import 'package:roninx/source_engine/models/source_setting.dart';
+import 'package:roninx/source_engine/providers/anime_source.dart';
 
 class $className implements AnimeSource {
   @override

@@ -1,10 +1,10 @@
-import 'package:shonenx/features/tracking/engine/tracking_service.dart';
-import 'package:shonenx/core/network/auth/authenticator.dart';
-import 'package:shonenx/features/tracking/domain/models/tracker_profile.dart';
-import 'package:shonenx/source_engine/models/tracker_search_result.dart';
-import 'package:shonenx/shared/models/unified_media.dart';
-import 'package:shonenx/source_engine/models/paginated_result.dart';
-import 'package:shonenx/shared/providers/content_prefs_provider.dart';
+import 'package:roninx/features/tracking/engine/tracking_service.dart';
+import 'package:roninx/core/network/auth/authenticator.dart';
+import 'package:roninx/features/tracking/domain/models/tracker_profile.dart';
+import 'package:roninx/source_engine/models/tracker_search_result.dart';
+import 'package:roninx/shared/models/unified_media.dart';
+import 'package:roninx/source_engine/models/paginated_result.dart';
+import 'package:roninx/shared/providers/content_prefs_provider.dart';
 
 abstract interface class RemoteTracker implements TrackingService {
   Authenticator get authenticator;

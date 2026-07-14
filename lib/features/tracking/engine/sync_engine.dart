@@ -1,13 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/core/utils/app_logger.dart';
-import 'package:shonenx/features/tracking/domain/models/tracked_status.dart';
-import 'package:shonenx/features/tracking/domain/models/tracked_list_item.dart';
-import 'package:shonenx/features/tracking/domain/models/tracker_type.dart';
-import 'package:shonenx/features/tracking/providers/media_tracking_provider.dart';
-import 'package:shonenx/features/tracking/providers/tracker_registry.dart';
-import 'package:shonenx/features/tracking/providers/tracker_link_provider.dart';
-import 'package:shonenx/features/tracking/providers/tracking_prefs_provider.dart';
-import 'package:shonenx/shared/models/unified_media.dart';
+import 'package:roninx/core/utils/app_logger.dart';
+import 'package:roninx/features/tracking/domain/models/tracked_status.dart';
+import 'package:roninx/features/tracking/domain/models/tracked_list_item.dart';
+import 'package:roninx/features/tracking/domain/models/tracker_type.dart';
+import 'package:roninx/features/tracking/providers/media_tracking_provider.dart';
+import 'package:roninx/features/tracking/providers/tracker_registry.dart';
+import 'package:roninx/features/tracking/providers/tracker_link_provider.dart';
+import 'package:roninx/features/tracking/providers/tracking_prefs_provider.dart';
+import 'package:roninx/shared/models/unified_media.dart';
 
 final syncEngineProvider = Provider<SyncEngine>((ref) => SyncEngine(ref));
 

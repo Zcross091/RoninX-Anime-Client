@@ -1,8 +1,8 @@
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shonenx/shared/providers/theme_prefs_provider.dart';
-import 'package:shonenx/core/theme/exclusive_schemes.dart';
+import 'package:roninx/shared/providers/theme_prefs_provider.dart';
+import 'package:roninx/core/theme/exclusive_schemes.dart';
 
 typedef ThemeModifier =
     ThemeData Function(ThemeData theme, ThemePrefsState prefs);

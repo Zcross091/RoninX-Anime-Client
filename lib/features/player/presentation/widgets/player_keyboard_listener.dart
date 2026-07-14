@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:volume_controller/volume_controller.dart';
-import 'package:shonenx/features/player/engine/video_engine.dart';
-import 'package:shonenx/features/player/providers/player_controller.dart';
-import 'package:shonenx/features/player/providers/video_engine_provider.dart';
+import 'package:roninx/features/player/engine/video_engine.dart';
+import 'package:roninx/features/player/providers/player_controller.dart';
+import 'package:roninx/features/player/providers/video_engine_provider.dart';
 
 class PlayerKeyboardListener extends ConsumerStatefulWidget {
   final Widget child;

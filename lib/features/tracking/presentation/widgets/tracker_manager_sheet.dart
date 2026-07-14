@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shonenx/features/auth/providers/auth_provider.dart';
-import 'package:shonenx/features/tracking/domain/isar_tracker_link.dart';
-import 'package:shonenx/features/tracking/domain/models/tracked_list_item.dart';
-import 'package:shonenx/features/tracking/domain/models/tracked_status.dart';
-import 'package:shonenx/features/tracking/domain/models/tracker_type.dart';
-import 'package:shonenx/features/tracking/engine/remote_tracker.dart';
-import 'package:shonenx/features/tracking/engine/tracking_service.dart';
-import 'package:shonenx/features/tracking/presentation/widgets/edit_tracker_sheet.dart';
-import 'package:shonenx/features/tracking/presentation/widgets/link_tracker_dialog.dart';
-import 'package:shonenx/features/tracking/providers/media_tracking_provider.dart';
-import 'package:shonenx/features/tracking/providers/tracker_link_provider.dart';
-import 'package:shonenx/features/tracking/providers/tracker_registry.dart';
-import 'package:shonenx/shared/models/unified_media.dart';
-import 'package:shonenx/shared/widgets/app_bottom_sheet.dart';
+import 'package:roninx/features/auth/providers/auth_provider.dart';
+import 'package:roninx/features/tracking/domain/isar_tracker_link.dart';
+import 'package:roninx/features/tracking/domain/models/tracked_list_item.dart';
+import 'package:roninx/features/tracking/domain/models/tracked_status.dart';
+import 'package:roninx/features/tracking/domain/models/tracker_type.dart';
+import 'package:roninx/features/tracking/engine/remote_tracker.dart';
+import 'package:roninx/features/tracking/engine/tracking_service.dart';
+import 'package:roninx/features/tracking/presentation/widgets/edit_tracker_sheet.dart';
+import 'package:roninx/features/tracking/presentation/widgets/link_tracker_dialog.dart';
+import 'package:roninx/features/tracking/providers/media_tracking_provider.dart';
+import 'package:roninx/features/tracking/providers/tracker_link_provider.dart';
+import 'package:roninx/features/tracking/providers/tracker_registry.dart';
+import 'package:roninx/shared/models/unified_media.dart';
+import 'package:roninx/shared/widgets/app_bottom_sheet.dart';
 
 class TrackerManagerSheet extends ConsumerWidget {
   final UnifiedMedia media;

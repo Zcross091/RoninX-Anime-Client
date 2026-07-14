@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shonenx/shared/providers/ui_prefs_provider.dart';
-import 'package:shonenx/features/discovery/presentation/widgets/continue/continue_media_mixin.dart';
-import 'package:shonenx/features/history/domain/models/read_history_entry.dart';
-import 'package:shonenx/features/history/providers/continue_reading_resolver.dart';
-import 'package:shonenx/features/history/providers/read_history_provider.dart';
-import 'package:shonenx/shared/models/unified_media.dart';
-import 'package:shonenx/source_engine/source_registry.dart';
+import 'package:roninx/shared/providers/ui_prefs_provider.dart';
+import 'package:roninx/features/discovery/presentation/widgets/continue/continue_media_mixin.dart';
+import 'package:roninx/features/history/domain/models/read_history_entry.dart';
+import 'package:roninx/features/history/providers/continue_reading_resolver.dart';
+import 'package:roninx/features/history/providers/read_history_provider.dart';
+import 'package:roninx/shared/models/unified_media.dart';
+import 'package:roninx/source_engine/source_registry.dart';
 import 'continue_card_layout.dart';
 
 class ContinueReadingItem extends ConsumerStatefulWidget {

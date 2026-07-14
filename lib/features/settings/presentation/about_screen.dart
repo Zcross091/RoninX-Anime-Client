@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:shonenx/features/settings/presentation/widgets/settings_ui_components.dart';
-import 'package:shonenx/shared/widgets/app_scaffold.dart';
-import 'package:shonenx/shared/widgets/svg_icon.dart';
+import 'package:roninx/features/settings/presentation/widgets/settings_ui_components.dart';
+import 'package:roninx/shared/widgets/app_scaffold.dart';
+import 'package:roninx/shared/widgets/svg_icon.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 final _packageInfoProvider = FutureProvider<PackageInfo>((ref) async {
@@ -34,7 +34,7 @@ class AboutScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                'ShonenX',
+                'RoninX',
                 style: theme.textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -78,7 +78,7 @@ class AboutScreen extends ConsumerWidget {
                 title: 'GitHub',
                 subtitle: 'Source code and releases',
                 onTap: () => launchUrl(
-                  Uri.parse('https://github.com/roshancodespace/shonenx'),
+                  Uri.parse('https://github.com/roshancodespace/RoninX'),
                   mode: LaunchMode.externalApplication,
                 ),
               ),
@@ -97,7 +97,7 @@ class AboutScreen extends ConsumerWidget {
                 subtitle: 'Found a bug? Let us know',
                 onTap: () => launchUrl(
                   Uri.parse(
-                    'https://github.com/roshancodespace/shonenx/issues',
+                    'https://github.com/roshancodespace/RoninX/issues',
                   ),
                   mode: LaunchMode.externalApplication,
                 ),

@@ -1,16 +1,16 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar_community/isar.dart';
-import 'package:shonenx/shared/providers/database_provider.dart';
-import 'package:shonenx/features/history/domain/models/read_history_entry.dart';
-import 'package:shonenx/features/history/domain/models/watch_history_entry.dart';
+import 'package:roninx/shared/providers/database_provider.dart';
+import 'package:roninx/features/history/domain/models/read_history_entry.dart';
+import 'package:roninx/features/history/domain/models/watch_history_entry.dart';
 
-class ShonenxLocalMetrics {
+class RoninXLocalMetrics {
   final int streamedSessions;
   final double hoursWatched;
   final int uniqueSeriesTracked;
   final int chaptersRead;
 
-  const ShonenxLocalMetrics({
+  const RoninXLocalMetrics({
     required this.streamedSessions,
     required this.hoursWatched,
     required this.uniqueSeriesTracked,
@@ -18,8 +18,8 @@ class ShonenxLocalMetrics {
   });
 }
 
-final shonenxLocalMetricsProvider =
-    FutureProvider.autoDispose<ShonenxLocalMetrics>((ref) async {
+final RoninXLocalMetricsProvider =
+    FutureProvider.autoDispose<RoninXLocalMetrics>((ref) async {
       final isar = ref.watch(databaseProvider);
       final watchEntries = await isar.watchHistoryEntrys.where().findAll();
       final readCount = await isar.readHistoryEntrys.count();
@@ -30,10 +30,10 @@ final shonenxLocalMetricsProvider =
       );
       final uniqueSeries = watchEntries.map((e) => e.animeId).toSet().length;
 
-      return ShonenxLocalMetrics(
+      return RoninXLocalMetrics(
         streamedSessions: watchEntries.length,
         hoursWatched: totalMillis / 3600000.0,
         uniqueSeriesTracked: uniqueSeries,
         chaptersRead: readCount,
       );
-    }, name: 'shonenxLocalMetricsProvider');
+    }, name: 'RoninXLocalMetricsProvider');

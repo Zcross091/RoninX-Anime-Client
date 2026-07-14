@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/shared/providers/content_prefs_provider.dart';
-import 'package:shonenx/features/discovery/providers/discovery_prefs_provider.dart';
-import 'package:shonenx/shared/models/unified_media.dart';
-import 'package:shonenx/source_engine/models/source_info.dart';
-import 'package:shonenx/source_engine/source_engine_provider.dart';
-import 'package:shonenx/source_engine/source_registry.dart';
+import 'package:roninx/shared/providers/content_prefs_provider.dart';
+import 'package:roninx/features/discovery/providers/discovery_prefs_provider.dart';
+import 'package:roninx/shared/models/unified_media.dart';
+import 'package:roninx/source_engine/models/source_info.dart';
+import 'package:roninx/source_engine/source_engine_provider.dart';
+import 'package:roninx/source_engine/source_registry.dart';
 
 class FeedGroup {
   final String title;

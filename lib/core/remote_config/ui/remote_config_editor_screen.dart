@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/core/remote_config/models/remote_config.dart';
-import 'package:shonenx/core/remote_config/providers/remote_config_provider.dart';
-import 'package:shonenx/shared/widgets/app_scaffold.dart';
-import 'package:shonenx/source_engine/providers/inbuilt_sources_provider.dart';
+import 'package:roninx/core/remote_config/models/remote_config.dart';
+import 'package:roninx/core/remote_config/providers/remote_config_provider.dart';
+import 'package:roninx/shared/widgets/app_scaffold.dart';
+import 'package:roninx/source_engine/providers/inbuilt_sources_provider.dart';
 
 class RemoteConfigEditorScreen extends ConsumerStatefulWidget {
   const RemoteConfigEditorScreen({super.key});

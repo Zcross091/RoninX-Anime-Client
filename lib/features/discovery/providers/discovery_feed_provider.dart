@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/shared/providers/content_prefs_provider.dart';
-import 'package:shonenx/shared/models/unified_media.dart';
-import 'package:shonenx/source_engine/source_engine_provider.dart';
+import 'package:roninx/shared/providers/content_prefs_provider.dart';
+import 'package:roninx/shared/models/unified_media.dart';
+import 'package:roninx/source_engine/source_engine_provider.dart';
 import 'metadata_tags_provider.dart';
 
 /// Provides a random selection of genres for the discovery feed

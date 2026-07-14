@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:shonenx/core/network/secure_storage.dart';
-import 'package:shonenx/features/tracking/domain/models/tracker_type.dart';
-import 'package:shonenx/features/tracking/engine/remote_tracker.dart';
-import 'package:shonenx/features/tracking/engine/tracking_service.dart';
-import 'package:shonenx/features/tracking/providers/tracker_profile_provider.dart';
+import 'package:roninx/core/network/secure_storage.dart';
+import 'package:roninx/features/tracking/domain/models/tracker_type.dart';
+import 'package:roninx/features/tracking/engine/remote_tracker.dart';
+import 'package:roninx/features/tracking/engine/tracking_service.dart';
+import 'package:roninx/features/tracking/providers/tracker_profile_provider.dart';
 
 final authTokensProvider =
     AsyncNotifierProvider<AuthTokensNotifier, Map<TrackerType, String>>(

@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
-import 'package:shonenx/core/network/auth/authenticator.dart';
-import 'package:shonenx/core/network/http_client.dart';
-import 'package:shonenx/core/utils/env.dart';
-import 'package:shonenx/features/tracking/domain/models/tracker_type.dart';
+import 'package:roninx/core/network/auth/authenticator.dart';
+import 'package:roninx/core/network/http_client.dart';
+import 'package:roninx/core/utils/env.dart';
+import 'package:roninx/features/tracking/domain/models/tracker_type.dart';
 
 class AnilistAuthenticator implements Authenticator {
   static final HTTP _http = HTTP();
@@ -20,11 +20,11 @@ class AnilistAuthenticator implements Authenticator {
   @override
   String get redirectUri => _isDesktop
       ? 'http://localhost:43824/success?code=1337'
-      : 'shonenx://callback';
+      : 'RoninX://callback';
 
   @override
   String get callbackScheme =>
-      _isDesktop ? 'http://localhost:43824' : 'shonenx';
+      _isDesktop ? 'http://localhost:43824' : 'RoninX';
 
   @override
   String get providerName => TrackerType.anilist.name;

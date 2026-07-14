@@ -1,9 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/features/notifications/domain/models/notification_subscription.dart';
-import 'package:shonenx/features/notifications/providers/notification_subscriptions_provider.dart';
-import 'package:shonenx/shared/widgets/app_scaffold.dart';
+import 'package:roninx/features/notifications/domain/models/notification_subscription.dart';
+import 'package:roninx/features/notifications/providers/notification_subscriptions_provider.dart';
+import 'package:roninx/shared/widgets/app_scaffold.dart';
 
 class NotificationsSettingsScreen extends ConsumerWidget {
   const NotificationsSettingsScreen({super.key});

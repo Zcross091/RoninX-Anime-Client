@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shonenx/shared/providers/ui_prefs_provider.dart';
+import 'package:roninx/shared/providers/ui_prefs_provider.dart';
 
 class AppBottomSheet extends StatelessWidget {
   final String title;

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shonenx/features/discovery/providers/episodes_provider.dart';
-import 'package:shonenx/features/discovery/providers/matched_media_provider.dart';
-import 'package:shonenx/features/player/engine/video_engine.dart';
-import 'package:shonenx/features/player/providers/video_engine_provider.dart';
-import 'package:shonenx/features/player/providers/player_controller.dart';
+import 'package:roninx/features/discovery/providers/episodes_provider.dart';
+import 'package:roninx/features/discovery/providers/matched_media_provider.dart';
+import 'package:roninx/features/player/engine/video_engine.dart';
+import 'package:roninx/features/player/providers/video_engine_provider.dart';
+import 'package:roninx/features/player/providers/player_controller.dart';
 
 class CenterControls extends ConsumerStatefulWidget {
   final bool showControls;

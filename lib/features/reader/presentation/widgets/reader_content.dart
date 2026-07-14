@@ -4,10 +4,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
-import 'package:shonenx/core/utils/responsive.dart';
-import 'package:shonenx/features/reader/providers/reader_prefs_provider.dart';
-import 'package:shonenx/features/reader/providers/reader_provider.dart';
-import 'package:shonenx/source_engine/models/chapter_page.dart';
+import 'package:roninx/core/utils/responsive.dart';
+import 'package:roninx/features/reader/providers/reader_prefs_provider.dart';
+import 'package:roninx/features/reader/providers/reader_provider.dart';
+import 'package:roninx/source_engine/models/chapter_page.dart';
 
 import 'reader_image.dart';
 
