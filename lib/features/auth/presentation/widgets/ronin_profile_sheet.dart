@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:roninx/features/auth/providers/supabase_auth_provider.dart';
 import 'package:roninx/shared/widgets/app_bottom_sheet.dart';
-import 'package:roninx/shared/utils/snackbar_utils.dart';
+
 
 class RoninProfileSheet extends ConsumerStatefulWidget {
   const RoninProfileSheet({super.key});
@@ -40,13 +40,26 @@ class _RoninProfileSheetState extends ConsumerState<RoninProfileSheet> {
       } else {
         await ref.read(supabaseAuthProvider.notifier).register(email, password);
         if (mounted) {
-          SnackBarUtils.showInfo(context, 'Account created successfully!');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Account created successfully!'),
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+          );
           context.pop();
         }
       }
     } catch (e) {
       if (mounted) {
-        SnackBarUtils.showError(context, e.toString());
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Theme.of(context).colorScheme.error,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          ),
+        );
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);

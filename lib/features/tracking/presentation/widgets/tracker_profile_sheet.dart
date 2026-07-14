@@ -10,7 +10,7 @@ import 'package:roninx/features/tracking/domain/models/tracker_type.dart';
 import 'package:roninx/features/tracking/engine/remote_tracker.dart';
 import 'package:roninx/features/tracking/providers/tracker_profile_provider.dart';
 import 'package:roninx/features/tracking/engine/trackers/anilist/anilist_tracker.dart';
-import 'package:roninx/features/tracking/providers/RoninX_metrics_provider.dart';
+import 'package:roninx/features/tracking/providers/roninx_metrics_provider.dart';
 import 'package:roninx/features/tracking/providers/tracker_registry.dart';
 import 'package:roninx/features/tracking/providers/tracking_prefs_provider.dart';
 import 'package:roninx/shared/widgets/app_bottom_sheet.dart';
