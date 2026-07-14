@@ -104,12 +104,16 @@ class RoninApiSource extends AnimeSource {
               try {
                 // Check if it's an m3u8 directly
                 if (!url.contains('.m3u8')) {
-                  log.i('Extracting M3U8 from iframe: $url');
-                  final extractedUrl = await _extractM3u8WithWebview(url);
-                  if (extractedUrl != null) {
-                    url = extractedUrl;
+                  log.i('Resolving M3U8 from iframe via backend resolver: $url');
+                  final resolvedUrl = await _resolveM3u8ViaServer(url);
+                  if (resolvedUrl != null) {
+                    url = resolvedUrl;
                   } else {
-                    log.w('Failed to extract M3U8 from $url');
+                    log.w('Backend resolver failed. Falling back to local Webview extraction for $url');
+                    final extractedUrl = await _extractM3u8WithWebview(url);
+                    if (extractedUrl != null) {
+                      url = extractedUrl;
+                    }
                   }
                 }
               } catch (e) {
@@ -190,5 +194,30 @@ class RoninApiSource extends AnimeSource {
     } catch (_) {}
     
     return m3u8Url;
+  }
+
+  Future<String?> _resolveM3u8ViaServer(String iframeUrl) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/api/resolve?url=${Uri.encodeComponent(iframeUrl)}'),
+      ).timeout(const Duration(seconds: 8));
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        final List<dynamic>? results = data['results'];
+        if (results != null && results.isNotEmpty) {
+          // GogoCDN extractor returns IVideo[] array: [{ url, isM3U8, quality }]
+          // Look for any valid .m3u8 stream first
+          final bestStream = results.firstWhere(
+            (s) => s['url'] != null && s['url'].toString().contains('.m3u8'),
+            orElse: () => results.first,
+          );
+          return bestStream['url']?.toString();
+        }
+      }
+    } catch (e) {
+      log.e('Server-side resolve failed: $e');
+    }
+    return null;
   }
 }
