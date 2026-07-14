@@ -2,6 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:encrypt/encrypt.dart' as enc;
+import 'package:html/parser.dart' as hp;
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:roninx/core/utils/app_logger.dart';
 import 'package:roninx/shared/models/unified_episode.dart';
 import 'package:roninx/shared/models/unified_media.dart';
@@ -84,30 +87,39 @@ class RoninApiSource extends AnimeSource {
     final parts = episodeId.split('|');
     if (parts.length < 2) return [];
 
-    final query = Uri.encodeComponent(parts[0]);
+    final query = parts[0];
     final episode = parts[1];
 
     try {
-      // 1. Check Supabase Cache First
-      final dbResponse = await http.get(Uri.parse('$baseUrl/api/db?title=$query&episode=$episode'));
-      if (dbResponse.statusCode == 200) {
-        final List<dynamic> dbData = json.decode(dbResponse.body);
-        if (dbData.isNotEmpty) {
-          log.i('Cache hit for $query episode $episode!');
+      // 1. Check Supabase Cache Directly (bypassing Vercel proxy)
+      log.i('Querying Supabase directly for cache: $query episode $episode');
+      final dbData = await Supabase.instance.client
+          .from('anime_links')
+          .select()
+          .eq('title', query.toLowerCase().trim())
+          .eq('episode', int.tryParse(episode) ?? 0);
+
+      if (dbData.isNotEmpty) {
+        log.i('Cache hit for $query episode $episode!');
+        
+        final List<VideoStream> streams = [];
+        for (final res in dbData) {
+          String url = res['url'];
+          final type = res['type'] ?? 'Auto';
           
-          final List<VideoStream> streams = [];
-          for (final res in dbData) {
-            String url = res['url'];
-            final type = res['type'] ?? 'Auto';
-            
-            if (type == 'http') {
-              try {
-                // Check if it's an m3u8 directly
-                if (!url.contains('.m3u8')) {
+          if (type == 'http') {
+            try {
+              // Check if it's an m3u8 directly
+              if (!url.contains('.m3u8')) {
+                log.i('Resolving M3U8 locally via GogoCDN decrypter: $url');
+                final resolvedUrl = await _resolveGogoCDNLocally(url);
+                if (resolvedUrl != null) {
+                  url = resolvedUrl;
+                } else {
                   log.i('Resolving M3U8 from iframe via backend resolver: $url');
-                  final resolvedUrl = await _resolveM3u8ViaServer(url);
-                  if (resolvedUrl != null) {
-                    url = resolvedUrl;
+                  final serverResolvedUrl = await _resolveM3u8ViaServer(url);
+                  if (serverResolvedUrl != null) {
+                    url = serverResolvedUrl;
                   } else {
                     log.w('Backend resolver failed. Falling back to local Webview extraction for $url');
                     final extractedUrl = await _extractM3u8WithWebview(url);
@@ -116,53 +128,53 @@ class RoninApiSource extends AnimeSource {
                     }
                   }
                 }
-              } catch (e) {
-                log.e('Error during M3U8 extraction', e);
               }
+            } catch (e) {
+              log.e('Error during M3U8 extraction', e);
             }
-            
-            // Only add HTTP streams if they have been successfully resolved to an m3u8 playlist
-            if (type == 'http' && !url.contains('.m3u8')) {
-              log.w('Skipping stream $url because it failed to resolve to a playable m3u8 link.');
-              continue;
-            }
-
-            final Map<String, String> headers = {};
-            if (url.startsWith('http')) {
-              try {
-                final uri = Uri.parse(url);
-                headers['Referer'] = '${uri.scheme}://${uri.host}/';
-                headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
-              } catch (_) {}
-            }
-
-            streams.add(VideoStream(
-              url: url,
-              quality: type,
-              headers: headers.isNotEmpty ? headers : null,
-            ));
+          }
+          
+          // Only add HTTP streams if they have been successfully resolved to an m3u8 playlist
+          if (type == 'http' && !url.contains('.m3u8')) {
+            log.w('Skipping stream $url because it failed to resolve to a playable m3u8 link.');
+            continue;
           }
 
-          // Prioritize HTTP streams over Torrent magnet links so they are selected by default
-          streams.sort((a, b) {
-            final aIsTorrent = a.url.startsWith('magnet:') || a.quality.toLowerCase() == 'torrent';
-            final bIsTorrent = b.url.startsWith('magnet:') || b.quality.toLowerCase() == 'torrent';
-            if (aIsTorrent && !bIsTorrent) return 1;
-            if (!aIsTorrent && bIsTorrent) return -1;
-            return 0;
-          });
-
-          if (streams.isEmpty) {
-            throw Exception('No playable video streams were resolved. The background miner has been triggered to fetch working links.');
+          final Map<String, String> headers = {};
+          if (url.startsWith('http')) {
+            try {
+              final uri = Uri.parse(url);
+              headers['Referer'] = '${uri.scheme}://${uri.host}/';
+              headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
+            } catch (_) {}
           }
 
-          return streams;
+          streams.add(VideoStream(
+            url: url,
+            quality: type,
+            headers: headers.isNotEmpty ? headers : null,
+          ));
         }
+
+        // Prioritize HTTP streams over Torrent magnet links so they are selected by default
+        streams.sort((a, b) {
+          final aIsTorrent = a.url.startsWith('magnet:') || a.quality.toLowerCase() == 'torrent';
+          final bIsTorrent = b.url.startsWith('magnet:') || b.quality.toLowerCase() == 'torrent';
+          if (aIsTorrent && !bIsTorrent) return 1;
+          if (!aIsTorrent && bIsTorrent) return -1;
+          return 0;
+        });
+
+        if (streams.isEmpty) {
+          throw Exception('No playable video streams were resolved. The background miner has been triggered to fetch working links.');
+        }
+
+        return streams;
       }
 
       // 2. Cache Miss - Trigger Miner
       log.i('Cache miss for $query episode $episode. Triggering GitHub Action Miner...');
-      await http.get(Uri.parse('$baseUrl/api/trigger-miner?title=$query&episode=$episode'));
+      await http.get(Uri.parse('$baseUrl/api/trigger-miner?title=${Uri.encodeComponent(query)}&episode=$episode'));
       
       // 3. Inform the user
       throw Exception('Episode not found in cache. The Ronin Miner has been triggered in the background! Please check back in a few minutes.');
@@ -229,8 +241,6 @@ class RoninApiSource extends AnimeSource {
         final Map<String, dynamic> data = json.decode(response.body);
         final List<dynamic>? results = data['results'];
         if (results != null && results.isNotEmpty) {
-          // GogoCDN extractor returns IVideo[] array: [{ url, isM3U8, quality }]
-          // Look for any valid .m3u8 stream first
           final bestStream = results.firstWhere(
             (s) => s['url'] != null && s['url'].toString().contains('.m3u8'),
             orElse: () => results.first,
@@ -240,6 +250,78 @@ class RoninApiSource extends AnimeSource {
       }
     } catch (e) {
       log.e('Server-side resolve failed: $e');
+    }
+    return null;
+  }
+
+  Future<String?> _resolveGogoCDNLocally(String iframeUrl) async {
+    try {
+      final videoUrl = Uri.parse(iframeUrl);
+      final id = videoUrl.queryParameters['id'];
+      if (id == null) return null;
+
+      final res = await http.get(
+        videoUrl,
+        headers: {
+          'Referer': 'https://anitaku.to/',
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        },
+      ).timeout(const Duration(seconds: 8));
+
+      if (res.statusCode != 200) return null;
+
+      final document = hp.parse(res.body);
+      final script = document.querySelector("script[data-name='episode']");
+      final scriptValue = script?.attributes['data-value'];
+      if (scriptValue == null) return null;
+
+      // Cryptographic keys matching TypeScript backend
+      final key = enc.Key.fromUtf8('37911490979715163134003223491201');
+      final secondKey = enc.Key.fromUtf8('54674138327930866480207815084989');
+      final iv = enc.IV.fromUtf8('3134003223491201');
+
+      final encrypter = enc.Encrypter(enc.AES(key, mode: enc.AESMode.cbc, padding: 'PKCS7'));
+      final secondEncrypter = enc.Encrypter(enc.AES(secondKey, mode: enc.AESMode.cbc, padding: 'PKCS7'));
+
+      // 1. Decrypt data-value token
+      final decryptedToken = encrypter.decrypt(enc.Encrypted.fromBase64(scriptValue), iv: iv);
+
+      // 2. Encrypt ID
+      final encryptedId = encrypter.encrypt(id, iv: iv).base64;
+
+      // 3. Make AJAX Request to decrypt-ajax
+      final ajaxUrl = '${videoUrl.scheme}://${videoUrl.host}/encrypt-ajax.php?'
+          'id=${Uri.encodeComponent(encryptedId)}&alias=$id&$decryptedToken';
+
+      final ajaxRes = await http.get(
+        Uri.parse(ajaxUrl),
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'Referer': iframeUrl,
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        },
+      ).timeout(const Duration(seconds: 8));
+
+      if (ajaxRes.statusCode != 200) return null;
+
+      final ajaxData = jsonDecode(ajaxRes.body);
+      final encryptedData = ajaxData['data'];
+      if (encryptedData == null) return null;
+
+      // 4. Decrypt AJAX Response
+      final decryptedAjaxStr = secondEncrypter.decrypt(enc.Encrypted.fromBase64(encryptedData), iv: iv);
+      final decryptedAjax = jsonDecode(decryptedAjaxStr);
+
+      final List<dynamic>? sourceList = decryptedAjax['source'];
+      if (sourceList != null && sourceList.isNotEmpty) {
+        final bestStream = sourceList.firstWhere(
+          (s) => s['file'] != null && s['file'].toString().contains('.m3u8'),
+          orElse: () => sourceList.first,
+        );
+        return bestStream['file']?.toString();
+      }
+    } catch (e) {
+      log.e('Local GogoCDN resolution failed: $e');
     }
     return null;
   }
