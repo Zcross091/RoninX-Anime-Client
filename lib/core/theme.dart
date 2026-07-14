@@ -35,6 +35,12 @@ class AppTheme {
         elevation: 0,
         centerTitle: true,
       ),
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        backgroundColor: Colors.black,
+        selectedItemColor: primaryRed,
+        unselectedItemColor: Colors.grey,
+        type: BottomNavigationBarType.fixed,
+      ),
     );
   }
 }

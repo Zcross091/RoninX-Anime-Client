@@ -1,44 +1,42 @@
-import 'dart:ui';
-import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:roninx/app_init.dart';
-import 'package:roninx/shared/providers/database_provider.dart';
-import 'package:roninx/shared/providers/storage_provider.dart';
-import 'package:roninx/shared/providers/theme_prefs_provider.dart';
-import 'package:roninx/shared/providers/ui_prefs_provider.dart';
-import 'package:roninx/core/router/app_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:roninx/core/remote_config/ui/remote_config_listener.dart';
-import 'package:roninx/core/theme/app_theme.dart';
-import 'package:roninx/core/utils/app_logger.dart';
-import 'package:roninx/shared/widgets/global_background.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:media_kit/media_kit.dart';
+import 'package:window_manager/window_manager.dart';
+import 'dart:io';
 
-final _log = AppLogger.scope('Main');
-final _riverpodLog = AppLogger.scope('RiverpodObserver');
+import 'core/theme/app_theme.dart';
+import 'core/router/app_router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await AppLogger.init();
+  MediaKit.ensureInitialized();
 
-  final log = _log.child('main');
+  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+    await windowManager.ensureInitialized();
+    WindowOptions windowOptions = const WindowOptions(
+      size: Size(1280, 720),
+      center: true,
+      backgroundColor: Colors.transparent,
+      skipTaskbar: false,
+      titleBarStyle: TitleBarStyle.normal,
+      title: 'RoninX',
+    );
+    windowManager.waitUntilReadyToShow(windowOptions, () async {
+      await windowManager.show();
+      await windowManager.focus();
+    });
+  }
 
-  log.i('App starting');
-
-  final init = await AppInit().init();
-  log.i('AppInit completed');
-
-  final sharedPreference = await SharedPreferences.getInstance();
-  log.i('SharedPreferences ready');
+  // Initialize Supabase with your credentials
+  await Supabase.initialize(
+    url: 'https://knmbpwlraitujnzdzbfv.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtubWJwd2xyYWl0dWpuemR6YmZ2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4Mjg5OTczMCwiZXhwIjoyMDk4NDc1NzMwfQ.LpFoKTThntmj6_cLIs4XB0kjTOBgB5w1Xlf_vBqKWYo',
+  );
 
   runApp(
-    ProviderScope(
-      observers: [RiverpodLogger()],
-      overrides: [
-        databaseProvider.overrideWith((ref) => init.isar),
-        sharedPreferencesProvider.overrideWith((ref) => sharedPreference),
-      ],
-      child: const RoninXApp(),
+    const ProviderScope(
+      child: RoninXApp(),
     ),
   );
 }
@@ -46,82 +44,15 @@ void main() async {
 class RoninXApp extends ConsumerWidget {
   const RoninXApp({super.key});
 
-  static final _log = AppLogger.scope(RoninXApp);
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final log = _log.child('build');
+    final router = ref.watch(routerProvider);
 
-    final themePrefs = ref.watch(themePrefsProvider);
-    log.d('Theme changed: ${themePrefs.themeMode}');
-
-    return DynamicColorBuilder(
-      builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
-        final lightTheme = AppTheme.light(
-          themePrefs,
-          themePrefs.useDynamic ? lightDynamic : null,
-        );
-        final darkTheme = AppTheme.dark(
-          themePrefs,
-          themePrefs.useDynamic ? darkDynamic : null,
-        );
-
-        return MaterialApp.router(
-          debugShowCheckedModeBanner: false,
-          title: 'RoninX',
-          themeMode: themePrefs.themeMode,
-          theme: lightTheme,
-          darkTheme: darkTheme,
-          scrollBehavior: const MaterialScrollBehavior().copyWith(
-            dragDevices: {
-              PointerDeviceKind.touch,
-              PointerDeviceKind.mouse,
-              PointerDeviceKind.trackpad,
-              PointerDeviceKind.stylus,
-              PointerDeviceKind.unknown,
-            },
-          ),
-          routerConfig: ref.watch(routerProvider),
-          builder: (context, child) {
-            if (child == null) return const SizedBox.shrink();
-
-            GlobalUI.uiScaleFactor = themePrefs.uiScaleFactor;
-            GlobalUI.uiRoundness = themePrefs.uiRoundness;
-
-            final textScaledChild = MediaQuery(
-              data: MediaQuery.of(context).copyWith(
-                textScaler: TextScaler.linear(themePrefs.fontScaleFactor),
-              ),
-              child: child,
-            );
-
-            return RemoteConfigListener(
-              child: GlobalBackground(child: textScaledChild),
-            );
-          },
-        );
-      },
+    return MaterialApp.router(
+      title: 'RoninX',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.darkTheme,
+      routerConfig: router,
     );
-  }
-}
-
-final class RiverpodLogger extends ProviderObserver {
-  static final _log = _riverpodLog;
-
-  @override
-  void didUpdateProvider(
-    ProviderObserverContext context,
-    Object? previousValue,
-    Object? newValue,
-  ) {
-    final providerName = context.provider.name ?? 'UnknownProvider';
-
-    if (providerName != 'episodeTabProvider') return;
-
-    final log = _log.child(providerName);
-
-    log.section('State Update');
-    log.i('Previous: $previousValue');
-    log.i('New: $newValue');
   }
 }

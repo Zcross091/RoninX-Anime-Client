@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../features/home/presentation/home_screen.dart';
-import '../../features/browse/presentation/browse_screen.dart';
-import '../../features/detail/presentation/detail_screen.dart';
-import '../../features/player/presentation/player_screen.dart';
-import '../../features/watchlist/presentation/watchlist_screen.dart';
+import '../features/home/home_screen.dart';
+import '../features/detail/detail_screen.dart';
+import '../features/player/player_screen.dart';
+import '../features/search/search_screen.dart';
+import '../features/settings/settings_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -17,10 +17,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const HomeScreen(),
       ),
       GoRoute(
-        path: '/browse',
-        builder: (context, state) => const BrowseScreen(),
-      ),
-      GoRoute(
         path: '/detail/:id',
         builder: (context, state) => DetailScreen(id: state.pathParameters['id']!),
       ),
@@ -29,16 +25,20 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final extra = state.extra as Map<String, dynamic>?;
           return PlayerScreen(
+            mediaId: extra?['mediaId'] ?? '',
             title: extra?['title'] ?? 'Unknown',
-            streamUrl: extra?['streamUrl'],
+            episodeNumber: extra?['episodeNumber'] ?? 1.0,
             animeTitle: extra?['animeTitle'],
-            episode: extra?['episode'],
           );
         },
       ),
       GoRoute(
-        path: '/watchlist',
-        builder: (context, state) => const WatchlistScreen(),
+        path: '/search',
+        builder: (context, state) => const SearchScreen(),
+      ),
+      GoRoute(
+        path: '/settings',
+        builder: (context, state) => const SettingsScreen(),
       ),
     ],
   );
