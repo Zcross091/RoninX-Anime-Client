@@ -121,9 +121,19 @@ class RoninApiSource extends AnimeSource {
               }
             }
             
+            final Map<String, String> headers = {};
+            if (url.startsWith('http')) {
+              try {
+                final uri = Uri.parse(url);
+                headers['Referer'] = '${uri.scheme}://${uri.host}/';
+                headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
+              } catch (_) {}
+            }
+
             streams.add(VideoStream(
               url: url,
               quality: type,
+              headers: headers.isNotEmpty ? headers : null,
             ));
           }
 
@@ -167,6 +177,9 @@ class RoninApiSource extends AnimeSource {
         javaScriptEnabled: true,
         useShouldInterceptRequest: true,
         mediaPlaybackRequiresUserGesture: false,
+        domStorageEnabled: true,
+        databaseEnabled: true,
+        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
       ),
       shouldInterceptRequest: (controller, request) async {
         final reqUrl = request.url.toString();
