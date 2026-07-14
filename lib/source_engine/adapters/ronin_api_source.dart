@@ -121,6 +121,12 @@ class RoninApiSource extends AnimeSource {
               }
             }
             
+            // Only add HTTP streams if they have been successfully resolved to an m3u8 playlist
+            if (type == 'http' && !url.contains('.m3u8')) {
+              log.w('Skipping stream $url because it failed to resolve to a playable m3u8 link.');
+              continue;
+            }
+
             final Map<String, String> headers = {};
             if (url.startsWith('http')) {
               try {
@@ -145,6 +151,10 @@ class RoninApiSource extends AnimeSource {
             if (!aIsTorrent && bIsTorrent) return -1;
             return 0;
           });
+
+          if (streams.isEmpty) {
+            throw Exception('No playable video streams were resolved. The background miner has been triggered to fetch working links.');
+          }
 
           return streams;
         }
