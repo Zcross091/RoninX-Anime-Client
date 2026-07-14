@@ -9,7 +9,7 @@ import 'package:shonenx/source_engine/models/source_info.dart';
 import 'package:shonenx/source_engine/providers/anime_source.dart';
 
 class RoninApiSource extends AnimeSource {
-  static const String baseUrl = 'https://ronin-api-proxy-a10mdfi56-zcross091s-projects.vercel.app';
+  static const String baseUrl = 'https://ronin-api-proxy.vercel.app';
   final log = AppLogger.scope(RoninApiSource);
 
   @override
