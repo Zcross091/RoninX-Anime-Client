@@ -122,6 +122,16 @@ class RoninApiSource extends AnimeSource {
               quality: type,
             ));
           }
+
+          // Prioritize HTTP streams over Torrent magnet links so they are selected by default
+          streams.sort((a, b) {
+            final aIsTorrent = a.url.startsWith('magnet:') || a.quality.toLowerCase() == 'torrent';
+            final bIsTorrent = b.url.startsWith('magnet:') || b.quality.toLowerCase() == 'torrent';
+            if (aIsTorrent && !bIsTorrent) return 1;
+            if (!aIsTorrent && bIsTorrent) return -1;
+            return 0;
+          });
+
           return streams;
         }
       }
