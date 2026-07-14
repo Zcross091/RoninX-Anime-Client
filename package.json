@@ -1,5 +1,10 @@
 {
   "dependencies": {
-    "jimp": "^0.16.13"
+    "jimp": "^0.16.13",
+    "@supabase/supabase-js": "^2.110.0",
+    "dotenv": "^17.4.2",
+    "puppeteer": "^25.3.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
   }
 }
