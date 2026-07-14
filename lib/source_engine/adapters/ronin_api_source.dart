@@ -91,16 +91,88 @@ class RoninApiSource extends AnimeSource {
     final episode = parts[1];
 
     try {
-      // 1. Check Supabase Cache Directly (bypassing Vercel proxy)
-      log.i('Querying Supabase directly for cache: $query episode $episode');
-      final dbData = await Supabase.instance.client
+      // 1. Build title variants to search against
+      final rawQuery = query.toLowerCase().trim();
+      final slug = rawQuery
+          .replaceAll(RegExp(r'[^\w\s]'), '')   // strip punctuation
+          .replaceAll(RegExp(r'\s+'), ' ')
+          .trim();
+
+      log.i('Fuzzy searching Supabase for: "$rawQuery" (slug: "$slug") episode $episode');
+
+      // ── Tier 1: Exact title match ──────────────────────────────────────────
+      List<dynamic> dbData = await Supabase.instance.client
           .from('anime_links')
           .select()
-          .eq('title', query.toLowerCase().trim())
+          .eq('title', rawQuery)
           .eq('episode', int.tryParse(episode) ?? 0);
 
+      // ── Tier 2: Case-insensitive LIKE on cleaned slug ──────────────────────
+      if (dbData.isEmpty) {
+        log.i('Tier-1 miss. Trying slug ilike: "$slug"');
+        dbData = await Supabase.instance.client
+            .from('anime_links')
+            .select()
+            .ilike('title', '%$slug%')
+            .eq('episode', int.tryParse(episode) ?? 0);
+      }
+
+      // ── Tier 3: Split into keywords, OR-search each significant word ────────
+      if (dbData.isEmpty) {
+        final keywords = slug
+            .split(' ')
+            .where((w) => w.length > 3)   // skip short stop-words
+            .toList();
+
+        if (keywords.isNotEmpty) {
+          log.i('Tier-2 miss. Trying keyword OR search: $keywords');
+          // Build an OR filter matching any keyword in the title
+          final orFilter = keywords
+              .map((k) => 'title.ilike.%$k%')
+              .join(',');
+          dbData = await Supabase.instance.client
+              .from('anime_links')
+              .select()
+              .or(orFilter)
+              .eq('episode', int.tryParse(episode) ?? 0);
+        }
+      }
+
+      // ── Tier 4: Local token-overlap scoring (pick best fuzzy match) ─────────
       if (dbData.isNotEmpty) {
-        log.i('Cache hit for $query episode $episode!');
+        // Score every DB row by counting how many query tokens appear in the DB title
+        final queryTokens = slug.split(' ').where((t) => t.isNotEmpty).toList();
+
+        int _scoreRow(Map<String, dynamic> row) {
+          final dbTitle = (row['title'] as String? ?? '').toLowerCase();
+          return queryTokens.where((t) => dbTitle.contains(t)).length;
+        }
+
+        // Keep only rows with at least 50% token overlap to avoid garbage matches
+        final minScore = (queryTokens.length * 0.5).ceil();
+        final scored = dbData
+            .where((r) => _scoreRow(r as Map<String, dynamic>) >= minScore)
+            .toList();
+
+        if (scored.isEmpty) {
+          log.w('All fuzzy matches failed the 50% token overlap threshold. Treating as cache miss.');
+          dbData = [];
+        } else {
+          // Sort descending by score so best match is first
+          scored.sort((a, b) =>
+              _scoreRow(b as Map<String, dynamic>)
+                  .compareTo(_scoreRow(a as Map<String, dynamic>)));
+          final bestTitle = (scored.first as Map<String, dynamic>)['title'];
+          log.i('Best fuzzy match: "$bestTitle" (${_scoreRow(scored.first as Map<String, dynamic>)}/${queryTokens.length} tokens)');
+          // Use only rows that share the best matching title to keep results coherent
+          dbData = scored
+              .where((r) => (r as Map<String, dynamic>)['title'] == bestTitle)
+              .toList();
+        }
+      }
+
+      if (dbData.isNotEmpty) {
+        log.i('Cache hit for "$rawQuery" episode $episode!');
         
         final List<VideoStream> streams = [];
         for (final res in dbData) {
