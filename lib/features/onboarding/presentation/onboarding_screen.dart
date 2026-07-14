@@ -173,7 +173,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           children: [
             FilledButton.icon(
               onPressed: () => launchUrl(
-                Uri.parse('https://discord.gg/Fp6HRPCsqe'),
+                Uri.parse('https://discord.com/invite/c2ZD8yEs4D'),
                 mode: LaunchMode.externalApplication,
               ),
               icon: const SvgIcon(
@@ -194,7 +194,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             const SizedBox(width: 16),
             FilledButton.icon(
               onPressed: () => launchUrl(
-                Uri.parse('https://github.com/roshancodespace/RoninX'),
+                Uri.parse('https://github.com/Zcross091/RoninX-Anime-Client'),
                 mode: LaunchMode.externalApplication,
               ),
               icon: const SvgIcon(

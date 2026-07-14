@@ -78,7 +78,7 @@ class AboutScreen extends ConsumerWidget {
                 title: 'GitHub',
                 subtitle: 'Source code and releases',
                 onTap: () => launchUrl(
-                  Uri.parse('https://github.com/roshancodespace/RoninX'),
+                  Uri.parse('https://github.com/Zcross091/RoninX-Anime-Client'),
                   mode: LaunchMode.externalApplication,
                 ),
               ),
@@ -87,7 +87,7 @@ class AboutScreen extends ConsumerWidget {
                 title: 'Discord',
                 subtitle: 'Join the community',
                 onTap: () => launchUrl(
-                  Uri.parse('https://discord.gg/Fp6HRPCsqe'),
+                  Uri.parse('https://discord.com/invite/c2ZD8yEs4D'),
                   mode: LaunchMode.externalApplication,
                 ),
               ),
@@ -97,7 +97,7 @@ class AboutScreen extends ConsumerWidget {
                 subtitle: 'Found a bug? Let us know',
                 onTap: () => launchUrl(
                   Uri.parse(
-                    'https://github.com/roshancodespace/RoninX/issues',
+                    'https://github.com/Zcross091/RoninX-Anime-Client/issues',
                   ),
                   mode: LaunchMode.externalApplication,
                 ),

@@ -6,7 +6,7 @@ import 'package:roninx/shared/widgets/app_bottom_sheet.dart';
 
 class RemoteConfigUI {
   static const String _releasesUrl =
-      'https://github.com/roshancodespace/RoninX/releases/latest';
+      'https://github.com/Zcross091/RoninX-Anime-Client/releases/latest';
 
   static Future<void> showUpdateSheet(
     BuildContext context, {
