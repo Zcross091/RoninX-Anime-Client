@@ -3,6 +3,9 @@ name: Compile Apps
 on:
   workflow_dispatch:
 
+env:
+  FLUTTER_VERSION: 3.35.7
+
 jobs:
   build-android:
     runs-on: ubuntu-latest
@@ -19,7 +22,7 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: 3.35.7
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
 
       - name: Create env file
@@ -35,14 +38,13 @@ jobs:
           }
           EOF
 
-      - name: Verify required source files / fall back to backup repo
+      - name: Verify required source files
         shell: bash
         run: |
           missing=0
           for f in \
             "packages/anymex_extension_bridge/lib" \
-            "packages/commentum_client/lib" \
-            "lib/features/extensions/presentation/widgets/runtime_setup_sheet.dart"
+            "packages/commentum_client/lib"
           do
             if [ ! -e "$f" ]; then
               echo "MISSING: $f"
@@ -51,28 +53,8 @@ jobs:
           done
 
           if [ "$missing" -eq 1 ]; then
-            echo "One or more required files/dirs are missing. Attempting backup repo fetch..."
-            git clone --recursive https://github.com/Yahya098/ShonenX.git /tmp/backup_repo || true
-            cp -r -n /tmp/backup_repo/packages/* packages/ 2>/dev/null || true
-            cp -rf /tmp/backup_repo/lib/source_engine/inbuilt_sources lib/source_engine/ 2>/dev/null || true
-            cp -rf /tmp/backup_repo/lib/features/extensions/presentation/widgets/runtime_setup_sheet.dart \
-              lib/features/extensions/presentation/widgets/ 2>/dev/null || true
-
-            still_missing=0
-            for f in \
-              "packages/anymex_extension_bridge/lib" \
-              "packages/commentum_client/lib" \
-              "lib/features/extensions/presentation/widgets/runtime_setup_sheet.dart"
-            do
-              if [ ! -e "$f" ]; then
-                echo "STILL MISSING after fallback: $f"
-                still_missing=1
-              fi
-            done
-            if [ "$still_missing" -eq 1 ]; then
-              echo "::error::Required source files are missing and were not recovered from the backup repo."
-              exit 1
-            fi
+            echo "::error::Required submodule source files are missing."
+            exit 1
           else
             echo "All required source files present."
           fi
@@ -104,7 +86,7 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: 3.35.7
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
 
       - name: Create env file
@@ -149,7 +131,7 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: 3.35.7
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
 
       - name: Enable Windows desktop config
@@ -169,14 +151,13 @@ jobs:
           }
           EOF
 
-      - name: Verify required source files / fall back to backup repo
+      - name: Verify required source files
         shell: bash
         run: |
           missing=0
           for f in \
             "packages/anymex_extension_bridge/lib" \
-            "packages/commentum_client/lib" \
-            "lib/features/extensions/presentation/widgets/runtime_setup_sheet.dart"
+            "packages/commentum_client/lib"
           do
             if [ ! -e "$f" ]; then
               echo "MISSING: $f"
@@ -185,28 +166,8 @@ jobs:
           done
 
           if [ "$missing" -eq 1 ]; then
-            echo "One or more required files/dirs are missing. Attempting backup repo fetch..."
-            git clone --recursive https://github.com/Yahya098/ShonenX.git /tmp/backup_repo || true
-            cp -r -n /tmp/backup_repo/packages/* packages/ 2>/dev/null || true
-            cp -rf /tmp/backup_repo/lib/source_engine/inbuilt_sources lib/source_engine/ 2>/dev/null || true
-            cp -rf /tmp/backup_repo/lib/features/extensions/presentation/widgets/runtime_setup_sheet.dart \
-              lib/features/extensions/presentation/widgets/ 2>/dev/null || true
-
-            still_missing=0
-            for f in \
-              "packages/anymex_extension_bridge/lib" \
-              "packages/commentum_client/lib" \
-              "lib/features/extensions/presentation/widgets/runtime_setup_sheet.dart"
-            do
-              if [ ! -e "$f" ]; then
-                echo "STILL MISSING after fallback: $f"
-                still_missing=1
-              fi
-            done
-            if [ "$still_missing" -eq 1 ]; then
-              echo "::error::Required source files are missing and were not recovered from the backup repo."
-              exit 1
-            fi
+            echo "::error::Required submodule source files are missing."
+            exit 1
           else
             echo "All required source files present."
           fi
