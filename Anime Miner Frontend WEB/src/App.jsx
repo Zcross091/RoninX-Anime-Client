@@ -1445,27 +1445,27 @@ function App() {
                       Your watchlist is empty. Add anime from the home page or detail pages!
                     </div>
                   ) : (
-                    <div className="flex flex-wrap gap-8">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 md:gap-8">
                       {watchlist.map((anime, idx) => (
                         <div 
                           key={idx} 
                           onClick={() => openAnime(anime)}
-                          className="group relative flex-none w-[240px] sm:w-[280px] md:w-[320px] cursor-pointer mb-8"
+                          className="group relative cursor-pointer"
                         >
-                          <div className="relative aspect-[2/3] w-full overflow-hidden rounded-lg bg-surface border border-white/5 group-hover:border-accent/50 transition-all duration-700 shadow-2xl shadow-black/60 group-hover:shadow-[0_0_40px_rgba(196,32,44,0.2)]">
-                            <img src={anime.image} alt={anime.title} className="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent opacity-70 group-hover:opacity-90 transition-opacity duration-700" />
-                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-700">
-                              <div className="bg-accent p-6 rounded-full shadow-[0_0_40px_rgba(196,32,44,0.6)] backdrop-blur-lg transform translate-y-8 group-hover:translate-y-0 transition-all duration-700">
-                                <Play size={32} fill="white" className="ml-1" />
+                          <div className="relative aspect-[2/3] w-full overflow-hidden rounded-lg bg-surface border border-white/5 group-hover:border-accent/50 transition-all duration-500 shadow-2xl shadow-black/60 group-hover:shadow-[0_0_24px_rgba(196,32,44,0.25)]">
+                            <img src={anime.image} alt={anime.title} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent opacity-85 group-hover:opacity-95 transition-opacity duration-500" />
+                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-400">
+                              <div className="bg-accent p-4 rounded-full shadow-[0_0_20px_rgba(196,32,44,0.6)] backdrop-blur-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-400">
+                                <Play size={20} fill="white" className="ml-0.5" />
                               </div>
                             </div>
                           </div>
-                          <div className="mt-5 px-2">
-                            <h3 className="text-[18px] font-bold text-zinc-100 line-clamp-2 leading-snug group-hover:text-accent transition-colors">{anime.title}</h3>
-                            <div className="flex items-center gap-3 mt-3 text-sm font-bold text-zinc-500 tracking-wide">
+                          <div className="mt-4 px-1">
+                            <h3 className="text-sm font-bold text-zinc-100 line-clamp-2 leading-snug group-hover:text-accent transition-colors">{anime.title}</h3>
+                            <div className="flex items-center gap-2 mt-2 text-xs font-bold text-zinc-500">
                               <Seal score={anime.score} />
-                              <span className="w-1.5 h-1.5 rounded-full bg-zinc-700" />
+                              <span className="w-1 h-1 rounded-full bg-zinc-700" />
                               <span>{anime.ep_count} Eps</span>
                             </div>
                           </div>
@@ -1483,27 +1483,27 @@ function App() {
                       You haven't watched anything yet.
                     </div>
                   ) : (
-                    <div className="flex flex-wrap gap-8">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 md:gap-8">
                       {watchHistory.map((item, idx) => (
-                        <div key={idx} onClick={() => openAnime(item)} className="group relative flex-none w-[240px] sm:w-[280px] md:w-[320px] cursor-pointer mb-8">
-                          <div className="relative aspect-[2/3] w-full overflow-hidden rounded-lg bg-surface border border-white/5 group-hover:border-accent/50 transition-all duration-700 shadow-2xl shadow-black/60 group-hover:shadow-[0_0_40px_rgba(196,32,44,0.2)]">
-                            <img src={item.image} alt={item.title} className="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent opacity-80 group-hover:opacity-95 transition-opacity duration-700" />
-                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-700">
-                              <div className="bg-accent p-6 rounded-full shadow-[0_0_40px_rgba(196,32,44,0.6)] backdrop-blur-lg transform translate-y-8 group-hover:translate-y-0 transition-all duration-700">
-                                <Play size={32} fill="white" className="ml-1" />
+                        <div key={idx} onClick={() => openAnime(item)} className="group relative cursor-pointer">
+                          <div className="relative aspect-[2/3] w-full overflow-hidden rounded-lg bg-surface border border-white/5 group-hover:border-accent/50 transition-all duration-500 shadow-2xl shadow-black/60 group-hover:shadow-[0_0_24px_rgba(196,32,44,0.25)]">
+                            <img src={item.image} alt={item.title} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent opacity-85 group-hover:opacity-95 transition-opacity duration-500" />
+                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-400">
+                              <div className="bg-accent p-4 rounded-full shadow-[0_0_20px_rgba(196,32,44,0.6)] backdrop-blur-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-400">
+                                <Play size={20} fill="white" className="ml-0.5" />
                               </div>
                             </div>
                             {/* Progress Bar inside image for History */}
-                            <div className="absolute bottom-0 left-0 right-0 p-4">
+                            <div className="absolute bottom-0 left-0 right-0 p-3">
                               <div className="w-full h-1.5 bg-white/20 rounded-full overflow-hidden backdrop-blur-md">
                                 <div className="h-full bg-accent shadow-[0_0_10px_var(--color-accent)]" style={{width: `${Math.min(100, (item.lastEp / item.ep_count) * 100)}%`}}></div>
                               </div>
                             </div>
                           </div>
-                          <div className="mt-5 px-2">
-                            <h3 className="text-[18px] font-bold text-zinc-100 line-clamp-2 leading-snug group-hover:text-accent transition-colors">{item.title}</h3>
-                            <div className="mt-3 text-sm font-bold text-accent tracking-wide drop-shadow-[0_0_5px_rgba(196,32,44,0.3)]">
+                          <div className="mt-4 px-1">
+                            <h3 className="text-sm font-bold text-zinc-100 line-clamp-2 leading-snug group-hover:text-accent transition-colors">{item.title}</h3>
+                            <div className="mt-2 text-xs font-bold text-accent tracking-wide drop-shadow-[0_0_5px_rgba(196,32,44,0.3)]">
                               Watched: Ep {item.lastEp} / {item.ep_count}
                             </div>
                           </div>
