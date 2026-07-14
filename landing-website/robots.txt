@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://roninx-anime.vercel.app/sitemap.xml

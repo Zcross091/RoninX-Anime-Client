@@ -3,27 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RoninX | Premium Anime & Manga Client</title>
+    <title>RoninX – Free, Open-Source Anime &amp; Manga Client</title>
+
     <!-- Primary Meta Tags -->
-    <meta name="title" content="RoninX | Premium Open-Source Anime & Manga Client">
-    <meta name="description" content="Download RoninX, the ultimate open-source desktop anime client. Watch free anime in HD, track with MyAnimeList & AniList, zero ads, hardware-accelerated playback. The best Ronin Anime experience.">
-    <meta name="keywords" content="Ronin, Ronin Anime, RoninX, RoninX Anime, Ronin Anime Client, Watch Anime Free, Open Source Anime App, Desktop Anime Player, AniList Sync, MyAnimeList Sync, Best Anime App, Ronin Desktop, RoninX Download, Anime Download Offline, Anime Tracker, Manga Client, Ronin Manga, High Quality Anime, No Ads Anime">
-    <meta name="author" content="RoninX Team">
+    <meta name="title" content="RoninX – Free, Open-Source Anime &amp; Manga Client">
+    <meta name="description" content="Watch anime and read manga free with RoninX, an open-source app for Windows, Linux and Android. Native AniList and MyAnimeList sync, hardware-accelerated playback, zero ads.">
+    <meta name="keywords" content="RoninX, RoninX anime, open source anime app, anime client Windows, anime client Linux, AniList sync, MyAnimeList sync, offline anime downloader, manga reader app">
+    <meta name="author" content="RoninX">
     <meta name="robots" content="index, follow">
-    
+    <link rel="canonical" href="https://roninx-anime.vercel.app/">
+    <meta name="theme-color" content="#030303">
+
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://roninx-anime.vercel.app/">
-    <meta property="og:title" content="RoninX | Premium Anime & Manga Client">
-    <meta property="og:description" content="Download RoninX, the ultimate open-source desktop anime client. Watch free anime in HD, track with MyAnimeList & AniList, zero ads, hardware-accelerated playback.">
-    
+    <meta property="og:site_name" content="RoninX">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:title" content="RoninX – Free, Open-Source Anime &amp; Manga Client">
+    <meta property="og:description" content="An open-source desktop and Android app for watching anime and reading manga. Native AniList/MyAnimeList sync, hardware-accelerated playback, no ads, no telemetry.">
+    <meta property="og:image" content="https://res.cloudinary.com/dscoexe9l/image/upload/v1781979110/Screenshot_20260620_211126_bsnvdk.jpg">
+
     <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:title" content="RoninX | Premium Anime & Manga Client">
-    <meta property="twitter:description" content="Download RoninX, the ultimate open-source desktop anime client. Watch free anime in HD, track with MyAnimeList & AniList, zero ads.">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="RoninX – Free, Open-Source Anime &amp; Manga Client">
+    <meta name="twitter:description" content="Open-source anime & manga app for Windows, Linux and Android. AniList/MyAnimeList sync, hardware-accelerated playback, zero ads.">
+    <meta name="twitter:image" content="https://res.cloudinary.com/dscoexe9l/image/upload/v1781979110/Screenshot_20260620_211126_bsnvdk.jpg">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=JetBrains+Mono:wght@400;700&family=Outfit:wght@700;900&display=swap" rel="stylesheet">
+
+    <!-- Structured data: helps search engines show RoninX correctly (price, platforms, category) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "RoninX",
+      "operatingSystem": "Windows, Linux, Android",
+      "applicationCategory": "MultimediaApplication",
+      "description": "Open-source anime and manga client with native AniList and MyAnimeList sync, hardware-accelerated playback, and offline downloads.",
+      "url": "https://roninx-anime.vercel.app/",
+      "downloadUrl": "https://github.com/Zcross091/RoninX-Anime-Client/releases/latest",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "author": {
+        "@type": "Organization",
+        "name": "RoninX",
+        "url": "https://github.com/Zcross091/RoninX-Anime-Client"
+      }
+    }
+    </script>
+
+    <!-- FAQ structured data: mirrors the visible FAQ section below word for word -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is RoninX actually free?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. RoninX is fully open-source and free to use, with no subscriptions, no paywalls, and no ads."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Which platforms does RoninX support?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "RoninX runs on Windows, Linux, and Android. Builds for each platform are published on the GitHub releases page."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does RoninX sync with AniList or MyAnimeList?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. You can log in with AniList or MyAnimeList and RoninX will keep your watch history and progress in sync."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I watch anime offline?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. RoninX includes a download manager for saving episodes locally so you can watch without a connection."
+          }
+        }
+      ]
+    }
+    </script>
+
     <style>
         :root {
             --bg-color: #030303;
@@ -51,11 +126,30 @@
             line-height: 1.6;
         }
 
+        a { color: inherit; }
+
+        /* Visible keyboard focus, kept simple and consistent everywhere */
+        a:focus-visible,
+        button:focus-visible {
+            outline: 2px solid var(--primary-red);
+            outline-offset: 3px;
+        }
+
         /* Utility Classes */
         .font-mono { font-family: 'JetBrains Mono', monospace; }
         .font-display { font-family: 'Outfit', sans-serif; }
         .text-red { color: var(--primary-red); }
+        .text-muted { color: var(--text-muted); }
         .uppercase { text-transform: uppercase; }
+        .sr-only {
+            position: absolute;
+            width: 1px; height: 1px;
+            padding: 0; margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
 
         /* Background Effects */
         .scanlines {
@@ -115,6 +209,8 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            text-decoration: none;
+            color: var(--text-main);
         }
 
         .logo-icon {
@@ -159,6 +255,7 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            display: inline-block;
         }
 
         .btn-primary:hover {
@@ -195,6 +292,13 @@
             animation: fadeUp 1s ease-out;
         }
 
+        .badge .pulse-dot {
+            width: 6px; height: 6px;
+            background: var(--primary-red);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--primary-red);
+        }
+
         .hero h1 {
             font-size: clamp(3rem, 8vw, 7rem);
             line-height: 0.95;
@@ -228,6 +332,7 @@
             text-decoration: none;
             text-transform: uppercase;
             transition: all 0.3s ease;
+            display: inline-block;
         }
 
         .btn-outline:hover {
@@ -291,6 +396,16 @@
             letter-spacing: -1px;
             line-height: 1;
             margin-bottom: 15px;
+        }
+
+        .eyebrow {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--primary-red);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+            display: block;
         }
 
         .grid {
@@ -404,15 +519,108 @@
             position: relative;
             width: 100%;
             aspect-ratio: 16/9;
-            background: url('https://res.cloudinary.com/dscoexe9l/image/upload/v1781979110/Screenshot_20260620_211126_bsnvdk.jpg') center/cover;
-            filter: saturate(1.2) contrast(1.1);
+            overflow: hidden;
         }
-        
+
+        .ui-body img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: saturate(1.2) contrast(1.1);
+            display: block;
+        }
+
         .ui-body::after {
             content: '';
             position: absolute;
             inset: 0;
             background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 40%);
+        }
+
+        /* Download Section */
+        .download {
+            padding: 100px 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .download-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+            max-width: 900px;
+            margin: 50px auto 0;
+        }
+
+        .download-card {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            padding: 30px 20px;
+            text-decoration: none;
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .download-card:hover {
+            border-color: var(--border-glow);
+            background: var(--surface-elevated);
+            transform: translateY(-4px);
+        }
+
+        .download-card svg {
+            color: var(--primary-red);
+        }
+
+        .download-card .platform-name {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .download-card .platform-format {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .download-note {
+            margin-top: 30px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .download-note a {
+            color: var(--primary-red);
+            text-decoration: underline;
+        }
+
+        /* FAQ */
+        .faq {
+            padding: 100px 40px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            border-bottom: 1px solid var(--border-color);
+            padding: 30px 0;
+        }
+
+        .faq-item h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.4rem;
+            margin-bottom: 12px;
+        }
+
+        .faq-item p {
+            color: var(--text-muted);
+            font-size: 1rem;
         }
 
         /* Footer */
@@ -426,10 +634,30 @@
             background: #000;
         }
 
+        footer a {
+            color: var(--text-muted);
+            text-decoration: underline;
+        }
+
+        footer a:hover {
+            color: var(--text-main);
+        }
+
         /* Animations */
         @keyframes fadeUp {
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .ambient-glow,
+            .marquee-content,
+            .badge,
+            .hero h1,
+            .hero p,
+            .hero-cta {
+                animation: none !important;
+            }
         }
 
         @media (max-width: 1024px) {
@@ -440,7 +668,7 @@
         @media (max-width: 768px) {
             header { padding: 15px 20px; }
             .nav-links { display: none; }
-            .features, .showcase { padding: 60px 20px; }
+            .features, .showcase, .download, .faq { padding: 60px 20px; }
             .hero h1 { font-size: clamp(2.5rem, 8vw, 3.5rem); margin-bottom: 20px; }
             .hero p { font-size: 1rem; margin-bottom: 30px; }
             .hero-cta { flex-direction: column; width: 100%; max-width: 300px; gap: 15px; }
@@ -450,7 +678,7 @@
             .marquee-item { font-size: 0.85rem; margin: 0 15px; }
             .marquee-item::after { margin-left: 15px; }
         }
-        
+
         @media (max-width: 480px) {
             .logo { font-size: 1.25rem; }
             header .btn-primary { padding: 8px 16px; font-size: 0.75rem; }
@@ -462,133 +690,195 @@
     </style>
 </head>
 <body>
-    <div class="scanlines"></div>
-    <div class="ambient-glow"></div>
+    <div class="scanlines" aria-hidden="true"></div>
+    <div class="ambient-glow" aria-hidden="true"></div>
 
     <header>
         <div class="header-inner">
-            <div class="logo">
-                <span class="logo-icon"></span>
+            <a href="#top" class="logo" aria-label="RoninX home">
+                <span class="logo-icon" aria-hidden="true"></span>
                 RONIN<span class="text-red font-display">X</span>
-            </div>
-            <nav class="nav-links font-mono uppercase">
+            </a>
+            <nav class="nav-links font-mono uppercase" aria-label="Primary">
                 <a href="#features">Features</a>
                 <a href="#showcase">Interface</a>
-                <a href="https://github.com/Zcross091/RoninX-Anime-Client" target="_blank">Source</a>
+                <a href="#faq">FAQ</a>
+                <a href="https://github.com/Zcross091/RoninX-Anime-Client" target="_blank" rel="noopener">Source</a>
             </nav>
             <a href="#download" class="btn-primary">Download</a>
         </div>
     </header>
 
-    <section class="hero">
-        <div class="badge font-mono uppercase">
-            <span style="width: 6px; height: 6px; background: var(--primary-red); border-radius: 50%; box-shadow: 0 0 10px var(--primary-red);"></span>
-            Next-Gen Client v2.4.1
-        </div>
-        <h1 class="font-display uppercase">Read. Watch.<br><span class="text-red">Conquer.</span></h1>
-        <p>The ultimate open-source <strong>Anime & Manga Client</strong> for the modern enthusiast. Zero ads, zero trackers, pure performance. Read manga seamlessly and watch anime flawlessly with native AniList and MyAnimeList sync.</p>
-        <div class="hero-cta">
-            <a href="#download" class="btn-primary">Get RoninX Free</a>
-            <a href="https://github.com/Zcross091/RoninX-Anime-Client" target="_blank" class="btn-outline">View on GitHub</a>
-        </div>
-    </section>
-
-    <div class="marquee-container uppercase">
-        <div class="marquee-content">
-            <!-- Double the content for smooth infinite loop -->
-            <div class="marquee-item">100% Open Source</div>
-            <div class="marquee-item">Hardware Accelerated</div>
-            <div class="marquee-item">No Ads</div>
-            <div class="marquee-item">Zero Telemetry</div>
-            <div class="marquee-item">AniList Integration</div>
-            <div class="marquee-item">MyAnimeList Sync</div>
-            <div class="marquee-item">Offline First</div>
-            
-            <div class="marquee-item">100% Open Source</div>
-            <div class="marquee-item">Hardware Accelerated</div>
-            <div class="marquee-item">No Ads</div>
-            <div class="marquee-item">Zero Telemetry</div>
-            <div class="marquee-item">AniList Integration</div>
-            <div class="marquee-item">MyAnimeList Sync</div>
-            <div class="marquee-item">Offline First</div>
-        </div>
-    </div>
-
-    <section id="features" class="features">
-        <div class="section-header">
-            <div class="font-mono text-red text-sm uppercase tracking-widest mb-2">[ SYSTEM_ARCHITECTURE ]</div>
-            <h2 class="uppercase">Built by fans.<br><span class="text-muted">For the culture.</span></h2>
-        </div>
-        
-        <div class="grid">
-            <div class="card">
-                <div class="card-icon">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                </div>
-                <h3 class="uppercase">True Ownership</h3>
-                <p>Log in securely. We sync your watch history instantly across AniList and MyAnimeList. No database lock-ins, you own your data entirely.</p>
-                <div class="tech-tags">
-                    <span>AniList GraphQL</span>
-                    <span>MAL API</span>
-                </div>
+    <main>
+        <section class="hero" id="top">
+            <p class="badge font-mono uppercase">
+                <span class="pulse-dot" aria-hidden="true"></span>
+                Actively developed · v2.4.1
+            </p>
+            <h1 class="font-display uppercase">Read. Watch.<br><span class="text-red">Conquer.</span></h1>
+            <p>RoninX is a free, open-source anime and manga client for people who are done with ads, trackers, and buffering web players. Sync your progress with AniList or MyAnimeList and pick up right where you left off, on desktop or Android.</p>
+            <div class="hero-cta">
+                <a href="#download" class="btn-primary">Download for Free</a>
+                <a href="https://github.com/Zcross091/RoninX-Anime-Client" target="_blank" rel="noopener" class="btn-outline">View Source on GitHub</a>
             </div>
+        </section>
 
-            <div class="card">
-                <div class="card-icon">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                </div>
-                <h3 class="uppercase">Flawless Player</h3>
-                <p>A native, hardware-accelerated video player that supports gestures, custom subtitle styling, and automatic episode tracking. Say goodbye to web-player buffering.</p>
-                <div class="tech-tags">
-                    <span>media_kit</span>
-                    <span>libmpv</span>
-                </div>
-            </div>
+        <div class="marquee-container uppercase" aria-hidden="true">
+            <div class="marquee-content">
+                <div class="marquee-item">100% Open Source</div>
+                <div class="marquee-item">Hardware Accelerated</div>
+                <div class="marquee-item">No Ads</div>
+                <div class="marquee-item">Zero Telemetry</div>
+                <div class="marquee-item">AniList Integration</div>
+                <div class="marquee-item">MyAnimeList Sync</div>
+                <div class="marquee-item">Offline First</div>
 
-            <div class="card">
-                <div class="card-icon">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                </div>
-                <h3 class="uppercase">Offline Mode</h3>
-                <p>Download entire seasons in the background. Our robust download manager ensures you have your favorite shows ready when you go off the grid.</p>
-                <div class="tech-tags">
-                    <span>Isar DB</span>
-                    <span>Isolate Processing</span>
-                </div>
+                <div class="marquee-item">100% Open Source</div>
+                <div class="marquee-item">Hardware Accelerated</div>
+                <div class="marquee-item">No Ads</div>
+                <div class="marquee-item">Zero Telemetry</div>
+                <div class="marquee-item">AniList Integration</div>
+                <div class="marquee-item">MyAnimeList Sync</div>
+                <div class="marquee-item">Offline First</div>
             </div>
         </div>
-    </section>
 
-    <section id="showcase" class="showcase">
-        <div class="ui-mockup">
-            <div class="ui-header">
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
+        <section id="features" class="features" aria-labelledby="features-heading">
+            <div class="section-header">
+                <span class="eyebrow font-mono">[ System Architecture ]</span>
+                <h2 id="features-heading" class="uppercase">Built by fans.<br><span class="text-muted">For the culture.</span></h2>
             </div>
-            <div class="ui-body"></div>
-        </div>
-    </section>
+
+            <div class="grid">
+                <div class="card">
+                    <div class="card-icon" aria-hidden="true">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    </div>
+                    <h3 class="uppercase">Your Progress, Everywhere</h3>
+                    <p>Log in with AniList or MyAnimeList and your watch history stays synced across every device. There's no separate RoninX account and no database lock-in — the data is always yours.</p>
+                    <div class="tech-tags">
+                        <span>AniList GraphQL</span>
+                        <span>MAL API</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon" aria-hidden="true">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    </div>
+                    <h3 class="uppercase">Smooth, Native Playback</h3>
+                    <p>Built on mpv through media_kit, so video is hardware-accelerated rather than running inside a browser tab. Includes gesture controls, custom subtitle styling, and automatic progress tracking.</p>
+                    <div class="tech-tags">
+                        <span>media_kit</span>
+                        <span>libmpv</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon" aria-hidden="true">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    </div>
+                    <h3 class="uppercase">Download and Watch Offline</h3>
+                    <p>Queue up a whole season and let it download in the background. The download manager keeps everything organized locally, so you're set before a flight or a commute with no signal.</p>
+                    <div class="tech-tags">
+                        <span>Isar DB</span>
+                        <span>Isolate Processing</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="showcase" class="showcase" aria-labelledby="showcase-heading">
+            <h2 id="showcase-heading" class="sr-only">RoninX app interface</h2>
+            <div class="ui-mockup">
+                <div class="ui-header" aria-hidden="true">
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                </div>
+                <div class="ui-body">
+                    <img
+                        src="https://res.cloudinary.com/dscoexe9l/image/upload/v1781979110/Screenshot_20260620_211126_bsnvdk.jpg"
+                        alt="RoninX desktop app showing the anime browsing interface with AniList sync"
+                        loading="lazy"
+                        width="1920"
+                        height="1080"
+                    >
+                </div>
+            </div>
+        </section>
+
+        <section id="download" class="download" aria-labelledby="download-heading">
+            <span class="eyebrow font-mono">[ Get RoninX ]</span>
+            <h2 id="download-heading" class="uppercase font-display" style="font-size: clamp(2rem, 5vw, 3.5rem); letter-spacing: -1px;">Pick your platform</h2>
+            <p class="text-muted" style="max-width: 500px; margin: 15px auto 0;">Every release is built straight from source on GitHub Actions. No third-party installers, no bundled adware.</p>
+
+            <div class="download-grid">
+                <a href="https://github.com/Zcross091/RoninX-Anime-Client/releases/latest" target="_blank" rel="noopener" class="download-card">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                    <span class="platform-name">Windows</span>
+                    <span class="platform-format">.exe installer</span>
+                </a>
+                <a href="https://github.com/Zcross091/RoninX-Anime-Client/releases/latest" target="_blank" rel="noopener" class="download-card">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a5 5 0 0 0-5 5v3a5 5 0 0 0 10 0V7a5 5 0 0 0-5-5z"/><path d="M4 21c1-3 4-4 8-4s7 1 8 4"/></svg>
+                    <span class="platform-name">Linux</span>
+                    <span class="platform-format">.zip bundle</span>
+                </a>
+                <a href="https://github.com/Zcross091/RoninX-Anime-Client/releases/latest" target="_blank" rel="noopener" class="download-card">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+                    <span class="platform-name">Android</span>
+                    <span class="platform-format">.apk (split per ABI)</span>
+                </a>
+            </div>
+
+            <p class="download-note">All builds published on <a href="https://github.com/Zcross091/RoninX-Anime-Client/releases" target="_blank" rel="noopener">GitHub Releases</a>.</p>
+        </section>
+
+        <section id="faq" class="faq" aria-labelledby="faq-heading">
+            <span class="eyebrow font-mono">[ FAQ ]</span>
+            <h2 id="faq-heading" class="uppercase font-display" style="font-size: clamp(2rem, 5vw, 3rem); letter-spacing: -1px; margin-bottom: 20px;">Common questions</h2>
+
+            <div class="faq-item">
+                <h3>Is RoninX actually free?</h3>
+                <p>Yes. RoninX is fully open-source and free to use, with no subscriptions, no paywalls, and no ads.</p>
+            </div>
+            <div class="faq-item">
+                <h3>Which platforms does RoninX support?</h3>
+                <p>RoninX runs on Windows, Linux, and Android. Builds for each platform are published on the GitHub releases page.</p>
+            </div>
+            <div class="faq-item">
+                <h3>Does RoninX sync with AniList or MyAnimeList?</h3>
+                <p>Yes. You can log in with AniList or MyAnimeList and RoninX will keep your watch history and progress in sync.</p>
+            </div>
+            <div class="faq-item">
+                <h3>Can I watch anime offline?</h3>
+                <p>Yes. RoninX includes a download manager for saving episodes locally so you can watch without a connection.</p>
+            </div>
+        </section>
+    </main>
 
     <footer>
-        <p>RoninX Anime Client // Open Source Project // © 2026</p>
+        <p>RoninX Anime Client — an open-source project. © 2026</p>
+        <p style="margin-top: 10px;"><a href="https://github.com/Zcross091/RoninX-Anime-Client" target="_blank" rel="noopener">GitHub</a></p>
     </footer>
 
     <script>
-        // Simple script to adjust marquee speed based on screen width or add interactive hover effects
-        document.querySelectorAll('.card').forEach(card => {
-            card.addEventListener('mousemove', e => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                card.style.setProperty('--mouse-x', `${x}px`);
-                card.style.setProperty('--mouse-y', `${y}px`);
-                card.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(230, 35, 35, 0.05) 0%, var(--surface-color) 50%)`;
+        // Subtle cursor-follow glow on feature cards. Skipped entirely if the
+        // person has asked their OS for reduced motion.
+        var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (!prefersReducedMotion) {
+            document.querySelectorAll('.card').forEach(function (card) {
+                card.addEventListener('mousemove', function (e) {
+                    var rect = card.getBoundingClientRect();
+                    var x = e.clientX - rect.left;
+                    var y = e.clientY - rect.top;
+                    card.style.background = 'radial-gradient(circle at ' + x + 'px ' + y + 'px, rgba(230, 35, 35, 0.05) 0%, var(--surface-color) 50%)';
+                });
+                card.addEventListener('mouseleave', function () {
+                    card.style.background = 'var(--surface-color)';
+                });
             });
-            card.addEventListener('mouseleave', () => {
-                card.style.background = 'var(--surface-color)';
-            });
-        });
+        }
     </script>
 </body>
 </html>
