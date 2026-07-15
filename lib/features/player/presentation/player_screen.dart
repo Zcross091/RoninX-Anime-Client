@@ -29,6 +29,7 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
   late final Player player = Player();
   late final VideoController controller = VideoController(player);
   bool _isInitialized = false;
+  bool _isInitializing = false;
   String? _error;
 
   @override
@@ -47,17 +48,21 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
   }
 
   Future<void> _initPlayer(String url) async {
+    if (_isInitializing) return;
+    _isInitializing = true;
     try {
       await player.open(Media(url));
       if (mounted) {
         setState(() {
           _isInitialized = true;
+          _isInitializing = false;
         });
       }
     } catch (e) {
       if (mounted) {
         setState(() {
           _error = e.toString();
+          _isInitializing = false;
         });
       }
     }
@@ -85,8 +90,10 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
 
       return streamAsync.when(
         data: (url) {
-          if (url != null && !_isInitialized && _error == null) {
-            _initPlayer(url);
+          if (url != null && !_isInitialized && !_isInitializing && _error == null) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) _initPlayer(url);
+            });
           }
           if (url == null) return _buildError('No stream found for this episode.');
           return _buildPlayerUI();

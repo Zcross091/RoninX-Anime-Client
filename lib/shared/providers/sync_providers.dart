@@ -104,7 +104,7 @@ class WatchHistoryNotifier extends StateNotifier<Map<String, dynamic>> {
     required Duration duration,
   }) async {
     final session = ref.read(supabaseAuthProvider);
-    final progress = (position.inSeconds / duration.inSeconds) * 100;
+    final progress = duration.inSeconds > 0 ? (position.inSeconds / duration.inSeconds) * 100 : 0.0;
 
     final data = {
       'media_id': mediaId,

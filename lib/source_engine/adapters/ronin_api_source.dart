@@ -129,7 +129,9 @@ class RoninApiSource {
       if (sources['source'] != null && sources['source'].isNotEmpty) {
         return sources['source'][0]['file'];
       }
-    } catch (_) {}
+    } catch (e) {
+      print('GogoCDN decrypt failed: $e');
+    }
     return null;
   }
 

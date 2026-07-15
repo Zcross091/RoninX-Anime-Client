@@ -3,7 +3,7 @@ import '../../source_engine/adapters/ronin_api_source.dart';
 
 final roninApiSourceProvider = Provider((ref) => RoninApiSource());
 
-final streamResolverProvider = FutureProvider.family<String?, Map<String, String>>((ref, params) async {
+final streamResolverProvider = FutureProvider.autoDispose.family<String?, Map<String, String>>((ref, params) async {
   final source = ref.read(roninApiSourceProvider);
   final title = params['title']!;
   final episode = params['episode']!;
