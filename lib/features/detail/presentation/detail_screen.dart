@@ -8,15 +8,21 @@ import '../../../shared/providers/sync_providers.dart';
 
 class DetailScreen extends ConsumerWidget {
   final String id;
-  const DetailScreen({super.key, required this.id});
+  final bool isManga;
+  
+  const DetailScreen({
+    super.key,
+    required this.id,
+    this.isManga = false,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final animeDetail = ref.watch(animeDetailProvider(id));
-    final episodes = ref.watch(animeEpisodesProvider(id));
+    final detailAsync = ref.watch(isManga ? mangaDetailProvider(id) : animeDetailProvider(id));
+    final episodesAsync = ref.watch(isManga ? mangaChaptersProvider(id) : animeEpisodesProvider(id));
 
     return Scaffold(
-      body: animeDetail.when(
+      body: detailAsync.when(
         data: (anime) => CustomScrollView(
           slivers: [
             SliverAppBar(
@@ -53,9 +59,12 @@ class DetailScreen extends ConsumerWidget {
                       style: const TextStyle(color: Colors.grey, height: 1.5),
                     ),
                     const SizedBox(height: 24),
-                    const Text('Episodes', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    Text(
+                      isManga ? 'Chapters' : 'Episodes',
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
                     const SizedBox(height: 12),
-                    episodes.when(
+                    episodesAsync.when(
                       data: (epList) => GridView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
@@ -67,12 +76,23 @@ class DetailScreen extends ConsumerWidget {
                         itemCount: epList.length,
                         itemBuilder: (context, index) {
                           final ep = epList[index];
+                          final displayNum = ep.number.toString().replaceAll('.0', '');
                           return GestureDetector(
-                            onTap: () => context.push('/player', extra: {
-                              'title': '${anime.title} - Episode ${ep.number}',
-                              'animeTitle': anime.title,
-                              'episode': ep.number.toString(),
-                            }),
+                            onTap: () {
+                              if (isManga) {
+                                context.push('/reader', extra: {
+                                  'title': '${anime.title} - Chapter $displayNum',
+                                  'chapter': displayNum,
+                                  'mangaTitle': anime.title,
+                                });
+                              } else {
+                                context.push('/player', extra: {
+                                  'title': '${anime.title} - Episode $displayNum',
+                                  'animeTitle': anime.title,
+                                  'episode': displayNum,
+                                });
+                              }
+                            },
                             child: Container(
                               decoration: BoxDecoration(
                                 color: AppTheme.surface,
@@ -80,13 +100,13 @@ class DetailScreen extends ConsumerWidget {
                                 border: Border.all(color: AppTheme.surfaceLight),
                               ),
                               alignment: Alignment.center,
-                              child: Text('${ep.number}'),
+                              child: Text(displayNum),
                             ),
                           );
                         },
                       ),
                       loading: () => const Center(child: CircularProgressIndicator()),
-                      error: (e, s) => Center(child: Text('Error loading episodes: $e')),
+                      error: (e, s) => Center(child: Text('Error loading contents: $e')),
                     ),
                   ],
                 ),
@@ -97,56 +117,46 @@ class DetailScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, s) => Scaffold(appBar: AppBar(), body: Center(child: Text('Error: $e'))),
       ),
-      floatingActionButton: animeDetail.when(
-        data: (anime) {
-          final watchlist = ref.watch(watchListProvider);
-          final isInWatchlist = watchlist.any((e) => e['media_id'] == anime.id);
+      floatingActionButton: detailAsync.when(
+        data: (anime) => Consumer(
+          builder: (context, ref, child) {
+            final watchList = ref.watch(watchListProvider);
+            final isAdded = watchList.any((item) => item.animeId == anime.id);
 
-          return FloatingActionButton.extended(
-            onPressed: () {
-              ref.read(watchListProvider.notifier).toggleWatchList({
-                'media_id': anime.id,
-                'title': anime.title,
-                'image': anime.poster,
-                'ep_count': 0, // Fallback placeholder
-                'score': '0.0', // Fallback placeholder
-              });
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    isInWatchlist
-                        ? 'Removed from Watchlist'
-                        : 'Added to Watchlist',
-                  ),
-                  duration: const Duration(seconds: 2),
-                ),
-              );
-            },
-            backgroundColor: AppTheme.primaryRed,
-            label: Text(
-              isInWatchlist ? 'In Watchlist' : 'Add to Watchlist',
-              style: const TextStyle(color: Colors.white),
-            ),
-            icon: Icon(
-              isInWatchlist ? Icons.bookmark_added : Icons.bookmark_add,
-              color: Colors.white,
-            ),
-          );
-        },
-        loading: () => const SizedBox.shrink(),
-        error: (e, s) => const SizedBox.shrink(),
+            return FloatingActionButton(
+              backgroundColor: AppTheme.primaryRed,
+              child: Icon(isAdded ? Icons.bookmark : Icons.bookmark_border, color: Colors.white),
+              onPressed: () async {
+                final session = ref.read(supabaseAuthProvider);
+                if (session == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Please log in first to manage your watchlist.')),
+                  );
+                  return;
+                }
+                await ref.read(watchListProvider.notifier).toggleWatchlist(anime);
+              },
+            );
+          },
+        ),
+        loading: () => null,
+        error: (e, s) => null,
       ),
     );
   }
 
   Widget _infoChip(String label) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
         color: AppTheme.surface,
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppTheme.surfaceLight),
       ),
-      child: Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+      child: Text(
+        label,
+        style: const TextStyle(fontSize: 12, color: Colors.white70),
+      ),
     );
   }
 }

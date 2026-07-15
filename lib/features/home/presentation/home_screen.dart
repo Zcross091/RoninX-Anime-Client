@@ -153,9 +153,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         final item = data.first;
         return GestureDetector(
           onTap: () {
-            if (!_isMangaMode) {
-              context.push('/detail/${item.id}');
-            }
+            context.push('/detail/${item.id}?manga=${_isMangaMode}');
           },
           child: Container(
             height: 250,
@@ -186,18 +184,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       const SizedBox(height: 8),
                       if (!_isMangaMode)
                         ElevatedButton(
-                          onPressed: () => context.push('/detail/${item.id}'),
+                          onPressed: () => context.push('/detail/${item.id}?manga=false'),
                           style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryRed),
                           child: const Text('Watch Now', style: TextStyle(color: Colors.white)),
                         )
                       else
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: AppTheme.primaryRed,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Text('Read Info', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                        ElevatedButton(
+                          onPressed: () => context.push('/detail/${item.id}?manga=true'),
+                          style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryRed),
+                          child: const Text('Read Info', style: TextStyle(color: Colors.white)),
                         ),
                     ],
                   ),
@@ -255,9 +250,7 @@ class _AnimeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        if (!isManga) {
-          context.push('/detail/${anime.id}');
-        }
+        context.push('/detail/${anime.id}?manga=$isManga');
       },
       child: Container(
         width: 140,
