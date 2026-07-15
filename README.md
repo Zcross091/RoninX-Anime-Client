@@ -13,7 +13,7 @@
 
 **The official premium frontend client for the Ronin API ecosystem.**
 
-An elegant, high-performance, open-source anime and manga companion app natively connected to the Ronin API proxy for lightning-fast media resolving. Syncs cleanly with MyAnimeList and AniList for seamless tracking and discovery.
+An elegant, high-performance anime and manga companion app natively connected to the Ronin API proxy for lightning-fast media resolving. Syncs cleanly with MyAnimeList and AniList for seamless tracking and discovery.
 
 <img src="assets/images/app_preview.png" alt="RoninX App UI Preview" width="80%" style="border-radius: 12px; margin: 20px 0; box-shadow: 0 4px 20px rgba(0,0,0,0.5);"/>
 
@@ -136,4 +136,3 @@ RoninX Anime Client is a frontend user interface designed to organize metadata a
 **⚔️ RoninX Anime Client — Built for the Ronin Ecosystem.**
 
 </div>
-
