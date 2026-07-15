@@ -2,7 +2,7 @@
 
 <img src="assets/images/roninx_banner.png" alt="RoninX Banner" width="100%"/>
 
-# ⚔️ RoninX Anime Client <img src="assets/images/app_icon.png" width="100" height="100"/>
+# ⚔️ RoninX Anime Client <img src="assets/images/app_icon.png" width="80" height="80"/>
 
 ### Read. Watch. Track.
 
