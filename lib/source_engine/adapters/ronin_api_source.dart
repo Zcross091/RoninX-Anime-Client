@@ -82,41 +82,62 @@ class RoninApiSource {
   }
 
   Future<String?> decryptGogoStream(String iframeUrl) async {
-    final response = await http.get(Uri.parse(iframeUrl), headers: {
-      'Referer': 'https://anitaku.to/',
-    });
+    try {
+      final uri = Uri.parse(iframeUrl);
+      final id = uri.queryParameters['id'];
+      if (id == null) return null;
 
-    if (response.statusCode != 200) return null;
+      final response = await http.get(Uri.parse(iframeUrl), headers: {
+        'Referer': 'https://anitaku.to/',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      });
 
-    final document = parse(response.body);
-    final scriptElement = document.querySelector('script[data-name="episode"]');
-    final cryptoValue = scriptElement?.attributes['data-value'];
+      if (response.statusCode != 200) return null;
 
-    if (cryptoValue == null) return null;
+      final document = parse(response.body);
+      final scriptElement = document.querySelector('script[data-name="episode"]');
+      final cryptoValue = scriptElement?.attributes['data-value'];
 
-    // Decrypt token
-    final decryptedToken = _decrypt(cryptoValue, key, iv);
-    final id = iframeUrl.split('id=').last.split('&').first;
-    final alias = iframeUrl.split('alias=').last.split('&').first;
+      if (cryptoValue == null) return null;
 
-    final ajaxUrl = '${iframeUrl.split('/streaming.php').first}/encrypt-ajax.php?id=$decryptedToken&alias=$alias';
+      // 1. Decrypt Gogo token
+      final decryptedToken = _decrypt(cryptoValue, key, iv);
+      
+      // 2. Encrypt the ID parameter
+      final encryptedId = _encrypt(id, key, iv);
 
-    final ajaxResponse = await http.get(Uri.parse(ajaxUrl), headers: {
-      'X-Requested-With': 'XMLHttpRequest',
-      'Referer': iframeUrl,
-    });
+      // 3. Build ajax URL: id=encryptedId & alias=id & decryptedToken
+      final ajaxBase = iframeUrl.split('/streaming.php').first;
+      final ajaxUrl = '$ajaxBase/encrypt-ajax.php?id=$encryptedId&alias=$id&$decryptedToken';
 
-    if (ajaxResponse.statusCode != 200) return null;
+      final ajaxResponse = await http.get(Uri.parse(ajaxUrl), headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'Referer': iframeUrl,
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      });
 
-    final ajaxData = json.decode(ajaxResponse.body);
-    final decryptedData = _decrypt(ajaxData['data'], secondKey, iv);
-    final sources = json.decode(decryptedData);
+      if (ajaxResponse.statusCode != 200) return null;
 
-    if (sources['source'] != null && sources['source'].isNotEmpty) {
-      return sources['source'][0]['file'];
-    }
+      final ajaxData = json.decode(ajaxResponse.body);
+      final encryptedData = ajaxData['data'] as String?;
+      if (encryptedData == null) return null;
 
+      // 4. Decrypt Ajax response data using secondKey
+      final decryptedData = _decrypt(encryptedData, secondKey, iv);
+      final sources = json.decode(decryptedData);
+
+      if (sources['source'] != null && sources['source'].isNotEmpty) {
+        return sources['source'][0]['file'];
+      }
+    } catch (_) {}
     return null;
+  }
+
+  String _encrypt(String text, String keyStr, String ivStr) {
+    final key = Key.fromUtf8(keyStr);
+    final iv = IV.fromUtf8(ivStr);
+    final encrypter = Encrypter(AES(key, mode: AESMode.cbc, padding: 'PKCS7'));
+    return encrypter.encrypt(text, iv: iv).base64;
   }
 
   String _decrypt(String text, String keyStr, String ivStr) {
