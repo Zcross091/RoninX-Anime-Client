@@ -1,18 +1,21 @@
 <div align="center">
 
-   <img src="assets/images/app_icon.png" alt="Ronin Logo" width="120"/>
+<img src="assets/images/roninx_banner.png" alt="RoninX Banner" width="100%"/>
 
-# RoninX
+# ⚔️ RoninX Anime Client
 
 ### Read. Watch. Track.
 
-[![Flutter](https://img.shields.io/badge/Flutter-≥3.8.1-02569B?logo=flutter)](https://flutter.dev/)
-[![Dart](https://img.shields.io/badge/Dart-≥3.8.1-0175C2?logo=dart)](https://dart.dev)
-[![Discord](https://img.shields.io/badge/Discord-Join_RoninX_API_Server-7289da?logo=discord&logoColor=white)](https://discord.gg/c2ZD8yEs4D)
+[![Flutter](https://img.shields.io/badge/Flutter-%E2%89%A5_3.24.0-02569B?logo=flutter&logoColor=white)](https://flutter.dev/)
+[![Dart](https://img.shields.io/badge/Dart-%E2%89%A5_3.5.0-0175C2?logo=dart&logoColor=white)](https://dart.dev)
+[![Supabase](https://img.shields.io/badge/Supabase-Backend_Cache-green?logo=supabase&logoColor=white)](https://supabase.com)
+[![Discord](https://img.shields.io/badge/Discord-Join_Ronin_Server-7289da?logo=discord&logoColor=white)](https://discord.gg/c2ZD8yEs4D)
 
-**The official frontend client for the Ronin API.**
+**The official premium frontend client for the Ronin API ecosystem.**
 
-An elegant, open-source anime companion app natively connected to the Ronin API for lightning-fast media fetching. Syncs cleanly with MyAnimeList and AniList for seamless tracking and discovery.
+An elegant, high-performance, open-source anime and manga companion app natively connected to the Ronin API proxy for lightning-fast media resolving. Syncs cleanly with MyAnimeList and AniList for seamless tracking and discovery.
+
+<img src="assets/images/app_preview.png" alt="RoninX App UI Preview" width="80%" style="border-radius: 12px; margin: 20px 0; box-shadow: 0 4px 20px rgba(0,0,0,0.5);"/>
 
 </div>
 
@@ -20,28 +23,62 @@ An elegant, open-source anime companion app natively connected to the Ronin API 
 
 ## ✨ Features
 
-- **Direct API Integration:** Connects directly to your Ronin backend via Vercel proxy. No third-party extension installations required!
-- **Omni-Sync Tracking:** Native bidirectional integration with MyAnimeList and AniList.
-- **Custom Player:** Low-latency media playback with customizable flow controls and AMOLED dark mode support.
-- **Cross-Platform:** High-performance native builds for Android, Windows, and Linux.
+- **📺 Advanced Media Player Engine**
+  - Powered by `media_kit` for low-latency hardware-accelerated video playback.
+  - Multi-server streaming adapter (direct streams and Playwright-based cloud resolvers).
+  - Built-in player stability protection against rate limits and concurrent stream initialization crashes.
+  - Custom fluid playback controllers with gesture-based volume/brightness scaling.
+
+- **📖 Unified Manga & Webtoon Reader**
+  - Native page rendering supporting page-by-page and long-strip webtoon scrolling.
+  - **MangaDex API Integration**: Queries the official MangaDex API natively to deliver fast, unblocked English translations.
+  - **Auto-Fallback Scraping**: Gracefully falls back to scraping mirrors like Manganato/Mangakakalot with smart 5-second timeouts to prevent reader hangs in blocked regions.
+
+- **🔍 Segregated Search & Browse Tab**
+  - Independent browsing tabs for **Anime** and **Manga** to isolate queries.
+  - Powered by the robust **Kitsu API** for fast, detailed catalog search without server-side gateway bottlenecks.
+
+- **☁️ Supabase Cloud Synchronization**
+  - Instant watch histories, bookmarks, and user preferences synced with your Supabase backend.
+  - Fail-safe initialization guards: detects network absence and boots up in local-only offline mode without throwing crashes.
+
+- **📡 Network Resiliency**
+  - Native internet state monitoring using `connectivity_plus`.
+  - Visual connectivity warning banner alerting you of connection loss or server downtime.
+  - Auto-retry and rate-limiting throttling queues for all API calls to prevent 429 errors.
+
+- **🎨 Immersive AMOLED Theme**
+  - Premium design system styled with custom **flex_color_scheme** tokens.
+  - Sleek dark theme using deep charcoals, striking crimson, and gold accents.
 
 ---
 
 ## 🛠️ Technology Stack
 
-**Framework**: Flutter ≥3.8.1 | **Language**: Dart ≥3.8.1
+- **Client Framework**: Flutter (Cross-platform builds for Android, Windows, and Linux)
+- **Programming Language**: Dart
+- **State Management**: Riverpod (`flutter_riverpod`)
+- **Routing & Navigation**: GoRouter (`go_router`)
+- **Database / Cache**: Supabase & Local Preferences (`shared_preferences`)
+- **Playback Engine**: MediaKit (`media_kit` & `media_kit_video`)
 
 <details>
-<summary><b>View Key Dependencies</b></summary>
+<summary><b>View Project Dependencies</b></summary>
 
 ```yaml
 dependencies:
-  flutter_riverpod: ^3.0.1
-  go_router: ^14.7.1
-  media_kit: ^1.2.6
-  media_kit_video: ^2.0.1
-  isar_community: ^3.3.0
-  flex_color_scheme: ^8.4.0
+  flutter_riverpod: ^2.6.1
+  go_router: ^14.0.0
+  supabase_flutter: ^2.9.0
+  media_kit: ^1.1.11
+  media_kit_video: ^1.2.4
+  http: ^1.6.0
+  encrypt: ^5.0.3
+  html: ^0.15.6
+  cached_network_image: ^3.4.1
+  google_fonts: ^8.0.2
+  shared_preferences: ^2.5.5
+  connectivity_plus: ^6.0.3
 ```
 
 </details>
@@ -50,60 +87,54 @@ dependencies:
 
 ## 🚀 Installation & Building
 
-**Prerequisites**: Flutter SDK ≥3.8.1, Git, Node.js (Optional for some tools)
+### Prerequisites
+- Flutter SDK (Channel Stable)
+- FVM (Flutter Version Manager) [Optional, but recommended]
+- Platform build tools (Visual Studio for Windows, Clang/CMake for Linux, Android Studio for Android)
 
+### Quick Start
 ```bash
-git clone <your-repo-url>
-cd ronin-app
+# Clone the repository
+git clone https://github.com/your-username/roninx-client.git
+cd roninx-client
+
+# Resolve dependencies
 fvm flutter pub get
+
+# Generate router and metadata code binders
 fvm flutter pub run build_runner build --delete-conflicting-outputs
-fvm flutter run # Select your device/platform
+
+# Execute debug build on connected target
+fvm flutter run
 ```
-
----
-
-## 🎨 Theme & Customization
-
-Ronin comes pre-loaded with a dedicated **Ronin Theme** that perfectly matches the dark base, striking crimson, and gold accents of the official website template. 
-
-To activate the theme:
-1. Open the App
-2. Navigate to **Settings** -> **Appearance**
-3. Select **Ronin** from the custom exclusive schemes list!
 
 ---
 
 ## ⚖️ LEGAL DISCLAIMER
 
-This is a frontend application for the Ronin API. The app itself does not host, upload, or own any of the media displayed. All metadata (covers, synopses, schedules) is pulled from public APIs like AniList and MyAnimeList. Video streams are served directly via the connected backend API.
+RoninX Anime Client is a frontend user interface designed to organize metadata and query links.
+- The app **does not host, upload, or own** any of the video streams, media files, or chapters displayed.
+- All titles, schedules, covers, and synopses are fetched from public third-party APIs (AniList, Kitsu, MyAnimeList).
+- Video streams are aggregated from public index servers. If you have inquiries regarding copyrighted material, please direct them to the third-party platforms hosting the content.
 
 ---
 
 ## RONINX PROPRIETARY LICENSE
 
-1. PROPRIETARY SOFTWARE
-This repository and the RoninX Anime Client software ("RoninX") are private, proprietary code. No permission is granted to reproduce, distribute, or modify this software without explicit authorization from the author.
+1. **PROPRIETARY CODEBASE**  
+   This repository and the RoninX Anime Client software ("RoninX") are private, proprietary code. No permission is granted to reproduce, copy, distribute, or modify this software without explicit written authorization from the copyright holder.
 
-2. NATURE OF THE SOFTWARE (SEARCH ENGINE INDEXER)
-RoninX operates strictly as a search engine and indexer, akin to Google or YouTube. 
-- It DOES NOT host, upload, store, or distribute any copyrighted media files.
-- It DOES NOT contain servers full of anime, manga, or video streams.
-- It merely acts as a client-side web crawler/browser that aggregates and indexes links provided by public, third-party sources on the internet.
+2. **NATURE OF INDEXING**  
+   RoninX operates strictly as a search engine and directory crawler. It does not own or store media files. It merely aggregates index files from third-party networks dynamically upon user search.
 
-3. DMCA POLICY & LEGAL WARNING
-Because RoninX does not host any media files, it is physically and legally impossible for this repository to infringe upon copyrights regarding media distribution. 
-
-If you are a copyright holder looking to file a DMCA takedown notice, be advised:
-ANY DMCA TAKEDOWN NOTICES DIRECTED AT THIS REPOSITORY WILL BE CONSIDERED INVALID, FRAUDULENT, AND LEGALLY BASELESS UNDER 17 U.S.C. § 512(f).
-
-We will aggressively contest any false DMCA claims filed against this repository. Misdirected DMCA notices that target our indexer rather than the actual host of the allegedly infringing material may result in counter-claims for damages and attorneys' fees. If you have an issue with specific media, you must direct your complaints to the third-party platforms that actually host and stream the video files.
-
-We are not your lawyers, we are not your hosts, and we will not comply with legally invalid takedown requests aimed at a search tool.
+3. **DMCA TAKEDOWN NOTICE WARNING**  
+   Under 17 U.S.C. § 512(f), any person who knowingly materially misrepresents that material or activity is infringing may be subject to liability for damages, including costs and attorneys' fees. TARGETING INDEX TOOLS INSTEAD OF FILES HOSTING SITES WILL BE LEGALLY COUNTERED AS FRAUDULENT AND Baseless. We protect and defend our open-source research and indexers.
 
 ---
 
 <div align="center">
 
-**Made for the Ronin Ecosystem.**
+**⚔️ RoninX Anime Client — Built for the Ronin Ecosystem.**
 
 </div>
+
