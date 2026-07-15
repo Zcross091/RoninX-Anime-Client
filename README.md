@@ -8,7 +8,7 @@
 
 [![Flutter](https://img.shields.io/badge/Flutter-%E2%89%A5_3.24.0-02569B?logo=flutter&logoColor=white)](https://flutter.dev/)
 [![Dart](https://img.shields.io/badge/Dart-%E2%89%A5_3.5.0-0175C2?logo=dart&logoColor=white)](https://dart.dev)
-[![Supabase](https://img.shields.io/badge/Supabase-Backend_Cache-green?logo=supabase&logoColor=white)](https://supabase.com)
+[![Ronin](https://www.pngall.com/wp-content/uploads/2/R-Letter-PNG-Free-Image.png)](https://supabase.com)](https://zcross091.github.io/Animetize-API-Play/)
 [![Discord](https://img.shields.io/badge/Discord-Join_Ronin_Server-7289da?logo=discord&logoColor=white)](https://discord.gg/c2ZD8yEs4D)
 
 **The official premium frontend client for the Ronin API ecosystem.**
@@ -38,8 +38,8 @@ An elegant, high-performance, open-source anime and manga companion app natively
   - Independent browsing tabs for **Anime** and **Manga** to isolate queries.
   - Powered by the robust **Kitsu API** for fast, detailed catalog search without server-side gateway bottlenecks.
 
-- **☁️ Supabase Cloud Synchronization**
-  - Instant watch histories, bookmarks, and user preferences synced with your Supabase backend.
+- **☁️ Cloud Synchronization**
+  - Instant watch histories, bookmarks, and user preferences synced with your Ronin Profile.
   - Fail-safe initialization guards: detects network absence and boots up in local-only offline mode without throwing crashes.
 
 - **📡 Network Resiliency**
