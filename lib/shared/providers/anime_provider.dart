@@ -4,52 +4,38 @@ import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' show parse;
 import '../models/anime.dart';
 import '../models/episode.dart';
-
 import 'dart:async';
 
-// Simple global lock/delay list to throttle Jikan API calls (limit: 3 requests/sec)
+// Throttling is no longer aggressively required for Kitsu, but we keep a relaxed version just in case
 DateTime _lastRequestTime = DateTime.now();
 Completer<void>? _throttleCompleter;
 
-Future<void> _throttleJikan() async {
+Future<void> _throttleRequest() async {
   while (_throttleCompleter != null) {
     await _throttleCompleter!.future;
   }
-  
   _throttleCompleter = Completer<void>();
-  
   final now = DateTime.now();
   final diff = now.difference(_lastRequestTime);
-  if (diff.inMilliseconds < 400) {
-    await Future.delayed(Duration(milliseconds: 400 - diff.inMilliseconds));
+  if (diff.inMilliseconds < 200) {
+    await Future.delayed(Duration(milliseconds: 200 - diff.inMilliseconds));
   }
-  
   _lastRequestTime = DateTime.now();
-  
   final completer = _throttleCompleter;
   _throttleCompleter = null;
   completer?.complete();
 }
 
-// Genre mapping for Jikan API
-final Map<String, int> jikanGenreIds = {
-  'Action': 1,
-  'Adventure': 2,
-  'Comedy': 4,
-  'Drama': 8,
-  'Fantasy': 10,
-  'Horror': 14,
-  'Mystery': 7,
-  'Romance': 22,
-  'Sci-Fi': 24,
-  'Slice of Life': 36,
-  'Sports': 30,
-  'Thriller': 41,
-};
-
 final animeListProvider = FutureProvider.family<List<Anime>, String>((ref, type) async {
-  await _throttleJikan();
-  final response = await http.get(Uri.parse('https://api.jikan.moe/v4/top/anime?filter=$type'));
+  await _throttleRequest();
+  String url = 'https://kitsu.io/api/edge/anime?sort=-userCount';
+  if (type == 'airing') {
+    url = 'https://kitsu.io/api/edge/anime?filter[status]=current&sort=-userCount';
+  } else if (type == 'upcoming') {
+    url = 'https://kitsu.io/api/edge/anime?filter[status]=upcoming&sort=-userCount';
+  }
+  
+  final response = await http.get(Uri.parse(url), headers: {'Accept': 'application/vnd.api+json'});
   if (response.statusCode == 200) {
     final data = json.decode(response.body);
     return (data['data'] as List).map((e) => Anime.fromJson(e)).toList();
@@ -58,11 +44,17 @@ final animeListProvider = FutureProvider.family<List<Anime>, String>((ref, type)
 });
 
 final mangaListProvider = FutureProvider.family<List<Anime>, String>((ref, type) async {
-  await _throttleJikan();
-  final response = await http.get(Uri.parse('https://api.jikan.moe/v4/top/manga?filter=$type'));
+  await _throttleRequest();
+  String url = 'https://kitsu.io/api/edge/manga?sort=-userCount';
+  if (type == 'manga') {
+    url = 'https://kitsu.io/api/edge/manga?filter[subtype]=manga&sort=-userCount';
+  } else if (type == 'novels') {
+    url = 'https://kitsu.io/api/edge/manga?filter[subtype]=novel&sort=-userCount';
+  }
+  
+  final response = await http.get(Uri.parse(url), headers: {'Accept': 'application/vnd.api+json'});
   if (response.statusCode == 200) {
     final data = json.decode(response.body);
-    // Reuse Anime model for Manga representation
     return (data['data'] as List).map((e) => Anime.fromJson(e)).toList();
   }
   throw Exception('Failed to load manga');
@@ -70,8 +62,11 @@ final mangaListProvider = FutureProvider.family<List<Anime>, String>((ref, type)
 
 final animeSearchProvider = FutureProvider.family<List<Anime>, String>((ref, query) async {
   if (query.isEmpty) return [];
-  await _throttleJikan();
-  final response = await http.get(Uri.parse('https://api.jikan.moe/v4/anime?q=$query'));
+  await _throttleRequest();
+  final response = await http.get(
+    Uri.parse('https://kitsu.io/api/edge/anime?filter[text]=${Uri.encodeComponent(query)}'),
+    headers: {'Accept': 'application/vnd.api+json'},
+  );
   if (response.statusCode == 200) {
     final data = json.decode(response.body);
     return (data['data'] as List).map((e) => Anime.fromJson(e)).toList();
@@ -81,8 +76,11 @@ final animeSearchProvider = FutureProvider.family<List<Anime>, String>((ref, que
 
 final mangaSearchProvider = FutureProvider.family<List<Anime>, String>((ref, query) async {
   if (query.isEmpty) return [];
-  await _throttleJikan();
-  final response = await http.get(Uri.parse('https://api.jikan.moe/v4/manga?q=$query'));
+  await _throttleRequest();
+  final response = await http.get(
+    Uri.parse('https://kitsu.io/api/edge/manga?filter[text]=${Uri.encodeComponent(query)}'),
+    headers: {'Accept': 'application/vnd.api+json'},
+  );
   if (response.statusCode == 200) {
     final data = json.decode(response.body);
     return (data['data'] as List).map((e) => Anime.fromJson(e)).toList();
@@ -91,10 +89,11 @@ final mangaSearchProvider = FutureProvider.family<List<Anime>, String>((ref, que
 });
 
 final genreAnimeProvider = FutureProvider.family<List<Anime>, String>((ref, genreName) async {
-  final genreId = jikanGenreIds[genreName];
-  if (genreId == null) return [];
-  await _throttleJikan();
-  final response = await http.get(Uri.parse('https://api.jikan.moe/v4/anime?genres=$genreId&order_by=popularity'));
+  await _throttleRequest();
+  final response = await http.get(
+    Uri.parse('https://kitsu.io/api/edge/anime?filter[categories]=${Uri.encodeComponent(genreName)}&sort=-userCount'),
+    headers: {'Accept': 'application/vnd.api+json'},
+  );
   if (response.statusCode == 200) {
     final data = json.decode(response.body);
     return (data['data'] as List).map((e) => Anime.fromJson(e)).toList();
@@ -103,8 +102,11 @@ final genreAnimeProvider = FutureProvider.family<List<Anime>, String>((ref, genr
 });
 
 final animeDetailProvider = FutureProvider.family<Anime, String>((ref, id) async {
-  await _throttleJikan();
-  final response = await http.get(Uri.parse('https://api.jikan.moe/v4/anime/$id'));
+  await _throttleRequest();
+  final response = await http.get(
+    Uri.parse('https://kitsu.io/api/edge/anime/$id'),
+    headers: {'Accept': 'application/vnd.api+json'},
+  );
   if (response.statusCode == 200) {
     final data = json.decode(response.body);
     return Anime.fromJson(data['data']);
@@ -113,20 +115,27 @@ final animeDetailProvider = FutureProvider.family<Anime, String>((ref, id) async
 });
 
 final animeEpisodesProvider = FutureProvider.family<List<Episode>, String>((ref, id) async {
-  await _throttleJikan();
-  final response = await http.get(Uri.parse('https://api.jikan.moe/v4/anime/$id/episodes'));
+  await _throttleRequest();
+  final response = await http.get(
+    Uri.parse('https://kitsu.io/api/edge/anime/$id'),
+    headers: {'Accept': 'application/vnd.api+json'},
+  );
   if (response.statusCode == 200) {
     final data = json.decode(response.body);
-    return (data['data'] as List).map((e) => Episode.fromJson(e)).toList();
+    final count = data['data']['attributes']['episodeCount'] as int? ?? 12;
+    return List.generate(count, (index) => Episode(number: index + 1));
   }
-  return List.generate(24, (index) => Episode(number: index + 1));
+  return List.generate(12, (index) => Episode(number: index + 1));
 });
 
 // --- Manga Providers ---
 
 final mangaDetailProvider = FutureProvider.family<Anime, String>((ref, id) async {
-  await _throttleJikan();
-  final response = await http.get(Uri.parse('https://api.jikan.moe/v4/manga/$id'));
+  await _throttleRequest();
+  final response = await http.get(
+    Uri.parse('https://kitsu.io/api/edge/manga/$id'),
+    headers: {'Accept': 'application/vnd.api+json'},
+  );
   if (response.statusCode == 200) {
     final data = json.decode(response.body);
     return Anime.fromJson(data['data']);
@@ -135,18 +144,17 @@ final mangaDetailProvider = FutureProvider.family<Anime, String>((ref, id) async
 });
 
 final mangaChaptersProvider = FutureProvider.family<List<Episode>, String>((ref, id) async {
-  // Jikan manga details endpoint to extract chapter count
-  await _throttleJikan();
-  final response = await http.get(Uri.parse('https://api.jikan.moe/v4/manga/$id'));
+  await _throttleRequest();
+  final response = await http.get(
+    Uri.parse('https://kitsu.io/api/edge/manga/$id'),
+    headers: {'Accept': 'application/vnd.api+json'},
+  );
   if (response.statusCode == 200) {
     final data = json.decode(response.body);
-    final chaptersCount = data['data']['chapters'] as int? ?? 500; // Fallback to 500 chapters for ongoing
-    return List.generate(
-      chaptersCount,
-      (index) => Episode(number: index + 1),
-    );
+    final count = data['data']['attributes']['chapterCount'] as int? ?? 500;
+    return List.generate(count, (index) => Episode(number: index + 1));
   }
-  return List.generate(50, (index) => Episode(number: index + 1));
+  return List.generate(100, (index) => Episode(number: index + 1));
 });
 
 // Scrapes/queries Manganato to fetch pages for a given manga and chapter number

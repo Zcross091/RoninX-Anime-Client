@@ -18,15 +18,17 @@ class Anime {
   });
 
   factory Anime.fromJson(Map<String, dynamic> json) {
-    // Jikan API mapping - prioritize English title if available
+    final attrs = json['attributes'] as Map<String, dynamic>? ?? {};
+    final titles = attrs['titles'] as Map<String, dynamic>? ?? {};
+    
     return Anime(
-      id: json['mal_id'].toString(),
-      title: json['title_english'] ?? json['title'] ?? 'Unknown',
-      poster: json['images']?['jpg']?['large_image_url'],
-      description: json['synopsis'],
-      type: json['type'],
-      status: json['status'],
-      genres: (json['genres'] as List?)?.map((e) => e['name'] as String).toList(),
+      id: json['id'].toString(),
+      title: titles['en'] ?? titles['en_jp'] ?? attrs['canonicalTitle'] ?? 'Unknown',
+      poster: attrs['posterImage']?['large'] ?? attrs['posterImage']?['original'],
+      description: attrs['synopsis'],
+      type: attrs['subtype'],
+      status: attrs['status'],
+      genres: [], // Kitsu uses relationships for genres, we can leave it empty or map later
     );
   }
 }
