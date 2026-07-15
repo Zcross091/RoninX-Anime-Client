@@ -157,28 +157,71 @@ final mangaChaptersProvider = FutureProvider.family<List<Episode>, String>((ref,
   return List.generate(100, (index) => Episode(number: index + 1));
 });
 
-// Scrapes/queries Manganato to fetch pages for a given manga and chapter number
+// Scrapes/queries MangaDex or Manganato to fetch pages for a given manga and chapter number
 final mangaPagesProvider = FutureProvider.family<List<String>, Map<String, String>>((ref, params) async {
   final title = params['title']!;
   final chapter = params['chapter']!;
 
+  // 1. Try MangaDex First (API-based, stable)
   try {
-    // 1. Search Manganato for the manga
+    final searchUrl = 'https://api.mangadex.org/manga?title=${Uri.encodeComponent(title)}&limit=1';
+    final searchRes = await http.get(Uri.parse(searchUrl), headers: {
+      'User-Agent': 'RoninXClient/1.0.0 (contact@roninx.app)',
+      'Accept': 'application/json',
+    }).timeout(const Duration(seconds: 5));
+
+    if (searchRes.statusCode == 200) {
+      final searchData = json.decode(searchRes.body);
+      if (searchData['data'] != null && searchData['data'].isNotEmpty) {
+        final mangaId = searchData['data'][0]['id'] as String;
+
+        // Fetch chapter feed matching chapter number
+        final feedUrl = 'https://api.mangadex.org/chapter?manga=$mangaId&chapter=$chapter&translatedLanguage[]=en&limit=1';
+        final feedRes = await http.get(Uri.parse(feedUrl), headers: {
+          'User-Agent': 'RoninXClient/1.0.0 (contact@roninx.app)',
+          'Accept': 'application/json',
+        }).timeout(const Duration(seconds: 5));
+
+        if (feedRes.statusCode == 200) {
+          final feedData = json.decode(feedRes.body);
+          if (feedData['data'] != null && feedData['data'].isNotEmpty) {
+            final chapterId = feedData['data'][0]['id'] as String;
+            final hash = feedData['data'][0]['attributes']['hash'] as String;
+            final pages = List<String>.from(feedData['data'][0]['attributes']['data'] as List);
+
+            // Fetch At-Home server host URL
+            final serverUrl = 'https://api.mangadex.org/at-home/server/$chapterId';
+            final serverRes = await http.get(Uri.parse(serverUrl), headers: {
+              'User-Agent': 'RoninXClient/1.0.0 (contact@roninx.app)',
+              'Accept': 'application/json',
+            }).timeout(const Duration(seconds: 5));
+
+            if (serverRes.statusCode == 200) {
+              final serverData = json.decode(serverRes.body);
+              final host = serverData['baseUrl'] as String;
+              return pages.map((page) => '$host/data/$hash/$page').toList();
+            }
+          }
+        }
+      }
+    }
+  } catch (_) {}
+
+  // 2. Fall back to Manganato scraping (HTML scraping)
+  try {
     final searchUrl = 'https://manganato.com/search/story/${title.toLowerCase().replaceAll(RegExp(r'[^\w\s]'), '').replaceAll(' ', '_')}';
-    final searchRes = await http.get(Uri.parse(searchUrl)).timeout(const Duration(seconds: 10));
+    final searchRes = await http.get(Uri.parse(searchUrl)).timeout(const Duration(seconds: 5));
     if (searchRes.statusCode == 200) {
       final doc = parse(searchRes.body);
       final firstResult = doc.querySelector('.search-story-item a.item-img');
       final mangaUrl = firstResult?.attributes['href'];
 
       if (mangaUrl != null) {
-        // 2. Fetch manga page to list chapters
-        final mangaPageRes = await http.get(Uri.parse(mangaUrl)).timeout(const Duration(seconds: 10));
+        final mangaPageRes = await http.get(Uri.parse(mangaUrl)).timeout(const Duration(seconds: 5));
         if (mangaPageRes.statusCode == 200) {
           final mangaDoc = parse(mangaPageRes.body);
           final chapters = mangaDoc.querySelectorAll('.chapter-name');
-          
-          // Match the closest chapter number
+
           String? chapterUrl;
           for (final chap in chapters) {
             final text = chap.text.toLowerCase();
@@ -188,14 +231,12 @@ final mangaPagesProvider = FutureProvider.family<List<String>, Map<String, Strin
             }
           }
 
-          // Fallback to first chapter match if not found
           chapterUrl ??= chapters.isNotEmpty ? chapters.first.attributes['href'] : null;
 
           if (chapterUrl != null) {
-            // 3. Fetch chapter page to scrape image links
             final chapPageRes = await http.get(Uri.parse(chapterUrl), headers: {
               'Referer': 'https://manganato.com/',
-            }).timeout(const Duration(seconds: 10));
+            }).timeout(const Duration(seconds: 5));
             if (chapPageRes.statusCode == 200) {
               final chapDoc = parse(chapPageRes.body);
               final imgs = chapDoc.querySelectorAll('.container-chapter-reader img');
@@ -207,9 +248,10 @@ final mangaPagesProvider = FutureProvider.family<List<String>, Map<String, Strin
     }
   } catch (_) {}
 
-  // Fallback placeholder images if scraping fails
+  // 3. Fallback placeholder images if all scraper/APIs fail
   return List.generate(
     10,
     (i) => 'https://placehold.co/600x800/000000/FFFFFF/png?text=Page+${i + 1}+(Offline+Scraper+Fallback)',
   );
 });
+
