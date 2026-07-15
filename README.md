@@ -21,7 +21,7 @@ An elegant, high-performance, open-source anime and manga companion app natively
 
 ---
 
-## ✨ Features
+## ✨ Features <img src="assets/images/app_icon.png" width="80" height="80"/>
 
 - **📺 Advanced Media Player Engine**
   - Powered by `media_kit` for low-latency hardware-accelerated video playback.
@@ -53,7 +53,7 @@ An elegant, high-performance, open-source anime and manga companion app natively
 
 ---
 
-## 🛠️ Technology Stack
+## 🛠️ Technology Stack <img src="assets/images/app_icon.png" width="80" height="80"/>
 
 - **Client Framework**: Flutter (Cross-platform builds for Android, Windows, and Linux)
 - **Programming Language**: Dart
@@ -85,7 +85,7 @@ dependencies:
 
 ---
 
-## 🚀 Installation & Building
+## 🚀 Installation & Building <img src="assets/images/app_icon.png" width="80" height="80"/>
 
 ### Prerequisites
 - Flutter SDK (Channel Stable)
@@ -119,7 +119,7 @@ RoninX Anime Client is a frontend user interface designed to organize metadata a
 
 ---
 
-## RONINX PROPRIETARY LICENSE
+## RONINX PROPRIETARY LICENSE 
 
 1. **PROPRIETARY CODEBASE**  
    This repository and the RoninX Anime Client software ("RoninX") are private, proprietary code. No permission is granted to reproduce, copy, distribute, or modify this software without explicit written authorization from the copyright holder.
