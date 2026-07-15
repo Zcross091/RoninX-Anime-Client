@@ -7,7 +7,8 @@ import '../../../shared/providers/anime_provider.dart';
 import '../../../shared/models/anime.dart';
 
 class BrowseScreen extends ConsumerStatefulWidget {
-  const BrowseScreen({super.key});
+  final bool isManga;
+  const BrowseScreen({super.key, this.isManga = false});
 
   @override
   ConsumerState<BrowseScreen> createState() => _BrowseScreenState();
@@ -20,7 +21,7 @@ class _BrowseScreenState extends ConsumerState<BrowseScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final searchResults = ref.watch(animeSearchProvider(_query));
+    final searchResults = ref.watch(widget.isManga ? mangaSearchProvider(_query) : animeSearchProvider(_query));
     final genreResults = _selectedGenre != null ? ref.watch(genreAnimeProvider(_selectedGenre!)) : null;
 
     final genres = [
@@ -40,7 +41,7 @@ class _BrowseScreenState extends ConsumerState<BrowseScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_selectedGenre ?? 'Browse'),
+        title: Text(_selectedGenre ?? (widget.isManga ? 'Browse Manga' : 'Browse Anime')),
         leading: _selectedGenre != null
             ? IconButton(
                 icon: const Icon(Icons.arrow_back),
@@ -62,7 +63,7 @@ class _BrowseScreenState extends ConsumerState<BrowseScreen> {
                   });
                 },
                 decoration: InputDecoration(
-                  hintText: 'Search anime...',
+                  hintText: widget.isManga ? 'Search manga...' : 'Search anime...',
                   prefixIcon: const Icon(Icons.search),
                   suffixIcon: _query.isNotEmpty
                       ? IconButton(
@@ -96,7 +97,7 @@ class _BrowseScreenState extends ConsumerState<BrowseScreen> {
                     itemCount: results.length,
                     itemBuilder: (context, index) {
                       final anime = results[index];
-                      return _SearchCard(anime: anime);
+                      return _SearchCard(anime: anime, isManga: widget.isManga);
                     },
                   ),
                   loading: () => const Center(child: CircularProgressIndicator()),
@@ -156,7 +157,7 @@ class _BrowseScreenState extends ConsumerState<BrowseScreen> {
                     itemCount: results.length,
                     itemBuilder: (context, index) {
                       final anime = results[index];
-                      return _SearchCard(anime: anime);
+                      return _SearchCard(anime: anime, isManga: widget.isManga);
                     },
                   ),
                   loading: () => const Center(child: CircularProgressIndicator()),
@@ -173,12 +174,13 @@ class _BrowseScreenState extends ConsumerState<BrowseScreen> {
 
 class _SearchCard extends StatelessWidget {
   final Anime anime;
-  const _SearchCard({required this.anime});
+  final bool isManga;
+  const _SearchCard({required this.anime, this.isManga = false});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => context.push('/detail/${anime.id}'),
+      onTap: () => context.push('/detail/${anime.id}?manga=$isManga'),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

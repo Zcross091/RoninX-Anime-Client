@@ -81,7 +81,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             actions: [
               IconButton(
                 icon: const Icon(Icons.search),
-                onPressed: () => context.push('/browse'),
+                onPressed: () => context.push('/browse?manga=$_isMangaMode'),
               ),
               Consumer(
                 builder: (context, ref, child) {

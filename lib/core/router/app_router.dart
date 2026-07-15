@@ -19,7 +19,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/browse',
-        builder: (context, state) => const BrowseScreen(),
+        builder: (context, state) {
+          final isManga = state.uri.queryParameters['manga'] == 'true';
+          return BrowseScreen(isManga: isManga);
+        },
       ),
       GoRoute(
         path: '/detail/:id',
