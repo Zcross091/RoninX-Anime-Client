@@ -30,7 +30,7 @@ dependencies:
   wakelock_plus: ^1.2.8
   window_manager: ^0.5.1
   connectivity_plus: ^6.0.3
-  flutter_qjs: any
+  flutter_js: ^0.8.0
   cryptography: any
   path_provider: any
   isar: any
@@ -46,6 +46,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
-dependency_overrides:
-  ffi: ^2.1.2

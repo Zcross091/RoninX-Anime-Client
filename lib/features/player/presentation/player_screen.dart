@@ -58,9 +58,12 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
     if (_isInitializing) return;
     _isInitializing = true;
     try {
-      await player.setProperty('cache', 'yes');
-      await player.setProperty('demuxer-max-bytes', '104857600');
-      await player.setProperty('hls-bitrate', 'max');
+      if (player.platform is NativePlayer) {
+        final nativePlayer = player.platform as NativePlayer;
+        await nativePlayer.setProperty('cache', 'yes');
+        await nativePlayer.setProperty('demuxer-max-bytes', '104857600');
+        await nativePlayer.setProperty('hls-bitrate', 'max');
+      }
       await player.open(Media(url));
       if (mounted) {
         setState(() {

@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:flutter_qjs/flutter_qjs.dart';
+import 'package:flutter_js/flutter_js.dart';
 import 'package:http/http.dart' as http;
 import 'sync_manager.dart';
 
@@ -9,7 +9,7 @@ class JSEngine {
 
   JSEngine._internal();
 
-  IsolateQjs? _engine;
+  JavascriptRuntime? _engine;
   bool _isInitialized = false;
 
   /// Initializes the JS Sandbox with the latest bundle
@@ -23,32 +23,33 @@ class JSEngine {
       return;
     }
 
-    // 2. Instantiate IsolateQjs (Hardware Isolation)
-    _engine = IsolateQjs(
-      stackSize: 10 * 1024 * 1024, // 10MB memory limit
-    );
+    // 2. Instantiate flutter_js runtime
+    _engine = getJavascriptRuntime();
 
     // 3. Expose the Bridge: JS -> Dart network interception
-    _engine!.setMethodHandler((String method, List<dynamic> args) async {
-      switch (method) {
-        case 'fetchHtml':
-          if (args.isEmpty) throw Exception('fetchHtml requires URL');
-          final url = args[0] as String;
-          return await _fetchHtml(url);
-        case 'flareFetch':
-          if (args.isEmpty) throw Exception('flareFetch requires URL');
-          final url = args[0] as String;
-          return await _flareFetch(url);
-        default:
-          throw Exception('Method $method not implemented in Dart bridge');
+    _engine!.onMessage('fetchHtml', (dynamic args) async {
+      try {
+        final url = args as String;
+        return await _fetchHtml(url);
+      } catch (e) {
+        return {"success": false, "error": e.toString()};
+      }
+    });
+
+    _engine!.onMessage('flareFetch', (dynamic args) async {
+      try {
+        final url = args as String;
+        return await _flareFetch(url);
+      } catch (e) {
+        return {"success": false, "error": e.toString()};
       }
     });
 
     // 4. Evaluate the JS bundle
     try {
-      await _engine!.evaluate(jsBundle, name: 'roninx_master.js');
+      _engine!.evaluate(jsBundle);
       _isInitialized = true;
-      print('JS Engine isolated sandbox successfully initialized.');
+      print('JS Engine successfully initialized with flutter_js.');
     } catch (e) {
       print('Failed to evaluate JS bundle: $e');
     }
@@ -70,9 +71,9 @@ class JSEngine {
         RoninX.route("$category", "$sourceId", "$action", $jsonParams);
       ''';
       
-      // We wrap the evaluation to ensure we don't block indefinitely
-      final result = await _engine!.evaluate(script);
-      return result;
+      final JsEvalResult result = _engine!.evaluate(script);
+      // flutter_js returns a JsEvalResult. We can parse stringResult as JSON
+      return jsonDecode(result.stringResult);
     } catch (e) {
       print('Error executing JS action $action on $sourceId: $e');
       rethrow;
@@ -94,7 +95,6 @@ class JSEngine {
 
   Future<String> _flareFetch(String url) async {
     // Route through Phase 3: Anti-Bot Proxy Server
-    // Placeholder implementation
     try {
       final proxyUrl = Uri.parse('http://127.0.0.1:8191/v1'); // Flaresolverr endpoint
       final payload = {
@@ -124,7 +124,7 @@ class JSEngine {
   }
 
   void dispose() {
-    _engine?.close();
+    _engine?.dispose();
     _isInitialized = false;
   }
 }
