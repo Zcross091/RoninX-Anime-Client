@@ -8,7 +8,7 @@
 
 [![Flutter](https://img.shields.io/badge/Flutter-%E2%89%A5_3.24.0-02569B?logo=flutter&logoColor=white)](https://flutter.dev/)
 [![Dart](https://img.shields.io/badge/Dart-%E2%89%A5_3.5.0-0175C2?logo=dart&logoColor=white)](https://dart.dev)
-[![Ronin](https://img.shields.io/badge/R-Ronin-8A2BE2?style=for-the-badge)](https://zcross091.github.io/Animetize-API-Play/)
+[![Ronin](https://img.shields.io/badge/R-Ronin-000000?style=flat-square)](https://zcross091.github.io/Animetize-API-Play/)
 [![Discord](https://img.shields.io/badge/Discord-Join_Ronin_Server-7289da?logo=discord&logoColor=white)](https://discord.gg/c2ZD8yEs4D)
 
 **The official premium frontend client for the Ronin API ecosystem.**
