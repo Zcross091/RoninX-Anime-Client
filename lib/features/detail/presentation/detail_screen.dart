@@ -76,7 +76,7 @@ class DetailScreen extends ConsumerWidget {
                         itemCount: epList.length,
                         itemBuilder: (context, index) {
                           final ep = epList[index];
-                          final displayNum = ep.number.toString().replaceAll('.0', '');
+                          final displayNum = ep.number.toInt().toString();
                           return GestureDetector(
                             onTap: () {
                               if (isManga) {

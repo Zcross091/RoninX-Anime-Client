@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/unified_models.dart';
+import '../../core/config/supabase_state.dart';
 
 // --- Supabase Auth Provider ---
 final supabaseAuthProvider = StateNotifierProvider<AuthNotifier, Session?>((ref) {
@@ -10,21 +11,26 @@ final supabaseAuthProvider = StateNotifierProvider<AuthNotifier, Session?>((ref)
 });
 
 class AuthNotifier extends StateNotifier<Session?> {
-  AuthNotifier() : super(Supabase.instance.client.auth.currentSession) {
-    Supabase.instance.client.auth.onAuthStateChange.listen((data) {
-      state = data.session;
-    });
+  AuthNotifier() : super(SupabaseState.isInitialized ? Supabase.instance.client.auth.currentSession : null) {
+    if (SupabaseState.isInitialized) {
+      Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+        state = data.session;
+      });
+    }
   }
 
   Future<void> signIn(String email, String password) async {
+    if (!SupabaseState.isInitialized) return;
     await Supabase.instance.client.auth.signInWithPassword(email: email, password: password);
   }
 
   Future<void> signUp(String email, String password) async {
+    if (!SupabaseState.isInitialized) return;
     await Supabase.instance.client.auth.signUp(email: email, password: password);
   }
 
   Future<void> signOut() async {
+    if (!SupabaseState.isInitialized) return;
     await Supabase.instance.client.auth.signOut();
   }
 }
@@ -42,7 +48,7 @@ class WatchListNotifier extends StateNotifier<List<Map<String, dynamic>>> {
 
   Future<void> _loadWatchList() async {
     final session = ref.read(supabaseAuthProvider);
-    if (session != null) {
+    if (SupabaseState.isInitialized && session != null) {
       final response = await Supabase.instance.client
           .from('user_watch_history')
           .select()
@@ -59,7 +65,7 @@ class WatchListNotifier extends StateNotifier<List<Map<String, dynamic>>> {
     final session = ref.read(supabaseAuthProvider);
     final exists = state.any((e) => e['media_id'] == item['media_id']);
 
-    if (session != null) {
+    if (SupabaseState.isInitialized && session != null) {
       if (exists) {
         await Supabase.instance.client
             .from('user_watch_history')
@@ -115,7 +121,7 @@ class WatchHistoryNotifier extends StateNotifier<Map<String, dynamic>> {
       'last_watched': DateTime.now().toIso8601String(),
     };
 
-    if (session != null) {
+    if (SupabaseState.isInitialized && session != null) {
       await Supabase.instance.client
           .from('user_watch_history')
           .upsert({

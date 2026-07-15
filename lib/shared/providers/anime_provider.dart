@@ -5,15 +5,30 @@ import 'package:html/parser.dart' show parse;
 import '../models/anime.dart';
 import '../models/episode.dart';
 
+import 'dart:async';
+
 // Simple global lock/delay list to throttle Jikan API calls (limit: 3 requests/sec)
 DateTime _lastRequestTime = DateTime.now();
+Completer<void>? _throttleCompleter;
+
 Future<void> _throttleJikan() async {
+  while (_throttleCompleter != null) {
+    await _throttleCompleter!.future;
+  }
+  
+  _throttleCompleter = Completer<void>();
+  
   final now = DateTime.now();
   final diff = now.difference(_lastRequestTime);
   if (diff.inMilliseconds < 400) {
     await Future.delayed(Duration(milliseconds: 400 - diff.inMilliseconds));
   }
+  
   _lastRequestTime = DateTime.now();
+  
+  final completer = _throttleCompleter;
+  _throttleCompleter = null;
+  completer?.complete();
 }
 
 // Genre mapping for Jikan API
@@ -125,7 +140,7 @@ final mangaChaptersProvider = FutureProvider.family<List<Episode>, String>((ref,
   final response = await http.get(Uri.parse('https://api.jikan.moe/v4/manga/$id'));
   if (response.statusCode == 200) {
     final data = json.decode(response.body);
-    final chaptersCount = data['data']['chapters'] as int? ?? 50; // Fallback to 50 chapters
+    final chaptersCount = data['data']['chapters'] as int? ?? 500; // Fallback to 500 chapters for ongoing
     return List.generate(
       chaptersCount,
       (index) => Episode(number: index + 1),
@@ -142,7 +157,7 @@ final mangaPagesProvider = FutureProvider.family<List<String>, Map<String, Strin
   try {
     // 1. Search Manganato for the manga
     final searchUrl = 'https://manganato.com/search/story/${title.toLowerCase().replaceAll(RegExp(r'[^\w\s]'), '').replaceAll(' ', '_')}';
-    final searchRes = await http.get(Uri.parse(searchUrl));
+    final searchRes = await http.get(Uri.parse(searchUrl)).timeout(const Duration(seconds: 10));
     if (searchRes.statusCode == 200) {
       final doc = parse(searchRes.body);
       final firstResult = doc.querySelector('.search-story-item a.item-img');
@@ -150,7 +165,7 @@ final mangaPagesProvider = FutureProvider.family<List<String>, Map<String, Strin
 
       if (mangaUrl != null) {
         // 2. Fetch manga page to list chapters
-        final mangaPageRes = await http.get(Uri.parse(mangaUrl));
+        final mangaPageRes = await http.get(Uri.parse(mangaUrl)).timeout(const Duration(seconds: 10));
         if (mangaPageRes.statusCode == 200) {
           final mangaDoc = parse(mangaPageRes.body);
           final chapters = mangaDoc.querySelectorAll('.chapter-name');
@@ -172,7 +187,7 @@ final mangaPagesProvider = FutureProvider.family<List<String>, Map<String, Strin
             // 3. Fetch chapter page to scrape image links
             final chapPageRes = await http.get(Uri.parse(chapterUrl), headers: {
               'Referer': 'https://manganato.com/',
-            });
+            }).timeout(const Duration(seconds: 10));
             if (chapPageRes.statusCode == 200) {
               final chapDoc = parse(chapPageRes.body);
               final imgs = chapDoc.querySelectorAll('.container-chapter-reader img');

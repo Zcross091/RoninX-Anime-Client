@@ -7,6 +7,7 @@ import 'dart:io';
 
 import 'core/theme/app_theme.dart';
 import 'core/router/app_router.dart';
+import 'core/config/supabase_state.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,6 +35,7 @@ void main() async {
       url: 'https://knmbpwlraitujnzdzbfv.supabase.co',
       anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtubWJwd2xyYWl0dWpuemR6YmZ2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4Mjg5OTczMCwiZXhwIjoyMDk4NDc1NzMwfQ.LpFoKTThntmj6_cLIs4XB0kjTOBgB5w1Xlf_vBqKWYo',
     );
+    SupabaseState.isInitialized = true;
   } catch (e) {
     debugPrint('Supabase initialization failed: $e');
   }

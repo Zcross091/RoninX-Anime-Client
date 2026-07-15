@@ -6,6 +6,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../shared/providers/anime_provider.dart';
 import '../../../shared/models/anime.dart';
 import '../../../shared/providers/sync_providers.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -16,6 +17,22 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   bool _isMangaMode = false; // Toggle state between Anime & Manga
+  bool _isConnected = true;
+
+  @override
+  void initState() {
+    super.initState();
+    Connectivity().checkConnectivity().then((result) {
+      if (mounted) {
+        setState(() => _isConnected = !result.contains(ConnectivityResult.none));
+      }
+    });
+    Connectivity().onConnectivityChanged.listen((result) {
+      if (mounted) {
+        setState(() => _isConnected = !result.contains(ConnectivityResult.none));
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,6 +98,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
             ],
           ),
+          if (!_isConnected)
+            SliverToBoxAdapter(
+              child: Container(
+                color: Colors.red,
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                alignment: Alignment.center,
+                child: const Text('Offline Mode - Check your connection', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+              ),
+            ),
           SliverToBoxAdapter(
             child: _buildHeroCarousel(),
           ),

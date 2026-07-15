@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:html/parser.dart' show parse;
+import '../../core/config/supabase_state.dart';
 
 class RoninApiSource {
   static const String baseUrl = 'https://ronin-api-proxy.vercel.app';
@@ -21,14 +22,17 @@ class RoninApiSource {
         .trim();
 
     // ── Tier 1: Exact title match ──
-    List<dynamic> dbData = await Supabase.instance.client
-        .from('anime_links')
+    List<dynamic> dbData = [];
+    if (SupabaseState.isInitialized) {
+      dbData = await Supabase.instance.client
+          .from('anime_links')
         .select()
         .eq('title', rawQuery)
         .eq('episode', int.tryParse(episode) ?? 0);
+    }
 
     // ── Tier 2: Case-insensitive LIKE on cleaned slug ──
-    if (dbData.isEmpty) {
+    if (dbData.isEmpty && SupabaseState.isInitialized) {
       dbData = await Supabase.instance.client
           .from('anime_links')
           .select()
@@ -37,7 +41,7 @@ class RoninApiSource {
     }
 
     // ── Tier 3: Split into keywords, OR-search each word >3 characters ──
-    if (dbData.isEmpty) {
+    if (dbData.isEmpty && SupabaseState.isInitialized) {
       final keywords = slug.split(' ').where((w) => w.length > 3).toList();
       if (keywords.isNotEmpty) {
         final orFilter = keywords.map((k) => 'title.ilike.%$k%').join(',');

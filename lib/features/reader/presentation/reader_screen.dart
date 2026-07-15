@@ -52,7 +52,8 @@ class ReaderScreen extends ConsumerWidget {
                 imageUrl: pages[index],
                 fit: BoxFit.contain,
                 httpHeaders: const {
-                  'Referer': 'https://manganato.com/',
+                  'Referer': 'https://chapmanganato.com/',
+                  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
                 },
                 placeholder: (context, url) => Container(
                   height: 400,

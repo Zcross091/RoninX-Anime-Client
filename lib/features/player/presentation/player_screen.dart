@@ -74,6 +74,7 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
     ]);
     player.dispose();
     super.dispose();
