@@ -54,6 +54,9 @@ jobs:
       - name: Install Flutter dependencies
         run: flutter pub get
 
+      - name: Generate Isar Schemas
+        run: flutter pub run build_runner build --delete-conflicting-outputs
+
       - name: Build Project
         run: ${{ matrix.build_cmd }}
 

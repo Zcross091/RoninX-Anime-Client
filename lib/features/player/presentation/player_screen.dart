@@ -5,20 +5,22 @@ import 'package:media_kit_video/media_kit_video.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:flutter/services.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../anime/providers/extension_provider.dart';
 import '../../../shared/providers/stream_provider.dart';
+import 'widgets/player_gesture_layer.dart';
 
 class PlayerScreen extends ConsumerStatefulWidget {
   final String title;
   final String? streamUrl; // Optional direct URL
-  final String? animeTitle; // For resolution
-  final String? episode; // For resolution
+  final String? sourceId; // For extension resolution
+  final String? episodeUrl; // For extension resolution
 
   const PlayerScreen({
     super.key,
     required this.title,
     this.streamUrl,
-    this.animeTitle,
-    this.episode,
+    this.sourceId,
+    this.episodeUrl,
   });
 
   @override
@@ -26,11 +28,16 @@ class PlayerScreen extends ConsumerStatefulWidget {
 }
 
 class _PlayerScreenState extends ConsumerState<PlayerScreen> {
-  late final Player player = Player();
+  late final Player player = Player(
+    configuration: const PlayerConfiguration(
+      bufferSize: 104857600, // 100MB Buffer Armor
+    ),
+  );
   late final VideoController controller = VideoController(player);
   bool _isInitialized = false;
   bool _isInitializing = false;
   String? _error;
+  bool _showControls = false;
 
   @override
   void initState() {
@@ -51,6 +58,9 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
     if (_isInitializing) return;
     _isInitializing = true;
     try {
+      await player.setProperty('cache', 'yes');
+      await player.setProperty('demuxer-max-bytes', '104857600');
+      await player.setProperty('hls-bitrate', 'max');
       await player.open(Media(url));
       if (mounted) {
         setState(() {
@@ -82,15 +92,16 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // If no direct URL, resolve it
-    if (widget.streamUrl == null && widget.animeTitle != null && widget.episode != null) {
-      final streamAsync = ref.watch(streamResolverProvider({
-        'title': widget.animeTitle!,
-        'episode': widget.episode!,
+    // If no direct URL, resolve it via JS extension
+    if (widget.streamUrl == null && widget.sourceId != null && widget.episodeUrl != null) {
+      final streamAsync = ref.watch(extensionVideoExtractorProvider({
+        'sourceId': widget.sourceId!,
+        'url': widget.episodeUrl!,
       }));
 
       return streamAsync.when(
-        data: (url) {
+        data: (videoExtraction) {
+          final url = videoExtraction.sources.isNotEmpty ? videoExtraction.sources.first.url : null;
           if (url != null && !_isInitialized && !_isInitializing && _error == null) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (mounted) _initPlayer(url);
@@ -173,7 +184,13 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
               controls: NoVideoControls,
             ),
           ),
-          _buildControlsOverlay(),
+          PlayerGestureLayer(
+            player: player,
+            onSingleTap: () {
+              setState(() => _showControls = !_showControls);
+            },
+          ),
+          if (_showControls) _buildControlsOverlay(),
           if (!_isInitialized) const Center(child: CircularProgressIndicator(color: AppTheme.primaryRed)),
         ],
       ),
