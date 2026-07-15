@@ -46,3 +46,6 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+dependency_overrides:
+  ffi: ^2.1.2
