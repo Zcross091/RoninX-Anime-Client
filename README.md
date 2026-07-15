@@ -2,7 +2,7 @@
 
    <img src="assets/images/app_icon.png" alt="Ronin Logo" width="120"/>
 
-# Ronin
+# RoninX
 
 ### Read. Watch. Track.
 
