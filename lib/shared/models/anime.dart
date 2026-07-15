@@ -18,10 +18,10 @@ class Anime {
   });
 
   factory Anime.fromJson(Map<String, dynamic> json) {
-    // Jikan API mapping
+    // Jikan API mapping - prioritize English title if available
     return Anime(
       id: json['mal_id'].toString(),
-      title: json['title'] ?? 'Unknown',
+      title: json['title_english'] ?? json['title'] ?? 'Unknown',
       poster: json['images']?['jpg']?['large_image_url'],
       description: json['synopsis'],
       type: json['type'],
