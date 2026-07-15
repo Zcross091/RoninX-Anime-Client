@@ -128,10 +128,10 @@ final mangaChaptersProvider = FutureProvider.family<List<Episode>, String>((ref,
     final chaptersCount = data['data']['chapters'] as int? ?? 50; // Fallback to 50 chapters
     return List.generate(
       chaptersCount,
-      (index) => Episode(number: (index + 1).toDouble()),
+      (index) => Episode(number: index + 1),
     );
   }
-  return List.generate(50, (index) => Episode(number: (index + 1).toDouble()));
+  return List.generate(50, (index) => Episode(number: index + 1));
 });
 
 // Scrapes/queries Manganato to fetch pages for a given manga and chapter number

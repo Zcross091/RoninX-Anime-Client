@@ -121,7 +121,7 @@ class DetailScreen extends ConsumerWidget {
         data: (anime) => Consumer(
           builder: (context, ref, child) {
             final watchList = ref.watch(watchListProvider);
-            final isAdded = watchList.any((item) => item.animeId == anime.id);
+            final isAdded = watchList.any((item) => item['media_id'] == anime.id);
 
             return FloatingActionButton(
               backgroundColor: AppTheme.primaryRed,
@@ -134,7 +134,12 @@ class DetailScreen extends ConsumerWidget {
                   );
                   return;
                 }
-                await ref.read(watchListProvider.notifier).toggleWatchlist(anime);
+                await ref.read(watchListProvider.notifier).toggleWatchList({
+                  'media_id': anime.id,
+                  'title': anime.title,
+                  'poster': anime.poster,
+                  'type': isManga ? 'manga' : 'anime',
+                });
               },
             );
           },

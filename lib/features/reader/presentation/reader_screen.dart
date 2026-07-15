@@ -33,7 +33,7 @@ class ReaderScreen extends ConsumerWidget {
             Text('Chapter $chapter', style: const TextStyle(fontSize: 12, color: Colors.grey)),
           ],
         ),
-        backgroundColor: Colors.black84,
+        backgroundColor: Colors.black87,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
