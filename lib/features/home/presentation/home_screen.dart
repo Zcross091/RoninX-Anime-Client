@@ -7,26 +7,65 @@ import '../../../shared/providers/anime_provider.dart';
 import '../../../shared/models/anime.dart';
 import '../../../shared/providers/sync_providers.dart';
 
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  bool _isMangaMode = false; // Toggle state between Anime & Manga
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
             floating: true,
-            title: Text(
-              'RONINX',
-              style: TextStyle(
-                color: AppTheme.primaryRed,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 2,
-              ),
+            title: Row(
+              children: [
+                Text(
+                  'RONINX',
+                  style: TextStyle(
+                    color: AppTheme.primaryRed,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 2,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                // Premium Anime/Manga Toggle Segment
+                GestureDetector(
+                  onTap: () => setState(() => _isMangaMode = false),
+                  child: Text(
+                    'Anime',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: !_isMangaMode ? Colors.white : Colors.grey,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                GestureDetector(
+                  onTap: () => setState(() => _isMangaMode = true),
+                  child: Text(
+                    'Manga',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: _isMangaMode ? Colors.white : Colors.grey,
+                    ),
+                  ),
+                ),
+              ],
             ),
             actions: [
-              IconButton(icon: const Icon(Icons.search), onPressed: () => context.push('/browse')),
+              IconButton(
+                icon: const Icon(Icons.search),
+                onPressed: () => context.push('/browse'),
+              ),
               Consumer(
                 builder: (context, ref, child) {
                   final session = ref.watch(supabaseAuthProvider);
@@ -43,11 +82,17 @@ class HomeScreen extends ConsumerWidget {
             ],
           ),
           SliverToBoxAdapter(
-            child: _buildHeroCarousel(context, ref),
+            child: _buildHeroCarousel(),
           ),
-          _buildSection(ref, 'Trending Now', 'airing'),
-          _buildSection(ref, 'Top Airing', 'upcoming'),
-          _buildSection(ref, 'Popular', 'bypopularity'),
+          if (!_isMangaMode) ...[
+            _buildSection('Trending Now', 'airing', isManga: false),
+            _buildSection('Top Airing', 'upcoming', isManga: false),
+            _buildSection('Popular', 'bypopularity', isManga: false),
+          ] else ...[
+            _buildSection('Top Manga', 'manga', isManga: true),
+            _buildSection('Top Novels', 'novels', isManga: true),
+            _buildSection('Popular Manga', 'bypopularity', isManga: true),
+          ],
           const SliverPadding(padding: EdgeInsets.only(bottom: 100)),
         ],
       ),
@@ -55,8 +100,10 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSection(WidgetRef ref, String title, String filter) {
-    final animeList = ref.watch(animeListProvider(filter));
+  Widget _buildSection(String title, String filter, {required bool isManga}) {
+    final listAsync = ref.watch(
+      isManga ? mangaListProvider(filter) : animeListProvider(filter),
+    );
 
     return SliverMainAxisGroup(
       slivers: [
@@ -75,14 +122,14 @@ class HomeScreen extends ConsumerWidget {
         SliverToBoxAdapter(
           child: SizedBox(
             height: 220,
-            child: animeList.when(
+            child: listAsync.when(
               data: (data) => ListView.builder(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 itemCount: data.length,
                 itemBuilder: (context, index) {
                   final anime = data[index];
-                  return _AnimeCard(anime: anime);
+                  return _AnimeCard(anime: anime, isManga: isManga);
                 },
               ),
               loading: () => const Center(child: CircularProgressIndicator()),
@@ -94,22 +141,29 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeroCarousel(BuildContext context, WidgetRef ref) {
-    final trending = ref.watch(animeListProvider('airing'));
+  Widget _buildHeroCarousel() {
+    // Reuse primary lists to avoid launching redundant API requests
+    final listAsync = ref.watch(
+      _isMangaMode ? mangaListProvider('manga') : animeListProvider('airing'),
+    );
 
-    return trending.when(
+    return listAsync.when(
       data: (data) {
         if (data.isEmpty) return const SizedBox.shrink();
-        final anime = data.first;
+        final item = data.first;
         return GestureDetector(
-          onTap: () => context.push('/detail/${anime.id}'),
+          onTap: () {
+            if (!_isMangaMode) {
+              context.push('/detail/${item.id}');
+            }
+          },
           child: Container(
             height: 250,
             margin: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
               image: DecorationImage(
-                image: CachedNetworkImageProvider(anime.poster ?? ''),
+                image: CachedNetworkImageProvider(item.poster ?? ''),
                 fit: BoxFit.cover,
                 colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.4), BlendMode.darken),
               ),
@@ -124,17 +178,27 @@ class HomeScreen extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        anime.title,
+                        item.title,
                         style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 8),
-                      ElevatedButton(
-                        onPressed: () => context.push('/detail/${anime.id}'),
-                        style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryRed),
-                        child: const Text('Watch Now', style: TextStyle(color: Colors.white)),
-                      ),
+                      if (!_isMangaMode)
+                        ElevatedButton(
+                          onPressed: () => context.push('/detail/${item.id}'),
+                          style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryRed),
+                          child: const Text('Watch Now', style: TextStyle(color: Colors.white)),
+                        )
+                      else
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: AppTheme.primaryRed,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Text('Read Info', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                        ),
                     ],
                   ),
                 ),
@@ -184,12 +248,17 @@ class HomeScreen extends ConsumerWidget {
 
 class _AnimeCard extends StatelessWidget {
   final Anime anime;
-  const _AnimeCard({required this.anime});
+  final bool isManga;
+  const _AnimeCard({required this.anime, required this.isManga});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => context.push('/detail/${anime.id}'),
+      onTap: () {
+        if (!isManga) {
+          context.push('/detail/${anime.id}');
+        }
+      },
       child: Container(
         width: 140,
         margin: const EdgeInsets.only(right: 12),

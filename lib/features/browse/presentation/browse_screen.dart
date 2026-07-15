@@ -16,42 +16,96 @@ class BrowseScreen extends ConsumerStatefulWidget {
 class _BrowseScreenState extends ConsumerState<BrowseScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _query = '';
+  String? _selectedGenre; // Track active selected genre
 
   @override
   Widget build(BuildContext context) {
     final searchResults = ref.watch(animeSearchProvider(_query));
-    final genres = ['Action', 'Adventure', 'Comedy', 'Drama', 'Fantasy', 'Horror', 'Mystery', 'Romance', 'Sci-Fi', 'Slice of Life', 'Sports', 'Thriller'];
+    final genreResults = _selectedGenre != null ? ref.watch(genreAnimeProvider(_selectedGenre!)) : null;
+
+    final genres = [
+      'Action',
+      'Adventure',
+      'Comedy',
+      'Drama',
+      'Fantasy',
+      'Horror',
+      'Mystery',
+      'Romance',
+      'Sci-Fi',
+      'Slice of Life',
+      'Sports',
+      'Thriller'
+    ];
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Browse')),
+      appBar: AppBar(
+        title: Text(_selectedGenre ?? 'Browse'),
+        leading: _selectedGenre != null
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => setState(() => _selectedGenre = null),
+              )
+            : null,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextField(
-              controller: _searchController,
-              onSubmitted: (value) {
-                setState(() {
-                  _query = value;
-                });
-              },
-              decoration: InputDecoration(
-                hintText: 'Search anime...',
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: _query.isNotEmpty
-                  ? IconButton(icon: const Icon(Icons.clear), onPressed: () {
-                      _searchController.clear();
-                      setState(() => _query = '');
-                    })
-                  : null,
-                filled: true,
-                fillColor: AppTheme.surface,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+            if (_selectedGenre == null)
+              TextField(
+                controller: _searchController,
+                onSubmitted: (value) {
+                  setState(() {
+                    _query = value;
+                  });
+                },
+                decoration: InputDecoration(
+                  hintText: 'Search anime...',
+                  prefixIcon: const Icon(Icons.search),
+                  suffixIcon: _query.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () {
+                            _searchController.clear();
+                            setState(() => _query = '');
+                          })
+                      : null,
+                  filled: true,
+                  fillColor: AppTheme.surface,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
               ),
-            ),
-            const SizedBox(height: 24),
-            if (_query.isEmpty) ...[
+            if (_selectedGenre == null && _query.isEmpty) const SizedBox(height: 24),
+            
+            // 1. Show Genre Results Grid
+            if (_selectedGenre != null) ...[
+              Expanded(
+                child: genreResults!.when(
+                  data: (results) => GridView.builder(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      childAspectRatio: 0.6,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                    ),
+                    itemCount: results.length,
+                    itemBuilder: (context, index) {
+                      final anime = results[index];
+                      return _SearchCard(anime: anime);
+                    },
+                  ),
+                  loading: () => const Center(child: CircularProgressIndicator()),
+                  error: (e, s) => Center(child: Text('Error: $e')),
+                ),
+              ),
+            ]
+            // 2. Show Genre Grid Selection List
+            else if (_query.isEmpty) ...[
               const Text('Genres', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               const SizedBox(height: 16),
               Expanded(
@@ -64,19 +118,30 @@ class _BrowseScreenState extends ConsumerState<BrowseScreen> {
                   ),
                   itemCount: genres.length,
                   itemBuilder: (context, index) {
-                    return Container(
-                      decoration: BoxDecoration(
-                        color: AppTheme.surface,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppTheme.surfaceLight),
+                    final name = genres[index];
+                    return InkWell(
+                      onTap: () {
+                        setState(() {
+                          _selectedGenre = name;
+                        });
+                      },
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: AppTheme.surface,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: AppTheme.surfaceLight),
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(name, style: const TextStyle(fontWeight: FontWeight.w500)),
                       ),
-                      alignment: Alignment.center,
-                      child: Text(genres[index], style: const TextStyle(fontWeight: FontWeight.w500)),
                     );
                   },
                 ),
               ),
-            ] else ...[
+            ]
+            // 3. Show Text Search Results Grid
+            else ...[
               Text('Results for "$_query"', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               const SizedBox(height: 16),
               Expanded(
@@ -128,10 +193,10 @@ class _SearchCard extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 8),
           Text(
             anime.title,
-            maxLines: 1,
+            maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(fontSize: 12),
           ),
