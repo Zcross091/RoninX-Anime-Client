@@ -57,8 +57,55 @@ jobs:
       - name: Build Project
         run: ${{ matrix.build_cmd }}
 
+      # Zip directory artifacts for Windows and Linux before uploading
+      - name: Pack Artifacts (Windows)
+        if: matrix.target == 'Windows'
+        run: Compress-Archive -Path build/windows/x64/runner/Release/* -DestinationPath build/roninx-windows.zip
+
+      - name: Pack Artifacts (Linux)
+        if: matrix.target == 'Linux'
+        run: zip -r build/roninx-linux.zip build/linux/x64/release/bundle/*
+
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: roninx-${{ matrix.target }}
-          path: ${{ matrix.artifact_path }}
+          path: |
+            build/app/outputs/flutter-apk/app-release.apk
+            build/roninx-windows.zip
+            build/roninx-linux.zip
+          if-no-files-found: ignore
+
+  publish-release:
+    name: Publish Release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+
+      - name: Flatten artifact structure
+        run: |
+          mkdir -p final-dist
+          find dist/ -type f -exec cp {} final-dist/ \;
+          ls -l final-dist/
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.0-${{ github.sha }}
+          name: Release v1.0.0-${{ github.run_number }}
+          draft: false
+          prerelease: false
+          files: |
+            final-dist/app-release.apk
+            final-dist/roninx-windows.zip
+            final-dist/roninx-linux.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
