@@ -94,3 +94,8 @@ android/app/build/
 
 *.js
 *.zip
+
+# Allow JS files inside scrapers/ and scripts/
+!scrapers/**/*.js
+!scripts/**/*.js
+
