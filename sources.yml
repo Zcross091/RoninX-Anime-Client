@@ -1,8 +1,14 @@
 anime:
   - name: HiAnime
-    url: https://raw.githubusercontent.com/roshancodespace/shonenx-sources/main/anime/hianime.js
+    url: >-
+      https://raw.githubusercontent.com/roshancodespace/Anime-Sources/main/hianime.js
   - name: GogoAnime
-    url: https://raw.githubusercontent.com/roshancodespace/shonenx-sources/main/anime/gogoanime.js
+    url: >-
+      https://raw.githubusercontent.com/roshancodespace/Anime-Sources/main/gogo.js
 manga:
   - name: MangaDex
-    url: https://raw.githubusercontent.com/roshancodespace/shonenx-sources/main/manga/mangadex.js
+    url: >-
+      https://raw.githubusercontent.com/roshancodespace/Manga-Sources/main/mangadex.js
+  - name: MangaPill
+    url: >-
+      https://raw.githubusercontent.com/roshancodespace/Manga-Sources/main/mangapill.js
