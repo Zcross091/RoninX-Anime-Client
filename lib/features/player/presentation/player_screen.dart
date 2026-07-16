@@ -15,6 +15,7 @@ class PlayerScreen extends ConsumerStatefulWidget {
   final String? sourceId; // For extension resolution
   final String? episodeUrl; // For extension resolution
   final String? animeTitle;
+  final String? episode;
 
   const PlayerScreen({
     super.key,
@@ -23,6 +24,7 @@ class PlayerScreen extends ConsumerStatefulWidget {
     this.sourceId,
     this.episodeUrl,
     this.animeTitle,
+    this.episode,
   });
 
   @override

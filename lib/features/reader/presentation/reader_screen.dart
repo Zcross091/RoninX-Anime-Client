@@ -14,6 +14,7 @@ class ReaderScreen extends ConsumerStatefulWidget {
   final String chapterUrl;
   final ReadingMode initialMode;
   final String? chapter;
+  final String? mangaTitle;
 
   const ReaderScreen({
     super.key,
@@ -22,6 +23,7 @@ class ReaderScreen extends ConsumerStatefulWidget {
     required this.chapterUrl,
     this.initialMode = ReadingMode.vertical,
     this.chapter,
+    this.mangaTitle,
   });
 
   @override
