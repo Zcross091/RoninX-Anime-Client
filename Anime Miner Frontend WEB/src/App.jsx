@@ -10,6 +10,7 @@ import { SectionHeader } from './components/ui/SectionHeader';
 import { AnimeRow } from './components/anime/AnimeRow';
 import { AuthModal } from './components/auth/AuthModal';
 import { SettingsModal } from './components/auth/SettingsModal';
+import MangaReader from './components/reader/MangaReader';
 import { PlayerHeader } from './components/player/PlayerHeader';
 import { PlayerSidebarLeft } from './components/player/PlayerSidebarLeft';
 import { PlayerCenter } from './components/player/PlayerCenter';
@@ -1842,7 +1843,7 @@ function App() {
       )}
 
       {/* YouTube-style Player */}
-      {selectedAnime && (
+      {selectedAnime && !selectedAnime.isManga && (
         <div className={`player-page ${theaterMode ? 'theater' : ''}`}>
 
           {/* ── Header Bar ── */}
@@ -1900,6 +1901,16 @@ function App() {
             openAnime={openAnime}
           />
         </div>
+      )}
+
+      {/* Manga Reader */}
+      {selectedAnime && selectedAnime.isManga && (
+        <MangaReader 
+          selectedManga={selectedAnime} 
+          closeReader={closePlayer} 
+          user={user}
+          supabase={supabase}
+        />
       )}
       {/* Authentication Modal */}
       <SettingsModal 
