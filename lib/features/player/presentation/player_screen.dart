@@ -102,7 +102,29 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // If no direct URL, resolve it via JS extension
+    // If we have animeTitle and episode, resolve the stream via the database/API provider
+    if (widget.streamUrl == null && widget.animeTitle != null && widget.episode != null) {
+      final streamAsync = ref.watch(streamResolverProvider({
+        'title': widget.animeTitle!,
+        'episode': widget.episode!,
+      }));
+
+      return streamAsync.when(
+        data: (url) {
+          if (url != null && !_isInitialized && !_isInitializing && _error == null) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) _initPlayer(url);
+            });
+          }
+          if (url == null) return _buildError('No stream found for this episode.');
+          return _buildPlayerUI();
+        },
+        loading: () => _buildLoading(),
+        error: (e, s) => _buildError(e.toString()),
+      );
+    }
+
+    // If no direct URL, resolve it via JS extension (legacy fallback)
     if (widget.streamUrl == null && widget.sourceId != null && widget.episodeUrl != null) {
       final streamAsync = ref.watch(extensionVideoExtractorProvider({
         'sourceId': widget.sourceId!,
