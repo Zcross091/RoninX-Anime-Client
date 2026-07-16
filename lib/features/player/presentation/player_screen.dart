@@ -62,6 +62,7 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
     if (_isInitializing) return;
     _isInitializing = true;
     try {
+      print("🟡 Initializing player with URL: $url");
       if (player.platform is NativePlayer) {
         final nativePlayer = player.platform as NativePlayer;
         await nativePlayer.setProperty('cache', 'yes');
@@ -69,6 +70,7 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
         await nativePlayer.setProperty('hls-bitrate', 'max');
       }
       await player.open(Media(url));
+      await player.play(); // Explicitly start playback
       if (mounted) {
         setState(() {
           _isInitialized = true;
@@ -76,6 +78,7 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen> {
         });
       }
     } catch (e) {
+      print("🔴 Player initialization failed: $e");
       if (mounted) {
         setState(() {
           _error = e.toString();

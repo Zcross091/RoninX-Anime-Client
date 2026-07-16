@@ -71,11 +71,14 @@ class JSEngine {
         RoninX.route("$category", "$sourceId", "$action", $jsonParams);
       ''';
       
+      print("🟡 Requesting video extraction/action: category=$category, source=$sourceId, action=$action");
       final JsEvalResult result = _engine!.evaluate(script);
+      print("🟢 JS Engine Returned: ${result.stringResult}");
+      
       // flutter_js returns a JsEvalResult. We can parse stringResult as JSON
       return jsonDecode(result.stringResult);
     } catch (e) {
-      print('Error executing JS action $action on $sourceId: $e');
+      print('🔴 Error executing JS action $action on $sourceId: $e');
       rethrow;
     }
   }
@@ -83,12 +86,14 @@ class JSEngine {
   Future<String> _fetchHtml(String url) async {
     // Pure native Dart HTTP request. JS engine has NO direct network access.
     try {
+      print("🟡 Bridge fetchHtml requesting: $url");
       final response = await http.get(Uri.parse(url), headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0 Safari/537.36'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
       }).timeout(const Duration(seconds: 10));
       return response.body;
     } catch (e) {
-      print('Bridge fetchHtml failed: $e');
+      print('🔴 Bridge fetchHtml failed: $e');
       throw Exception('fetchHtml failed: $e');
     }
   }
