@@ -51,6 +51,8 @@ final routerProvider = Provider<GoRouter>((ref) {
             title: extra?['title'] ?? 'Chapter',
             chapter: extra?['chapter'] ?? '1',
             mangaTitle: extra?['mangaTitle'] ?? '',
+            sourceId: extra?['sourceId'] ?? 'default_manga_source',
+            chapterUrl: extra?['chapterUrl'] ?? '',
           );
         },
       ),
