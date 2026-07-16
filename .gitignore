@@ -51,6 +51,7 @@ app.*.map.json
 .fvm/
 
 # Node (Unrelated to project but for personal fix automation)
+node_modules/
 fixer.js
 read.js
 
