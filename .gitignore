@@ -1,0 +1,18 @@
+# React / Node.js
+node_modules/
+dist/
+dist-ssr/
+*.local
+.env
+.env.*
+
+# Kotlin Multiplatform / Gradle
+.gradle/
+build/
+local.properties
+.artifacts/
+
+# IntelliJ / IDEs
+.idea/
+*.iml
+.DS_Store

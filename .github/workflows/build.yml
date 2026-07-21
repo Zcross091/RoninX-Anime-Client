@@ -1,0 +1,120 @@
+name: Build Production Applications
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  # Job 1: Build Android Release APK
+  build-android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'zulu'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+        working-directory: ./roninx-app
+
+      - name: Build Android Release APK
+        run: ./gradlew :composeApp:assembleRelease --no-daemon
+        working-directory: ./roninx-app
+
+      - name: Upload Android APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: RoninX-Android-APK
+          path: ./roninx-app/composeApp/build/outputs/apk/release/*.apk
+
+  # Job 2: Build Windows Desktop App (MSI)
+  build-windows:
+    name: Build Windows App
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'zulu'
+
+      - name: Build Windows MSI Package
+        run: ./gradlew :composeApp:packageMsi --no-daemon
+        working-directory: ./roninx-app
+
+      - name: Upload Windows MSI
+        uses: actions/upload-artifact@v4
+        with:
+          name: RoninX-Windows-MSI
+          path: ./roninx-app/composeApp/build/compose/binaries/main/msi/*.msi
+
+  # Job 3: Build macOS Desktop App (DMG)
+  build-macos:
+    name: Build macOS App
+    runs-on: macos-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'zulu'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+        working-directory: ./roninx-app
+
+      - name: Build macOS DMG Package
+        run: ./gradlew :composeApp:packageDmg --no-daemon
+        working-directory: ./roninx-app
+
+      - name: Upload macOS DMG
+        uses: actions/upload-artifact@v4
+        with:
+          name: RoninX-macOS-DMG
+          path: ./roninx-app/composeApp/build/compose/binaries/main/dmg/*.dmg
+
+  # Job 4: Build Linux Desktop App (DEB)
+  build-linux:
+    name: Build Linux App
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'zulu'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+        working-directory: ./roninx-app
+
+      - name: Build Linux DEB Package
+        run: ./gradlew :composeApp:packageDeb --no-daemon
+        working-directory: ./roninx-app
+
+      - name: Upload Linux DEB
+        uses: actions/upload-artifact@v4
+        with:
+          name: RoninX-Linux-DEB
+          path: ./roninx-app/composeApp/build/compose/binaries/main/deb/*.deb
