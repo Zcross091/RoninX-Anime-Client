@@ -42,7 +42,7 @@ jobs:
       - name: Ensure Gradle Wrapper & Permissions
         run: |
           if [ ! -f ./gradlew ]; then
-            gradle wrapper
+            gradle wrapper --gradle-version 8.7
           fi
           chmod +x gradlew
 
