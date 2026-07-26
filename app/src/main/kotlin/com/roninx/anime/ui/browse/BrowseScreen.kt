@@ -190,7 +190,7 @@ fun AniListGrid(media: List<AniListMedia>, onAnimeClick: (Int) -> Unit) {
                     coil.compose.AsyncImage(
                         model = item.coverImage?.large,
                         contentDescription = null,
-                        contentScale = androidx.compose.ui.layout.ContentScale.Cover,
+                        contentScale = androidx.compose.ui.layout.ContentScale.Crop,
                         modifier = Modifier.fillMaxSize()
                     )
                 }
