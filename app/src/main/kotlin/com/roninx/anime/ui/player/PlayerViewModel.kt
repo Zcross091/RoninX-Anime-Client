@@ -1,6 +1,6 @@
 package com.roninx.anime.ui.player
 
-import android.app.Application
+import android.content.Context
 import android.net.Uri
 import androidx.annotation.OptIn
 import androidx.lifecycle.SavedStateHandle
@@ -15,6 +15,7 @@ import com.roninx.anime.data.api.JikanAnime
 import com.roninx.anime.data.api.StreamLink
 import com.roninx.anime.data.repository.AnimeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -23,7 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class PlayerViewModel @Inject constructor(
     private val repository: AnimeRepository,
-    private val app: Application,
+    @ApplicationContext private val context: Context,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -33,7 +34,7 @@ class PlayerViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<PlayerUiState>(PlayerUiState.Loading)
     val uiState: StateFlow<PlayerUiState> = _uiState
 
-    val player: ExoPlayer = ExoPlayer.Builder(app).build().apply {
+    val player: ExoPlayer = ExoPlayer.Builder(context).build().apply {
         prepare()
         playWhenReady = true
     }
