@@ -183,7 +183,6 @@ fun AniListGrid(media: List<AniListMedia>, onAnimeClick: (Int) -> Unit) {
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.aspectRatio(2f / 3f).fillMaxWidth()
                 ) {
-                    androidx.compose.ui.layout.ContentScale
                     coil.compose.AsyncImage(
                         model = item.coverImage?.large,
                         contentDescription = null,

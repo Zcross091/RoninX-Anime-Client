@@ -26,6 +26,10 @@ class AnimeRepository @Inject constructor(
         return jikanApi.getAnimeByGenre("22").data
     }
 
+    suspend fun getAnimeByGenre(genreId: String): List<JikanAnime> {
+        return jikanApi.getAnimeByGenre(genreId).data
+    }
+
     suspend fun searchAnime(query: String): List<JikanAnime> {
         return jikanApi.searchAnime(query).data
     }

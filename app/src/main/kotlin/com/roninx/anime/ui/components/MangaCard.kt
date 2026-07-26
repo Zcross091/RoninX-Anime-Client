@@ -38,7 +38,7 @@ fun MangaCard(
             AsyncImage(
                 model = manga.coverImage?.large,
                 contentDescription = manga.title?.english ?: manga.title?.romaji,
-                contentScale = ContentScale.Cover,
+                contentScale = androidx.compose.ui.layout.ContentScale.Cover,
                 modifier = Modifier.fillMaxSize()
             )
         }

@@ -27,7 +27,9 @@ import com.roninx.anime.ui.components.AnimeRow
 import com.roninx.anime.ui.theme.RoninBase
 import com.roninx.anime.ui.theme.RoninRed
 import kotlinx.coroutines.delay
+import androidx.compose.foundation.ExperimentalFoundationApi
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel,
@@ -109,6 +111,7 @@ fun HomeContent(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HeroCarousel(
     heroAnime: List<JikanAnime>,

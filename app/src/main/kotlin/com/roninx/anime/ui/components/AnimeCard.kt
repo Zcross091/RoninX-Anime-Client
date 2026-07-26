@@ -39,7 +39,7 @@ fun AnimeCard(
             AsyncImage(
                 model = anime.images.jpg.large_image_url,
                 contentDescription = anime.title,
-                contentScale = ContentScale.Cover,
+                contentScale = androidx.compose.ui.layout.ContentScale.Cover,
                 modifier = Modifier.fillMaxSize()
             )
         }
