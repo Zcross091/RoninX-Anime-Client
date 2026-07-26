@@ -15,7 +15,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -23,7 +22,6 @@ import androidx.compose.ui.unit.sp
 import com.roninx.anime.data.api.AniListMedia
 import com.roninx.anime.data.api.JikanAnime
 import com.roninx.anime.ui.components.AnimeCard
-import com.roninx.anime.ui.components.MangaCard
 import com.roninx.anime.ui.theme.RoninBase
 import com.roninx.anime.ui.theme.RoninRed
 import com.roninx.anime.ui.theme.RoninSurface
@@ -81,7 +79,7 @@ fun BrowseScreen(
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(
-                        text = tab.name.lowercase().capitalize(),
+                        text = tab.name.lowercase().replaceFirstChar { it.titlecase() },
                         color = Color.White,
                         fontWeight = FontWeight.Bold,
                         fontSize = 14.sp,
@@ -131,11 +129,19 @@ fun BrowseScreen(
                     AniListGrid(media = state.anime, onAnimeClick = onAnimeClick)
                 }
                 is BrowseUiState.Error -> {
-                    Text(
-                        text = state.message,
-                        color = Color.Red,
-                        modifier = Modifier.align(Alignment.Center)
-                    )
+                    Column(
+                        modifier = Modifier.align(Alignment.Center),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = state.message, color = Color.Red, fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Button(
+                            onClick = { viewModel.retry() },
+                            colors = ButtonDefaults.buttonColors(containerColor = RoninRed)
+                        ) {
+                            Text("Retry")
+                        }
+                    }
                 }
                 else -> {}
             }
@@ -172,8 +178,6 @@ fun AniListGrid(media: List<AniListMedia>, onAnimeClick: (Int) -> Unit) {
         modifier = Modifier.fillMaxSize()
     ) {
         items(media) { item ->
-            // Map AniListMedia to AnimeCard or create a GenericCard
-            // Reusing AnimeCard with a helper mapping or simple mock for now
             Column(
                 modifier = Modifier
                     .width(150.dp)
@@ -203,5 +207,3 @@ fun AniListGrid(media: List<AniListMedia>, onAnimeClick: (Int) -> Unit) {
         }
     }
 }
-
-private fun String.capitalize() = this.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }

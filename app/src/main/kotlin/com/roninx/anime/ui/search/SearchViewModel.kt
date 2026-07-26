@@ -4,13 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.roninx.anime.data.api.JikanAnime
 import com.roninx.anime.data.repository.AnimeRepository
+import com.roninx.anime.data.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@OptIn(FlowPreview::class)
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val repository: AnimeRepository
@@ -22,6 +22,7 @@ class SearchViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<SearchUiState>(SearchUiState.Initial)
     val uiState: StateFlow<SearchUiState> = _uiState
 
+    @OptIn(FlowPreview::class)
     init {
         _searchQuery
             .debounce(500)
@@ -40,18 +41,25 @@ class SearchViewModel @Inject constructor(
         _searchQuery.value = query
     }
 
+    fun retrySearch() {
+        performSearch(_searchQuery.value)
+    }
+
     private fun performSearch(query: String) {
         viewModelScope.launch {
             _uiState.value = SearchUiState.Loading
-            try {
-                val results = repository.searchAnime(query)
-                if (results.isEmpty()) {
-                    _uiState.value = SearchUiState.Empty
-                } else {
-                    _uiState.value = SearchUiState.Success(results)
+            when (val resource = repository.searchAnime(query)) {
+                is Resource.Success -> {
+                    if (resource.data.isEmpty()) {
+                        _uiState.value = SearchUiState.Empty
+                    } else {
+                        _uiState.value = SearchUiState.Success(resource.data)
+                    }
                 }
-            } catch (e: Exception) {
-                _uiState.value = SearchUiState.Error(e.message ?: "Unknown error occurred")
+                is Resource.Error -> {
+                    _uiState.value = SearchUiState.Error(resource.message)
+                }
+                else -> {}
             }
         }
     }

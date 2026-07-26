@@ -13,11 +13,13 @@ import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import com.roninx.anime.data.api.JikanAnime
 import com.roninx.anime.data.api.StreamLink
 import com.roninx.anime.data.repository.AnimeRepository
+import com.roninx.anime.data.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -75,6 +77,10 @@ class PlayerViewModel @Inject constructor(
             override fun onTracksChanged(tracks: Tracks) {
                 updateAvailableQualities(tracks)
             }
+
+            override fun onPlayerError(error: PlaybackException) {
+                _uiState.value = PlayerUiState.Error("Playback Error: ${error.localizedMessage}")
+            }
         })
     }
 
@@ -97,11 +103,11 @@ class PlayerViewModel @Inject constructor(
 
     private fun startPositionUpdateTracker() {
         viewModelScope.launch {
-            while (true) {
+            while (isActive) {
                 if (player.isPlaying) {
                     _currentPosition.value = player.currentPosition
                 }
-                delay(1000)
+                delay(500) // More responsive update
             }
         }
     }
@@ -137,17 +143,20 @@ class PlayerViewModel @Inject constructor(
 
     private fun fetchStreamAndPlay() {
         viewModelScope.launch {
-            try {
-                val anime = repository.getAnimeFull(animeId)
-                val streams = repository.getStreamLinks(
+            _uiState.value = PlayerUiState.Loading
+            
+            val animeRes = repository.getAnimeFull(animeId)
+            if (animeRes is Resource.Success) {
+                val anime = animeRes.data
+                val streamsRes = repository.getStreamLinks(
                     title = anime.title,
                     originalTitle = anime.title_english ?: anime.title,
                     synonyms = emptyList(),
                     episode = episode
                 )
 
-                if (streams.isNotEmpty()) {
-                    val streamToPlay = streams.firstOrNull { it.url.startsWith("http") }
+                if (streamsRes is Resource.Success && streamsRes.data.isNotEmpty()) {
+                    val streamToPlay = streamsRes.data.firstOrNull { it.url.startsWith("http") }
                     if (streamToPlay != null) {
                         playStream(streamToPlay.url)
                         _uiState.value = PlayerUiState.Success(anime, episode)
@@ -159,8 +168,8 @@ class PlayerViewModel @Inject constructor(
                     _uiState.value = PlayerUiState.Error("Fetching stream... Miner triggered.")
                     repository.triggerMiner(anime.title, episode)
                 }
-            } catch (e: Exception) {
-                _uiState.value = PlayerUiState.Error(e.message ?: "Unknown error")
+            } else {
+                _uiState.value = PlayerUiState.Error((animeRes as? Resource.Error)?.message ?: "Failed to load anime metadata")
             }
         }
     }

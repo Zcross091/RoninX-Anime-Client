@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.roninx.anime.data.api.JikanAnime
 import com.roninx.anime.data.repository.AnimeRepository
+import com.roninx.anime.data.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,13 +27,17 @@ class DetailViewModel @Inject constructor(
         fetchAnimeDetail()
     }
 
-    private fun fetchAnimeDetail() {
+    fun fetchAnimeDetail() {
         viewModelScope.launch {
-            try {
-                val anime = repository.getAnimeFull(animeId)
-                _uiState.value = DetailUiState.Success(anime)
-            } catch (e: Exception) {
-                _uiState.value = DetailUiState.Error(e.message ?: "Unknown error")
+            _uiState.value = DetailUiState.Loading
+            when (val resource = repository.getAnimeFull(animeId)) {
+                is Resource.Success -> {
+                    _uiState.value = DetailUiState.Success(resource.data)
+                }
+                is Resource.Error -> {
+                    _uiState.value = DetailUiState.Error(resource.message)
+                }
+                else -> {}
             }
         }
     }

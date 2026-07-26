@@ -6,6 +6,7 @@ import com.roninx.anime.data.api.AniListMedia
 import com.roninx.anime.data.api.JikanAnime
 import com.roninx.anime.data.repository.AniListRepository
 import com.roninx.anime.data.repository.AnimeRepository
+import com.roninx.anime.data.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -32,6 +33,15 @@ class BrowseViewModel @Inject constructor(
         fetchScheduleData(ScheduleTab.AIRING)
     }
 
+    fun retry() {
+        val genre = _selectedGenre.value
+        if (genre != null) {
+            fetchGenreData(genre)
+        } else {
+            fetchScheduleData(_selectedScheduleTab.value)
+        }
+    }
+
     fun onGenreSelected(genre: GenreItem?) {
         _selectedGenre.value = genre
         if (genre != null) {
@@ -50,11 +60,14 @@ class BrowseViewModel @Inject constructor(
     private fun fetchGenreData(genre: GenreItem) {
         viewModelScope.launch {
             _uiState.value = BrowseUiState.Loading
-            try {
-                val results = animeRepository.getAnimeByGenre(genre.id.toString())
-                _uiState.value = BrowseUiState.GenreSuccess(results)
-            } catch (e: Exception) {
-                _uiState.value = BrowseUiState.Error(e.message ?: "Unknown error")
+            when (val resource = animeRepository.getAnimeByGenre(genre.id.toString())) {
+                is Resource.Success -> {
+                    _uiState.value = BrowseUiState.GenreSuccess(resource.data)
+                }
+                is Resource.Error -> {
+                    _uiState.value = BrowseUiState.Error(resource.message)
+                }
+                else -> {}
             }
         }
     }
@@ -62,16 +75,21 @@ class BrowseViewModel @Inject constructor(
     private fun fetchScheduleData(tab: ScheduleTab) {
         viewModelScope.launch {
             _uiState.value = BrowseUiState.Loading
-            try {
-                val results = when (tab) {
-                    ScheduleTab.AIRING -> aniListRepository.getAnimeBySchedule(status = "RELEASING")
-                    ScheduleTab.UPCOMING -> aniListRepository.getAnimeBySchedule(status = "NOT_YET_RELEASED")
-                    ScheduleTab.TV -> aniListRepository.getAnimeBySchedule(format = "TV")
-                    ScheduleTab.MOVIE -> aniListRepository.getAnimeBySchedule(format = "MOVIE")
+            val resource = when (tab) {
+                ScheduleTab.AIRING -> aniListRepository.getAnimeBySchedule(status = "RELEASING")
+                ScheduleTab.UPCOMING -> aniListRepository.getAnimeBySchedule(status = "NOT_YET_RELEASED")
+                ScheduleTab.TV -> aniListRepository.getAnimeBySchedule(format = "TV")
+                ScheduleTab.MOVIE -> aniListRepository.getAnimeBySchedule(format = "MOVIE")
+            }
+            
+            when (resource) {
+                is Resource.Success -> {
+                    _uiState.value = BrowseUiState.ScheduleSuccess(resource.data)
                 }
-                _uiState.value = BrowseUiState.ScheduleSuccess(results)
-            } catch (e: Exception) {
-                _uiState.value = BrowseUiState.Error(e.message ?: "Unknown error")
+                is Resource.Error -> {
+                    _uiState.value = BrowseUiState.Error(resource.message)
+                }
+                else -> {}
             }
         }
     }

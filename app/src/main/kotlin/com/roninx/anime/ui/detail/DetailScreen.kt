@@ -2,14 +2,11 @@ package com.roninx.anime.ui.detail
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -20,7 +17,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -43,10 +39,22 @@ fun DetailScreen(
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = RoninRed)
             }
             is DetailUiState.Success -> {
-                DetailContent(anime = state.anime, onEpisodeClick = onEpisodeClick)
+                DetailContent(anime = state.anime, onEpisodeClick = onEpisodeClick, onBackClick = onBackClick)
             }
             is DetailUiState.Error -> {
-                Text(text = state.message, color = Color.Red, modifier = Modifier.align(Alignment.Center))
+                Column(
+                    modifier = Modifier.align(Alignment.Center),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = state.message, color = Color.Red, fontWeight = FontWeight.Bold)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(
+                        onClick = { viewModel.fetchAnimeDetail() },
+                        colors = ButtonDefaults.buttonColors(containerColor = RoninRed)
+                    ) {
+                        Text("Retry")
+                    }
+                }
             }
         }
     }
@@ -55,7 +63,8 @@ fun DetailScreen(
 @Composable
 fun DetailContent(
     anime: JikanAnime,
-    onEpisodeClick: (JikanAnime, Int) -> Unit
+    onEpisodeClick: (JikanAnime, Int) -> Unit,
+    onBackClick: () -> Unit
 ) {
     val scrollState = rememberScrollState()
 
@@ -78,6 +87,13 @@ fun DetailContent(
                     )
             )
             
+            IconButton(
+                onClick = onBackClick,
+                modifier = Modifier.padding(16.dp).align(Alignment.TopStart).background(Color.Black.copy(alpha = 0.5f), shape = RoundedCornerShape(12.dp))
+            ) {
+                Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
+            }
+
             Column(
                 modifier = Modifier.align(Alignment.BottomStart).padding(24.dp)
             ) {
@@ -141,8 +157,6 @@ fun DetailContent(
             
             Spacer(modifier = Modifier.height(16.dp))
             
-            // Episode Grid (Since we are inside a vertical scroll, we can't use LazyVerticalGrid directly without height)
-            // For now, let's manually build a grid or use a flow row
             val episodesCount = anime.episodes ?: 12
             val chunkedEpisodes = (1..episodesCount).toList().chunked(4)
             
@@ -155,7 +169,6 @@ fun DetailContent(
                             modifier = Modifier.weight(1f).padding(4.dp)
                         )
                     }
-                    // Fill empty slots in last row
                     repeat(4 - rowEps.size) {
                         Spacer(modifier = Modifier.weight(1f).padding(4.dp))
                     }

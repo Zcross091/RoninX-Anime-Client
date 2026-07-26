@@ -125,12 +125,19 @@ fun SearchScreen(
                     }
                 }
                 is SearchUiState.Error -> {
-                    Text(
-                        state.message,
-                        color = Color.Red,
-                        modifier = Modifier.align(Alignment.Center).padding(24.dp),
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                    )
+                    Column(
+                        modifier = Modifier.align(Alignment.Center),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = state.message, color = Color.Red, fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Button(
+                            onClick = { viewModel.retrySearch() },
+                            colors = ButtonDefaults.buttonColors(containerColor = RoninRed)
+                        ) {
+                            Text("Retry")
+                        }
+                    }
                 }
             }
         }

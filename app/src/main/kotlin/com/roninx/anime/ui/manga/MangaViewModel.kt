@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.roninx.anime.data.api.AniListMedia
 import com.roninx.anime.data.repository.AniListRepository
+import com.roninx.anime.data.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -22,18 +24,26 @@ class MangaViewModel @Inject constructor(
         fetchMangaData()
     }
 
-    private fun fetchMangaData() {
+    fun fetchMangaData() {
         viewModelScope.launch {
-            try {
-                val trending = aniListRepository.getTrendingManga()
-                val popular = aniListRepository.getPopularManga()
-                
+            _uiState.value = MangaUiState.Loading
+            
+            val trendingDeferred = async { aniListRepository.getTrendingManga() }
+            val popularDeferred = async { aniListRepository.getPopularManga() }
+
+            val trendingRes = trendingDeferred.await()
+            val popularRes = popularDeferred.await()
+
+            if (trendingRes is Resource.Success && popularRes is Resource.Success) {
                 _uiState.value = MangaUiState.Success(
-                    trendingManga = trending,
-                    popularManga = popular
+                    trendingManga = trendingRes.data,
+                    popularManga = popularRes.data
                 )
-            } catch (e: Exception) {
-                _uiState.value = MangaUiState.Error(e.message ?: "Unknown error")
+            } else {
+                val errorMsg = (trendingRes as? Resource.Error)?.message 
+                    ?: (popularRes as? Resource.Error)?.message 
+                    ?: "Failed to load Manga data"
+                _uiState.value = MangaUiState.Error(errorMsg)
             }
         }
     }

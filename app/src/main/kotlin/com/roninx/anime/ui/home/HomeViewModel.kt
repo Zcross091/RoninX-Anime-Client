@@ -5,7 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.roninx.anime.data.api.JikanAnime
 import com.roninx.anime.data.repository.AniListRepository
 import com.roninx.anime.data.repository.AnimeRepository
+import com.roninx.anime.data.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -24,25 +26,36 @@ class HomeViewModel @Inject constructor(
         fetchHomeData()
     }
 
-    private fun fetchHomeData() {
+    fun fetchHomeData() {
         viewModelScope.launch {
-            try {
-                val topAiring = repository.getTopAiring()
-                val action = repository.getActionAnime()
-                val romance = repository.getRomanceAnime()
-                
-                val heroList = topAiring.take(5)
-                val banners = aniListRepository.getBanners(heroList.map { it.mal_id })
+            _uiState.value = HomeUiState.Loading
+            
+            val topAiringDeferred = async { repository.getTopAiring() }
+            val actionDeferred = async { repository.getActionAnime() }
+            val romanceDeferred = async { repository.getRomanceAnime() }
+
+            val topAiringRes = topAiringDeferred.await()
+            val actionRes = actionDeferred.await()
+            val romanceRes = romanceDeferred.await()
+
+            if (topAiringRes is Resource.Success && actionRes is Resource.Success && romanceRes is Resource.Success) {
+                val heroList = topAiringRes.data.take(5)
+                val bannersRes = aniListRepository.getBanners(heroList.map { it.mal_id })
+                val banners = if (bannersRes is Resource.Success) bannersRes.data else emptyMap()
 
                 _uiState.value = HomeUiState.Success(
                     heroAnime = heroList,
                     heroBanners = banners,
-                    topAiring = topAiring.drop(5),
-                    actionAnime = action,
-                    romanceAnime = romance
+                    topAiring = topAiringRes.data.drop(5),
+                    actionAnime = actionRes.data,
+                    romanceAnime = romanceRes.data
                 )
-            } catch (e: Exception) {
-                _uiState.value = HomeUiState.Error(e.message ?: "Unknown error")
+            } else {
+                val errorMsg = (topAiringRes as? Resource.Error)?.message 
+                    ?: (actionRes as? Resource.Error)?.message 
+                    ?: (romanceRes as? Resource.Error)?.message 
+                    ?: "Failed to load Home data"
+                _uiState.value = HomeUiState.Error(errorMsg)
             }
         }
     }
