@@ -57,8 +57,8 @@ fun MainScreen() {
     val navController = rememberNavController()
     val items = listOf(
         BottomNavItem("Home", Screen.Home.route, Icons.Default.Home),
-        BottomNavItem("Manga", Screen.Manga.route, Icons.Default.Book),
-        BottomNavItem("Browse", Screen.Browse.route, Icons.Default.Explore),
+        BottomNavItem("Manga", Screen.Manga.route, Icons.Default.List),
+        BottomNavItem("Browse", Screen.Browse.route, Icons.Default.Menu),
         BottomNavItem("Search", Screen.Search.route, Icons.Default.Search),
         BottomNavItem("My List", Screen.MyList.route, Icons.Default.Person)
     )
