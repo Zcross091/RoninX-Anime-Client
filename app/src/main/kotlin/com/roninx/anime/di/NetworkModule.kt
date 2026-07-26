@@ -1,5 +1,6 @@
 package com.roninx.anime.di
 
+import com.roninx.anime.data.api.AniListApi
 import com.roninx.anime.data.api.JikanApi
 import com.roninx.anime.data.api.RoninProxyApi
 import dagger.Module
@@ -46,5 +47,16 @@ object NetworkModule {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(RoninProxyApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAniListApi(okHttpClient: OkHttpClient): AniListApi {
+        return Retrofit.Builder()
+            .baseUrl("https://graphql.anilist.co/")
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(AniListApi::class.java)
     }
 }

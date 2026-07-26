@@ -3,6 +3,7 @@ package com.roninx.anime.ui.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.roninx.anime.data.api.JikanAnime
+import com.roninx.anime.data.repository.AniListRepository
 import com.roninx.anime.data.repository.AnimeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,7 +13,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repository: AnimeRepository
+    private val repository: AnimeRepository,
+    private val aniListRepository: AniListRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
@@ -29,8 +31,12 @@ class HomeViewModel @Inject constructor(
                 val action = repository.getActionAnime()
                 val romance = repository.getRomanceAnime()
                 
+                val heroList = topAiring.take(5)
+                val banners = aniListRepository.getBanners(heroList.map { it.mal_id })
+
                 _uiState.value = HomeUiState.Success(
-                    heroAnime = topAiring.take(5),
+                    heroAnime = heroList,
+                    heroBanners = banners,
                     topAiring = topAiring.drop(5),
                     actionAnime = action,
                     romanceAnime = romance
@@ -46,6 +52,7 @@ sealed class HomeUiState {
     object Loading : HomeUiState()
     data class Success(
         val heroAnime: List<JikanAnime>,
+        val heroBanners: Map<Int, String?> = emptyMap(),
         val topAiring: List<JikanAnime>,
         val actionAnime: List<JikanAnime>,
         val romanceAnime: List<JikanAnime>

@@ -1,12 +1,16 @@
 package com.roninx.anime.ui.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -22,6 +26,7 @@ import com.roninx.anime.data.api.JikanAnime
 import com.roninx.anime.ui.components.AnimeRow
 import com.roninx.anime.ui.theme.RoninBase
 import com.roninx.anime.ui.theme.RoninRed
+import kotlinx.coroutines.delay
 
 @Composable
 fun HomeScreen(
@@ -67,9 +72,13 @@ fun HomeContent(
             .fillMaxSize()
             .verticalScroll(scrollState)
     ) {
-        // Hero Section (Simple first one for now)
+        // Hero Carousel Section
         if (state.heroAnime.isNotEmpty()) {
-            HeroSection(anime = state.heroAnime[0], onClick = { onAnimeClick(state.heroAnime[0]) })
+            HeroCarousel(
+                heroAnime = state.heroAnime,
+                heroBanners = state.heroBanners,
+                onAnimeClick = onAnimeClick
+            )
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -101,17 +110,76 @@ fun HomeContent(
 }
 
 @Composable
-fun HeroSection(
-    anime: JikanAnime,
-    onClick: () -> Unit
+fun HeroCarousel(
+    heroAnime: List<JikanAnime>,
+    heroBanners: Map<Int, String?>,
+    onAnimeClick: (JikanAnime) -> Unit
 ) {
+    val pagerState = rememberPagerState(pageCount = { heroAnime.size })
+
+    // Auto-scroll logic
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(7000) // 7 seconds
+            val nextPage = (pagerState.currentPage + 1) % heroAnime.size
+            pagerState.animateScrollToPage(nextPage)
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(450.dp)
     ) {
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.fillMaxSize()
+        ) { page ->
+            val anime = heroAnime[page]
+            val bannerUrl = heroBanners[anime.mal_id] ?: anime.images.jpg.large_image_url
+            
+            HeroSlide(
+                anime = anime,
+                bannerUrl = bannerUrl,
+                onClick = { onAnimeClick(anime) }
+            )
+        }
+        
+        // Pager Indicators
+        Row(
+            Modifier
+                .height(50.dp)
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 20.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            repeat(heroAnime.size) { iteration ->
+                val color = if (pagerState.currentPage == iteration) RoninRed else Color.White.copy(alpha = 0.5f)
+                Box(
+                    modifier = Modifier
+                        .padding(2.dp)
+                        .size(if (pagerState.currentPage == iteration) 8.dp else 6.dp)
+                        .background(color, shape = androidx.compose.foundation.shape.CircleShape)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun HeroSlide(
+    anime: JikanAnime,
+    bannerUrl: String,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .clickable { onClick() }
+    ) {
         AsyncImage(
-            model = anime.images.jpg.large_image_url,
+            model = bannerUrl,
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
@@ -135,6 +203,7 @@ fun HeroSection(
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(24.dp)
+                .padding(bottom = 40.dp) // Space for indicators
         ) {
             Text(
                 text = "TRENDING NOW",

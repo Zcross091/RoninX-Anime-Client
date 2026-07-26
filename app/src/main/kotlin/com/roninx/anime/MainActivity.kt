@@ -29,6 +29,10 @@ import com.roninx.anime.ui.detail.DetailScreen
 import com.roninx.anime.ui.detail.DetailViewModel
 import com.roninx.anime.ui.home.HomeScreen
 import com.roninx.anime.ui.home.HomeViewModel
+import com.roninx.anime.ui.browse.BrowseScreen
+import com.roninx.anime.ui.browse.BrowseViewModel
+import com.roninx.anime.ui.manga.MangaScreen
+import com.roninx.anime.ui.manga.MangaViewModel
 import com.roninx.anime.ui.player.PlayerScreen
 import com.roninx.anime.ui.player.PlayerViewModel
 import com.roninx.anime.ui.search.SearchScreen
@@ -134,8 +138,24 @@ fun MainScreen() {
                     onBackClick = { navController.popBackStack() }
                 )
             }
-            composable(Screen.Manga.route) { PlaceholderScreen("Manga") }
-            composable(Screen.Browse.route) { PlaceholderScreen("Browse") }
+            composable(Screen.Manga.route) {
+                val viewModel: MangaViewModel = hiltViewModel()
+                MangaScreen(
+                    viewModel = viewModel,
+                    onMangaClick = { manga ->
+                        // Tapping manga doesn't have a detail screen yet in this MVP
+                    }
+                )
+            }
+            composable(Screen.Browse.route) {
+                val viewModel: BrowseViewModel = hiltViewModel()
+                BrowseScreen(
+                    viewModel = viewModel,
+                    onAnimeClick = { animeId ->
+                        navController.navigate(Screen.Detail.createRoute(animeId))
+                    }
+                )
+            }
             composable(Screen.Search.route) {
                 val viewModel: SearchViewModel = hiltViewModel()
                 SearchScreen(
