@@ -45,11 +45,11 @@ jobs:
           path: app/build/outputs/apk/debug/app-debug.apk
 
   # =============================================================
-  # Job 2: Create GitHub Release on Tag (e.g. v1.0.0)
+  # Job 2: Create GitHub Release
   # =============================================================
   create-release:
     name: Create GitHub Release
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v'))
     needs: [build-android]
     runs-on: ubuntu-latest
     steps:
@@ -62,12 +62,30 @@ jobs:
           name: RoninX-Anime-Client-Android-APK
           path: ./release-assets/
 
-      - name: Create Release
+      - name: Determine Release Tag
+        id: vars
+        run: |
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+            echo "title=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=latest" >> $GITHUB_OUTPUT
+            echo "title=Latest Development Build" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create or Update Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.vars.outputs.tag }}
+          name: ${{ steps.vars.outputs.title }}
+          body: |
+            This release contains the latest automated build of the RoninX Anime Android App.
+            
+            **Triggered by:** ${{ github.event.head_commit.message }}
+            **Commit:** ${{ github.sha }}
           files: |
             ./release-assets/app-debug.apk
           draft: false
-          prerelease: false
+          prerelease: ${{ steps.vars.outputs.tag == 'latest' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
