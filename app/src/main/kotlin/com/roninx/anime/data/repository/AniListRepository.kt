@@ -53,4 +53,23 @@ class AniListRepository @Inject constructor(
             response.data.Page?.media ?: emptyList()
         }
     }
+
+    suspend fun getTrendingAnime(): Resource<List<AniListMedia>> {
+        return safeApiCall {
+            val response = aniListApi.query(AniListRequest(query = AniListQueries.GET_TRENDING_ANIME))
+            response.data.Page?.media ?: emptyList()
+        }
+    }
+
+    suspend fun getAnimeByGenre(genre: String): Resource<List<AniListMedia>> {
+        return safeApiCall {
+            val response = aniListApi.query(
+                AniListRequest(
+                    query = AniListQueries.GET_ANIME_BY_GENRE,
+                    variables = mapOf("genre" to genre)
+                )
+            )
+            response.data.Page?.media ?: emptyList()
+        }
+    }
 }

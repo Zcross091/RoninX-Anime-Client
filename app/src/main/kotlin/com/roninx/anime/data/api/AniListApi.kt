@@ -110,4 +110,38 @@ object AniListQueries {
           }
         }
     """.trimIndent()
+
+    val GET_TRENDING_ANIME = """
+        query {
+          Page(page: 1, perPage: 24) {
+            media(type: ANIME, sort: TRENDING_DESC) {
+              id
+              idMal
+              title { english romaji }
+              coverImage { large }
+              bannerImage
+              episodes
+              averageScore
+              description
+              synopsis: description
+            }
+          }
+        }
+    """.trimIndent()
+
+    val GET_ANIME_BY_GENRE = """
+        query (${'$'}genre: String) {
+          Page(page: 1, perPage: 24) {
+            media(genre: ${'$'}genre, type: ANIME, sort: POPULARITY_DESC) {
+              id
+              idMal
+              title { english romaji }
+              coverImage { large }
+              episodes
+              averageScore
+              description
+            }
+          }
+        }
+    """.trimIndent()
 }

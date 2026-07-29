@@ -1,5 +1,7 @@
 package com.roninx.anime
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -49,8 +51,38 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val mainViewModel: MainViewModel = hiltViewModel()
+            val updateInfo by mainViewModel.updateInfo.collectAsState()
+
             RoninXAnimeTheme {
-                MainScreen()
+                Surface(modifier = Modifier.fillMaxSize(), color = RoninBase) {
+                    MainScreen()
+
+                    updateInfo?.let { info ->
+                        AlertDialog(
+                            onDismissRequest = { mainViewModel.dismissUpdate() },
+                            title = { Text("New Update Available (${info.versionName})") },
+                            text = { Text(info.releaseNotes.take(300) + if (info.releaseNotes.length > 300) "..." else "") },
+                            confirmButton = {
+                                Button(onClick = {
+                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(info.downloadUrl))
+                                    startActivity(intent)
+                                    mainViewModel.dismissUpdate()
+                                }, colors = ButtonDefaults.buttonColors(containerColor = RoninRed)) {
+                                    Text("Download")
+                                }
+                            },
+                            dismissButton = {
+                                TextButton(onClick = { mainViewModel.dismissUpdate() }) {
+                                    Text("Later", color = Color.Gray)
+                                }
+                            },
+                            containerColor = Color(0xFF1A1A1A),
+                            titleContentColor = Color.White,
+                            textContentColor = Color.LightGray
+                        )
+                    }
+                }
             }
         }
     }

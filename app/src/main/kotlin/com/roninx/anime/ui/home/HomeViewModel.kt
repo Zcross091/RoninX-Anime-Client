@@ -2,7 +2,7 @@ package com.roninx.anime.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.roninx.anime.data.api.JikanAnime
+import com.roninx.anime.data.api.*
 import com.roninx.anime.data.repository.AniListRepository
 import com.roninx.anime.data.repository.AnimeRepository
 import com.roninx.anime.data.util.Resource
@@ -30,13 +30,10 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = HomeUiState.Loading
             
-            val topAiringDeferred = async { repository.getTopAiring() }
-            val actionDeferred = async { repository.getActionAnime() }
-            val romanceDeferred = async { repository.getRomanceAnime() }
-
-            val topAiringRes = topAiringDeferred.await()
-            val actionRes = actionDeferred.await()
-            val romanceRes = romanceDeferred.await()
+            // Primary: Try Jikan API
+            val topAiringRes = repository.getTopAiring()
+            val actionRes = repository.getActionAnime()
+            val romanceRes = repository.getRomanceAnime()
 
             if (topAiringRes is Resource.Success && actionRes is Resource.Success && romanceRes is Resource.Success) {
                 val heroList = topAiringRes.data.take(5)
@@ -51,13 +48,45 @@ class HomeViewModel @Inject constructor(
                     romanceAnime = romanceRes.data
                 )
             } else {
-                val errorMsg = (topAiringRes as? Resource.Error)?.message 
-                    ?: (actionRes as? Resource.Error)?.message 
-                    ?: (romanceRes as? Resource.Error)?.message 
-                    ?: "Failed to load Home data"
-                _uiState.value = HomeUiState.Error(errorMsg)
+                // Fallback: Try AniList API if Jikan fails (e.g. 504 error)
+                println("Jikan failed, trying AniList fallback...")
+                fetchFallbackHomeData()
             }
         }
+    }
+
+    private suspend fun fetchFallbackHomeData() {
+        val trendingRes = aniListRepository.getTrendingAnime()
+        val actionRes = aniListRepository.getAnimeByGenre("Action")
+        val romanceRes = aniListRepository.getAnimeByGenre("Romance")
+
+        if (trendingRes is Resource.Success && actionRes is Resource.Success && romanceRes is Resource.Success) {
+            val heroList = trendingRes.data.take(5).map { it.toJikan() }
+            val heroBanners = trendingRes.data.take(5).associate { (it.idMal ?: 0) to it.bannerImage }
+
+            _uiState.value = HomeUiState.Success(
+                heroAnime = heroList,
+                heroBanners = heroBanners,
+                topAiring = trendingRes.data.drop(5).map { it.toJikan() },
+                actionAnime = actionRes.data.map { it.toJikan() },
+                romanceAnime = romanceRes.data.map { it.toJikan() }
+            )
+        } else {
+            val errorMsg = (trendingRes as? Resource.Error)?.message ?: "Critical: Both Jikan and AniList failed."
+            _uiState.value = HomeUiState.Error(errorMsg)
+        }
+    }
+
+    private fun AniListMedia.toJikan(): JikanAnime {
+        return JikanAnime(
+            mal_id = idMal ?: id,
+            title = title?.romaji ?: "Unknown",
+            title_english = title?.english,
+            images = JikanImages(JikanJpg(coverImage?.large ?: "")),
+            episodes = episodes ?: chapters,
+            score = (averageScore?.toDouble() ?: 0.0) / 10.0,
+            synopsis = description
+        )
     }
 }
 
