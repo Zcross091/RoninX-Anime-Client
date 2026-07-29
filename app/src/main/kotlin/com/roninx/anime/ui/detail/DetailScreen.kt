@@ -6,7 +6,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -32,6 +34,7 @@ fun DetailScreen(
     onEpisodeClick: (JikanAnime, Int) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val isInWatchlist by viewModel.isInWatchlist.collectAsState()
 
     Box(modifier = Modifier.fillMaxSize().background(RoninBase)) {
         when (val state = uiState) {
@@ -39,7 +42,13 @@ fun DetailScreen(
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = RoninRed)
             }
             is DetailUiState.Success -> {
-                DetailContent(anime = state.anime, onEpisodeClick = onEpisodeClick, onBackClick = onBackClick)
+                DetailContent(
+                    anime = state.anime,
+                    isInWatchlist = isInWatchlist,
+                    onWatchlistToggle = { viewModel.toggleWatchlist() },
+                    onEpisodeClick = onEpisodeClick,
+                    onBackClick = onBackClick
+                )
             }
             is DetailUiState.Error -> {
                 Column(
@@ -63,6 +72,8 @@ fun DetailScreen(
 @Composable
 fun DetailContent(
     anime: JikanAnime,
+    isInWatchlist: Boolean,
+    onWatchlistToggle: () -> Unit,
     onEpisodeClick: (JikanAnime, Int) -> Unit,
     onBackClick: () -> Unit
 ) {
@@ -126,6 +137,25 @@ fun DetailContent(
                         color = Color.LightGray,
                         fontSize = 14.sp
                     )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = onWatchlistToggle,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (isInWatchlist) Color.White.copy(alpha = 0.1f) else RoninRed
+                    ),
+                    shape = RoundedCornerShape(8.dp),
+                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
+                ) {
+                    Icon(
+                        if (isInWatchlist) Icons.Default.Check else Icons.Default.Add,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(if (isInWatchlist) "Added to List" else "Add to List", fontWeight = FontWeight.Bold)
                 }
             }
         }

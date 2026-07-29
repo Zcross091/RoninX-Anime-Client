@@ -3,13 +3,13 @@ package com.roninx.anime.ui.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.roninx.anime.data.api.*
+import com.roninx.anime.data.local.entities.WatchHistoryEntity
 import com.roninx.anime.data.repository.AniListRepository
 import com.roninx.anime.data.repository.AnimeRepository
 import com.roninx.anime.data.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,6 +21,9 @@ class HomeViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val uiState: StateFlow<HomeUiState> = _uiState
+
+    val watchHistory: StateFlow<List<WatchHistoryEntity>> = repository.getWatchHistory()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     init {
         fetchHomeData()
@@ -49,7 +52,6 @@ class HomeViewModel @Inject constructor(
                 )
             } else {
                 // Fallback: Try AniList API if Jikan fails (e.g. 504 error)
-                println("Jikan failed, trying AniList fallback...")
                 fetchFallbackHomeData()
             }
         }

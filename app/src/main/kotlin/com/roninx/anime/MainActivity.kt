@@ -39,6 +39,8 @@ import com.roninx.anime.ui.player.PlayerScreen
 import com.roninx.anime.ui.player.PlayerViewModel
 import com.roninx.anime.ui.search.SearchScreen
 import com.roninx.anime.ui.search.SearchViewModel
+import com.roninx.anime.ui.mylist.MyListScreen
+import com.roninx.anime.ui.mylist.MyListViewModel
 import com.roninx.anime.ui.navigation.Screen
 import com.roninx.anime.ui.theme.RoninBase
 import com.roninx.anime.ui.theme.RoninRed
@@ -140,9 +142,15 @@ fun MainScreen() {
         ) {
             composable(Screen.Home.route) {
                 val viewModel: HomeViewModel = hiltViewModel()
-                HomeScreen(viewModel = viewModel, onAnimeClick = { anime ->
-                    navController.navigate(Screen.Detail.createRoute(anime.mal_id))
-                })
+                HomeScreen(
+                    viewModel = viewModel, 
+                    onAnimeClick = { anime ->
+                        navController.navigate(Screen.Detail.createRoute(anime.mal_id))
+                    },
+                    onHistoryClick = { malId ->
+                        navController.navigate(Screen.Detail.createRoute(malId))
+                    }
+                )
             }
             composable(
                 Screen.Detail.route,
@@ -175,7 +183,7 @@ fun MainScreen() {
                 MangaScreen(
                     viewModel = viewModel,
                     onMangaClick = { manga ->
-                        // Tapping manga doesn't have a detail screen yet in this MVP
+                        // Tapping manga doesn't have a detail screen yet
                     }
                 )
             }
@@ -197,15 +205,16 @@ fun MainScreen() {
                     }
                 )
             }
-            composable(Screen.MyList.route) { PlaceholderScreen("My List") }
+            composable(Screen.MyList.route) { 
+                val viewModel: MyListViewModel = hiltViewModel()
+                MyListScreen(
+                    viewModel = viewModel,
+                    onAnimeClick = { animeId ->
+                        navController.navigate(Screen.Detail.createRoute(animeId))
+                    }
+                )
+            }
         }
-    }
-}
-
-@Composable
-fun PlaceholderScreen(name: String) {
-    Box(modifier = Modifier.fillMaxSize().background(RoninBase), contentAlignment = Alignment.Center) {
-        Text(text = "$name Screen coming soon!", color = Color.White)
     }
 }
 

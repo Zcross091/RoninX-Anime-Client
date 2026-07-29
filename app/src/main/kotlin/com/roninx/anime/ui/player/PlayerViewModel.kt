@@ -12,6 +12,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import com.roninx.anime.data.api.JikanAnime
 import com.roninx.anime.data.api.StreamLink
+import com.roninx.anime.data.local.entities.WatchHistoryEntity
 import com.roninx.anime.data.repository.AnimeRepository
 import com.roninx.anime.data.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -66,6 +67,7 @@ class PlayerViewModel @Inject constructor(
         player.addListener(object : Player.Listener {
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 _isPlaying.value = isPlaying
+                saveProgress()
             }
 
             override fun onPlaybackStateChanged(state: Int) {
@@ -82,6 +84,24 @@ class PlayerViewModel @Inject constructor(
                 _uiState.value = PlayerUiState.Error("Playback Error: ${error.localizedMessage}")
             }
         })
+    }
+
+    private fun saveProgress() {
+        val state = uiState.value
+        if (state is PlayerUiState.Success) {
+            viewModelScope.launch {
+                repository.upsertWatchHistory(
+                    WatchHistoryEntity(
+                        malId = state.anime.mal_id,
+                        title = state.anime.title_english ?: state.anime.title,
+                        imageUrl = state.anime.images.jpg.large_image_url,
+                        lastEpisodeWatched = state.episode,
+                        progressMs = player.currentPosition,
+                        durationMs = player.duration
+                    )
+                )
+            }
+        }
     }
 
     private fun updateAvailableQualities(tracks: Tracks) {
@@ -107,7 +127,7 @@ class PlayerViewModel @Inject constructor(
                 if (player.isPlaying) {
                     _currentPosition.value = player.currentPosition
                 }
-                delay(500) // More responsive update
+                delay(1000)
             }
         }
     }
@@ -119,19 +139,23 @@ class PlayerViewModel @Inject constructor(
     fun seekTo(position: Long) {
         player.seekTo(position)
         _currentPosition.value = position
+        saveProgress()
     }
 
     fun skipIntro() {
         val newPos = player.currentPosition + 85000L
         player.seekTo(newPos.coerceAtMost(player.duration))
+        saveProgress()
     }
 
     fun seekForward() {
         player.seekTo(player.currentPosition + 10000L)
+        saveProgress()
     }
 
     fun seekBackward() {
         player.seekTo((player.currentPosition - 10000L).coerceAtLeast(0L))
+        saveProgress()
     }
 
     @OptIn(UnstableApi::class)
@@ -160,6 +184,7 @@ class PlayerViewModel @Inject constructor(
                     if (streamToPlay != null) {
                         playStream(streamToPlay.url)
                         _uiState.value = PlayerUiState.Success(anime, episode)
+                        saveProgress()
                     } else {
                         _uiState.value = PlayerUiState.Error("No playable stream found. Miner triggered.")
                         repository.triggerMiner(anime.title, episode)
@@ -184,6 +209,7 @@ class PlayerViewModel @Inject constructor(
     }
 
     override fun onCleared() {
+        saveProgress()
         super.onCleared()
         player.release()
     }

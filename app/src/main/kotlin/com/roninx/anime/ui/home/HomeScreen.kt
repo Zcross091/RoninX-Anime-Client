@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.roninx.anime.data.api.JikanAnime
+import com.roninx.anime.data.local.entities.WatchHistoryEntity
 import com.roninx.anime.ui.components.AnimeRow
 import com.roninx.anime.ui.theme.RoninBase
 import com.roninx.anime.ui.theme.RoninRed
@@ -32,9 +33,11 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel,
-    onAnimeClick: (JikanAnime) -> Unit
+    onAnimeClick: (JikanAnime) -> Unit,
+    onHistoryClick: (Int) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val watchHistory by viewModel.watchHistory.collectAsState()
 
     Box(modifier = Modifier.fillMaxSize().background(RoninBase)) {
         when (val state = uiState) {
@@ -47,7 +50,9 @@ fun HomeScreen(
             is HomeUiState.Success -> {
                 HomeContent(
                     state = state,
-                    onAnimeClick = onAnimeClick
+                    watchHistory = watchHistory,
+                    onAnimeClick = onAnimeClick,
+                    onHistoryClick = onHistoryClick
                 )
             }
             is HomeUiState.Error -> {
@@ -72,7 +77,9 @@ fun HomeScreen(
 @Composable
 fun HomeContent(
     state: HomeUiState.Success,
-    onAnimeClick: (JikanAnime) -> Unit
+    watchHistory: List<WatchHistoryEntity>,
+    onAnimeClick: (JikanAnime) -> Unit,
+    onHistoryClick: (Int) -> Unit
 ) {
     val scrollState = rememberScrollState()
 
@@ -91,6 +98,14 @@ fun HomeContent(
         }
 
         Spacer(modifier = Modifier.height(24.dp))
+
+        if (watchHistory.isNotEmpty()) {
+            ContinueWatchingRow(
+                history = watchHistory,
+                onItemClick = onHistoryClick
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+        }
 
         AnimeRow(
             title = "Top Airing",
@@ -115,6 +130,76 @@ fun HomeContent(
         )
         
         Spacer(modifier = Modifier.height(100.dp)) // Bottom nav space
+    }
+}
+
+@Composable
+fun ContinueWatchingRow(
+    history: List<WatchHistoryEntity>,
+    onItemClick: (Int) -> Unit
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = "Continue Watching",
+            color = Color.White,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.ExtraBold,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        androidx.compose.foundation.lazy.LazyRow(
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(history.size) { index ->
+                val item = history[index]
+                Card(
+                    modifier = Modifier
+                        .width(280.dp)
+                        .height(160.dp)
+                        .clickable { onItemClick(item.malId) },
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        AsyncImage(
+                            model = item.imageUrl,
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    Brush.verticalGradient(
+                                        colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.8f))
+                                    )
+                                )
+                        )
+                        Column(
+                            modifier = Modifier
+                                .align(Alignment.BottomStart)
+                                .padding(12.dp)
+                        ) {
+                            Text(text = item.title, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 14.sp, maxLines = 1)
+                            Text(text = "Episode ${item.lastEpisodeWatched}", color = RoninRed, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                        }
+                        
+                        // Progress Bar
+                        val progress = if (item.durationMs > 0) item.progressMs.toFloat() / item.durationMs else 0f
+                        LinearProgressIndicator(
+                            progress = progress,
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .fillMaxWidth()
+                                .height(4.dp),
+                            color = RoninRed,
+                            trackColor = Color.White.copy(alpha = 0.2f)
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 
