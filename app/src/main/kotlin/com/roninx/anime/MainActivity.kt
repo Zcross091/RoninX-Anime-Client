@@ -55,6 +55,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             val mainViewModel: MainViewModel = hiltViewModel()
             val updateInfo by mainViewModel.updateInfo.collectAsState()
+            val downloadProgress by mainViewModel.downloadProgress.collectAsState()
+            val updateError by mainViewModel.updateError.collectAsState()
 
             RoninXAnimeTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = RoninBase) {
@@ -62,21 +64,54 @@ class MainActivity : ComponentActivity() {
 
                     updateInfo?.let { info ->
                         AlertDialog(
-                            onDismissRequest = { mainViewModel.dismissUpdate() },
-                            title = { Text("New Update Available (${info.versionName})") },
-                            text = { Text(info.releaseNotes.take(300) + if (info.releaseNotes.length > 300) "..." else "") },
+                            onDismissRequest = { 
+                                if (downloadProgress == null) mainViewModel.dismissUpdate() 
+                            },
+                            title = { Text(if (downloadProgress != null) "Downloading Update..." else "New Update Available (${info.versionName})") },
+                            text = { 
+                                Column {
+                                    if (downloadProgress != null) {
+                                        LinearProgressIndicator(
+                                            progress = downloadProgress ?: 0f,
+                                            modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
+                                            color = RoninRed
+                                        )
+                                        Text("${((downloadProgress ?: 0f) * 100).toInt()}%", modifier = Modifier.align(Alignment.CenterHorizontally))
+                                    } else {
+                                        Text(info.releaseNotes.take(300) + if (info.releaseNotes.length > 300) "..." else "")
+                                    }
+                                }
+                            },
                             confirmButton = {
-                                Button(onClick = {
-                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(info.downloadUrl))
-                                    startActivity(intent)
-                                    mainViewModel.dismissUpdate()
-                                }, colors = ButtonDefaults.buttonColors(containerColor = RoninRed)) {
-                                    Text("Download")
+                                if (downloadProgress == null) {
+                                    Button(onClick = {
+                                        mainViewModel.startUpdate(info.downloadUrl)
+                                    }, colors = ButtonDefaults.buttonColors(containerColor = RoninRed)) {
+                                        Text("Download & Install")
+                                    }
                                 }
                             },
                             dismissButton = {
-                                TextButton(onClick = { mainViewModel.dismissUpdate() }) {
-                                    Text("Later", color = Color.Gray)
+                                if (downloadProgress == null) {
+                                    TextButton(onClick = { mainViewModel.dismissUpdate() }) {
+                                        Text("Later", color = Color.Gray)
+                                    }
+                                }
+                            },
+                            containerColor = Color(0xFF1A1A1A),
+                            titleContentColor = Color.White,
+                            textContentColor = Color.LightGray
+                        )
+                    }
+
+                    updateError?.let { error ->
+                        AlertDialog(
+                            onDismissRequest = { mainViewModel.dismissError() },
+                            title = { Text("Update Failed") },
+                            text = { Text(error) },
+                            confirmButton = {
+                                Button(onClick = { mainViewModel.dismissError() }) {
+                                    Text("OK")
                                 }
                             },
                             containerColor = Color(0xFF1A1A1A),
