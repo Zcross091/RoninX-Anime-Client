@@ -1,6 +1,7 @@
 package com.roninx.anime.data.repository
 
 import android.content.Context
+import android.content.pm.PackageManager
 import com.roninx.anime.data.api.GitHubApi
 import com.roninx.anime.data.api.GitHubRelease
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -15,7 +16,11 @@ class UpdateRepository @Inject constructor(
     suspend fun checkForUpdate(): UpdateInfo? {
         return try {
             val latestRelease = gitHubApi.getLatestRelease()
-            val currentVersion = context.packageManager.getPackageInfo(context.packageName, 0).versionName
+            val currentVersion = try {
+                context.packageManager.getPackageInfo(context.packageName, 0).versionName
+            } catch (e: PackageManager.NameNotFoundException) {
+                "0.0.0"
+            }
             
             // Basic version comparison (e.g. "1.0.0" vs "1.0.1")
             if (isNewerVersion(currentVersion, latestRelease.tag_name)) {
@@ -35,8 +40,8 @@ class UpdateRepository @Inject constructor(
 
     private fun isNewerVersion(current: String?, latest: String): Boolean {
         if (current == null) return true
-        val cur = current.replace(Regex("[^0-9.]"), "").split(".")
-        val lat = latest.replace(Regex("[^0-9.]"), "").split(".")
+        val cur = current.replace(Regex("[^0-9.]"), "").split(".").filter { it.isNotEmpty() }
+        val lat = latest.replace(Regex("[^0-9.]"), "").split(".").filter { it.isNotEmpty() }
         
         for (i in 0 until minOf(cur.size, lat.size)) {
             val c = cur[i].toIntOrNull() ?: 0

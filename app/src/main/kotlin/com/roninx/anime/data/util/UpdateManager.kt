@@ -1,10 +1,8 @@
 package com.roninx.anime.data.util
 
 import android.app.DownloadManager
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.net.Uri
 import android.os.Environment
 import androidx.core.content.FileProvider
@@ -23,11 +21,15 @@ class UpdateManager @Inject constructor(
     private val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
 
     fun downloadAndInstall(url: String): Flow<DownloadStatus> = callbackFlow {
+        // Download to a private folder and share via FileProvider
+        val destinationFile = File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "roninx-update.apk")
+        if (destinationFile.exists()) destinationFile.delete()
+
         val request = DownloadManager.Request(Uri.parse(url))
             .setTitle("RoninX Update")
             .setDescription("Downloading latest version...")
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-            .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "roninx-update.apk")
+            .setDestinationUri(Uri.fromFile(destinationFile))
             .setAllowedOverMetered(true)
             .setAllowedOverRoaming(true)
 
@@ -36,7 +38,8 @@ class UpdateManager @Inject constructor(
         val timer = java.util.Timer()
         timer.scheduleAtFixedRate(object : java.util.TimerTask() {
             override fun run() {
-                val cursor = downloadManager.query(DownloadManager.Query().setFilterById(downloadId))
+                val query = DownloadManager.Query().setFilterById(downloadId)
+                val cursor = downloadManager.query(query)
                 if (cursor != null && cursor.moveToFirst()) {
                     val statusIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)
                     val downloadedIndex = cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR)
@@ -52,12 +55,12 @@ class UpdateManager @Inject constructor(
 
                     if (status == DownloadManager.STATUS_SUCCESSFUL) {
                         timer.cancel()
-                        val uri = downloadManager.getUriForDownloadedFile(downloadId)
-                        if (uri != null) {
-                            trySend(DownloadStatus.Finished(uri))
-                        } else {
-                            trySend(DownloadStatus.Error("Download failed: URI is null"))
-                        }
+                        val contentUri = FileProvider.getUriForFile(
+                            context,
+                            "${context.packageName}.fileprovider",
+                            destinationFile
+                        )
+                        trySend(DownloadStatus.Finished(contentUri))
                         close()
                     } else if (status == DownloadManager.STATUS_FAILED) {
                         timer.cancel()
