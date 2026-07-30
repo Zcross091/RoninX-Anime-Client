@@ -55,6 +55,8 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Download Android APK Artifact
         uses: actions/download-artifact@v4
@@ -72,6 +74,14 @@ jobs:
             echo "tag=latest" >> $GITHUB_OUTPUT
             echo "title=Latest Development Build" >> $GITHUB_OUTPUT
           fi
+
+      - name: Update Latest Git Tag
+        if: steps.vars.outputs.tag == 'latest'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -f latest ${{ github.sha }}
+          git push -f origin latest
 
       - name: Create or Update Release
         uses: softprops/action-gh-release@v2
