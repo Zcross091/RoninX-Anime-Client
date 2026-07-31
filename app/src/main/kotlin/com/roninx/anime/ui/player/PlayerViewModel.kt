@@ -24,6 +24,10 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+import androidx.media3.datasource.DefaultDataSource
+import androidx.media3.datasource.DefaultHttpDataSource
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+
 @HiltViewModel
 class PlayerViewModel @Inject constructor(
     private val repository: AnimeRepository,
@@ -37,13 +41,13 @@ class PlayerViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<PlayerUiState>(PlayerUiState.Loading)
     val uiState: StateFlow<PlayerUiState> = _uiState
 
+    private var streamList: List<StreamLink> = emptyList()
+    private var currentStreamIndex: Int = 0
+
     private val trackSelector = DefaultTrackSelector(context)
     val player: ExoPlayer = ExoPlayer.Builder(context)
         .setTrackSelector(trackSelector)
-        .build().apply {
-            prepare()
-            playWhenReady = true
-        }
+        .build()
 
     private val _isPlaying = MutableStateFlow(true)
     val isPlaying: StateFlow<Boolean> = _isPlaying
@@ -81,7 +85,13 @@ class PlayerViewModel @Inject constructor(
             }
 
             override fun onPlayerError(error: PlaybackException) {
-                _uiState.value = PlayerUiState.Error("Playback Error: ${error.localizedMessage}")
+                val nextIndex = currentStreamIndex + 1
+                if (nextIndex < streamList.size) {
+                    currentStreamIndex = nextIndex
+                    playStream(streamList[nextIndex].url)
+                } else {
+                    _uiState.value = PlayerUiState.Error("Playback Error: ${error.localizedMessage}")
+                }
             }
         })
     }
@@ -180,9 +190,11 @@ class PlayerViewModel @Inject constructor(
                 )
 
                 if (streamsRes is Resource.Success && streamsRes.data.isNotEmpty()) {
-                    val streamToPlay = streamsRes.data.firstOrNull { it.url.startsWith("http") }
-                    if (streamToPlay != null) {
-                        playStream(streamToPlay.url)
+                    val validStreams = streamsRes.data.filter { it.url.startsWith("http") }
+                    if (validStreams.isNotEmpty()) {
+                        streamList = validStreams
+                        currentStreamIndex = 0
+                        playStream(streamList[0].url)
                         _uiState.value = PlayerUiState.Success(anime, episode)
                         saveProgress()
                     } else {
@@ -190,7 +202,7 @@ class PlayerViewModel @Inject constructor(
                         repository.triggerMiner(anime.title, episode)
                     }
                 } else {
-                    _uiState.value = PlayerUiState.Error("Fetching stream... Miner triggered.")
+                    _uiState.value = PlayerUiState.Error("No cached stream found. Miner triggered.")
                     repository.triggerMiner(anime.title, episode)
                 }
             } else {
@@ -201,11 +213,26 @@ class PlayerViewModel @Inject constructor(
 
     @OptIn(UnstableApi::class)
     private fun playStream(url: String) {
+        val httpDataSourceFactory = DefaultHttpDataSource.Factory()
+            .setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+            .setAllowCrossProtocolRedirects(true)
+
+        val dataSourceFactory = DefaultDataSource.Factory(context, httpDataSourceFactory)
+        val mediaSourceFactory = DefaultMediaSourceFactory(dataSourceFactory)
+
+        val isHls = url.contains("m3u8", ignoreCase = true) || url.contains("hls", ignoreCase = true) || url.contains(".m3u", ignoreCase = true)
+        val mimeType = if (isHls) MimeTypes.APPLICATION_M3U8 else MimeTypes.VIDEO_MP4
+
         val mediaItem = MediaItem.Builder()
             .setUri(Uri.parse(url))
-            .setMimeType(if (url.contains("m3u8")) MimeTypes.APPLICATION_M3U8 else MimeTypes.VIDEO_MP4)
+            .setMimeType(mimeType)
             .build()
-        player.setMediaItem(mediaItem)
+
+        val mediaSource = mediaSourceFactory.createMediaSource(mediaItem)
+
+        player.setMediaSource(mediaSource)
+        player.prepare()
+        player.playWhenReady = true
     }
 
     override fun onCleared() {
