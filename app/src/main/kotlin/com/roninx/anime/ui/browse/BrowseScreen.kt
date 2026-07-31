@@ -178,10 +178,11 @@ fun AniListGrid(media: List<AniListMedia>, onAnimeClick: (Int) -> Unit) {
         modifier = Modifier.fillMaxSize()
     ) {
         items(media) { item ->
+            val targetId = item.idMal ?: item.id
             Column(
                 modifier = Modifier
                     .width(150.dp)
-                    .clickable { onAnimeClick(item.idMal ?: 0) }
+                    .clickable { if (targetId > 0) onAnimeClick(targetId) }
             ) {
                 Card(
                     shape = RoundedCornerShape(8.dp),

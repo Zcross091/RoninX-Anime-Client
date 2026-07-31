@@ -12,4 +12,10 @@ sealed class Screen(val route: String) {
     object Player : Screen("player/{animeId}/{episode}") {
         fun createRoute(animeId: Int, episode: Int) = "player/$animeId/$episode"
     }
+    object MangaDetail : Screen("manga_detail/{mangaId}") {
+        fun createRoute(mangaId: Int) = "manga_detail/$mangaId"
+    }
+    object MangaReader : Screen("manga_reader/{mangaId}/{chapter}") {
+        fun createRoute(mangaId: Int, chapter: Int) = "manga_reader/$mangaId/$chapter"
+    }
 }

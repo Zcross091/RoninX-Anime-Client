@@ -181,17 +181,7 @@ fun DetailContent(
             
             Spacer(modifier = Modifier.height(32.dp))
             
-            val titleName = anime.title_english ?: anime.title
-            val totalEpisodes = when {
-                anime.episodes != null && anime.episodes > 0 -> anime.episodes
-                titleName.contains("One Piece", ignoreCase = true) -> 1100
-                titleName.contains("Conan", ignoreCase = true) -> 1100
-                titleName.contains("Pokemon", ignoreCase = true) || titleName.contains("Pokémon", ignoreCase = true) -> 1200
-                titleName.contains("Naruto", ignoreCase = true) || titleName.contains("Boruto", ignoreCase = true) -> 720
-                titleName.contains("Bleach", ignoreCase = true) -> 366
-                else -> 100
-            }
-
+            val totalEpisodes = calculateTotalEpisodes(anime)
             var selectedRangeIndex by remember { mutableIntStateOf(0) }
             val chunkSize = 50
             val episodeRanges = (1..totalEpisodes).chunked(chunkSize)
@@ -282,5 +272,18 @@ fun EpisodeButton(
                 fontSize = 16.sp
             )
         }
+    }
+}
+
+private fun calculateTotalEpisodes(anime: JikanAnime): Int {
+    if (anime.episodes != null && anime.episodes > 0) return anime.episodes
+    val titleName = anime.title_english ?: anime.title
+    return when {
+        titleName.contains("One Piece", ignoreCase = true) -> 1100
+        titleName.contains("Conan", ignoreCase = true) -> 1100
+        titleName.contains("Pokemon", ignoreCase = true) || titleName.contains("Pokémon", ignoreCase = true) -> 1200
+        titleName.contains("Naruto", ignoreCase = true) || titleName.contains("Boruto", ignoreCase = true) -> 720
+        titleName.contains("Bleach", ignoreCase = true) -> 366
+        else -> 50
     }
 }

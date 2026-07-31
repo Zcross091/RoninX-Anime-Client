@@ -38,6 +38,10 @@ import com.roninx.anime.ui.browse.BrowseScreen
 import com.roninx.anime.ui.browse.BrowseViewModel
 import com.roninx.anime.ui.manga.MangaScreen
 import com.roninx.anime.ui.manga.MangaViewModel
+import com.roninx.anime.ui.manga.MangaDetailScreen
+import com.roninx.anime.ui.manga.MangaDetailViewModel
+import com.roninx.anime.ui.manga.MangaReaderScreen
+import com.roninx.anime.ui.manga.MangaReaderViewModel
 import com.roninx.anime.ui.player.PlayerScreen
 import com.roninx.anime.ui.player.PlayerViewModel
 import com.roninx.anime.ui.search.SearchScreen
@@ -221,8 +225,34 @@ fun MainScreen() {
                 MangaScreen(
                     viewModel = viewModel,
                     onMangaClick = { manga ->
-                        // Tapping manga doesn't have a detail screen yet
+                        navController.navigate(Screen.MangaDetail.createRoute(manga.id))
                     }
+                )
+            }
+            composable(
+                Screen.MangaDetail.route,
+                arguments = listOf(navArgument("mangaId") { type = NavType.IntType })
+            ) {
+                val viewModel: MangaDetailViewModel = hiltViewModel()
+                MangaDetailScreen(
+                    viewModel = viewModel,
+                    onBackClick = { navController.popBackStack() },
+                    onChapterClick = { mangaId, chapter ->
+                        navController.navigate(Screen.MangaReader.createRoute(mangaId, chapter))
+                    }
+                )
+            }
+            composable(
+                Screen.MangaReader.route,
+                arguments = listOf(
+                    navArgument("mangaId") { type = NavType.IntType },
+                    navArgument("chapter") { type = NavType.IntType }
+                )
+            ) {
+                val viewModel: MangaReaderViewModel = hiltViewModel()
+                MangaReaderScreen(
+                    viewModel = viewModel,
+                    onBackClick = { navController.popBackStack() }
                 )
             }
             composable(Screen.Browse.route) {

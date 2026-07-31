@@ -36,8 +36,11 @@ data class AniListMedia(
     val bannerImage: String?,
     val episodes: Int?,
     val chapters: Int?,
+    val volumes: Int?,
     val averageScore: Int?,
-    val description: String?
+    val description: String?,
+    val genres: List<String>? = null,
+    val status: String? = null
 )
 
 data class AniListTitle(
@@ -71,8 +74,11 @@ object AniListQueries {
               coverImage { large }
               bannerImage
               chapters
+              volumes
               averageScore
               description
+              genres
+              status
             }
           }
         }
@@ -88,9 +94,30 @@ object AniListQueries {
               coverImage { large }
               bannerImage
               chapters
+              volumes
               averageScore
               description
+              genres
+              status
             }
+          }
+        }
+    """.trimIndent()
+
+    val GET_MANGA_DETAILS = """
+        query (${'$'}id: Int) {
+          Media(id: ${'$'}id, type: MANGA) {
+            id
+            idMal
+            title { english romaji }
+            coverImage { large }
+            bannerImage
+            chapters
+            volumes
+            averageScore
+            description
+            genres
+            status
           }
         }
     """.trimIndent()

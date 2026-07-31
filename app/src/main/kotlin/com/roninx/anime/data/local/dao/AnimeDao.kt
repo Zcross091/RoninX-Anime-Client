@@ -29,4 +29,17 @@ interface AnimeDao {
 
     @Query("SELECT EXISTS(SELECT 1 FROM watchlist WHERE malId = :malId)")
     fun isInWatchlist(malId: Int): Flow<Boolean>
+
+    // Manga History
+    @Query("SELECT * FROM manga_history ORDER BY updatedAt DESC")
+    fun getAllMangaHistory(): Flow<List<com.roninx.anime.data.local.entities.MangaHistoryEntity>>
+
+    @Query("SELECT * FROM manga_history WHERE mangaId = :mangaId LIMIT 1")
+    fun getMangaHistoryItem(mangaId: Int): Flow<com.roninx.anime.data.local.entities.MangaHistoryEntity?>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertMangaHistory(history: com.roninx.anime.data.local.entities.MangaHistoryEntity)
+
+    @Query("DELETE FROM manga_history WHERE mangaId = :mangaId")
+    suspend fun deleteMangaHistory(mangaId: Int)
 }

@@ -96,4 +96,16 @@ class AniListRepository @Inject constructor(
             response.data.Media ?: throw Exception("Anime details not found in AniList")
         }
     }
+
+    suspend fun getMangaDetails(id: Int): Resource<AniListMedia> {
+        return safeApiCall {
+            val response = aniListApi.query(
+                AniListRequest(
+                    query = AniListQueries.GET_MANGA_DETAILS,
+                    variables = mapOf("id" to id)
+                )
+            )
+            response.data.Media ?: throw Exception("Manga details not found in AniList")
+        }
+    }
 }
