@@ -88,7 +88,7 @@ class MainActivity : ComponentActivity() {
                             confirmButton = {
                                 if (downloadProgress == null) {
                                     Button(onClick = {
-                                        mainViewModel.startUpdate(info.downloadUrl)
+                                        mainViewModel.startUpdate(info)
                                     }, colors = ButtonDefaults.buttonColors(containerColor = RoninRed)) {
                                         Text("Download & Install")
                                     }

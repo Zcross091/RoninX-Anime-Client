@@ -8,7 +8,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.*
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.DefaultDataSource
+import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import com.roninx.anime.data.api.JikanAnime
 import com.roninx.anime.data.api.StreamLink
@@ -23,10 +26,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-import androidx.media3.datasource.DefaultDataSource
-import androidx.media3.datasource.DefaultHttpDataSource
-import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 
 @HiltViewModel
 class PlayerViewModel @Inject constructor(
@@ -45,9 +44,21 @@ class PlayerViewModel @Inject constructor(
     private var currentStreamIndex: Int = 0
 
     private val trackSelector = DefaultTrackSelector(context)
-    val player: ExoPlayer = ExoPlayer.Builder(context)
-        .setTrackSelector(trackSelector)
-        .build()
+    
+    // Core ExoPlayer instance with globalized network configuration
+    val player: ExoPlayer = run {
+        val httpDataSourceFactory = DefaultHttpDataSource.Factory()
+            .setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+            .setAllowCrossProtocolRedirects(true)
+
+        val dataSourceFactory = DefaultDataSource.Factory(context, httpDataSourceFactory)
+        val mediaSourceFactory = DefaultMediaSourceFactory(dataSourceFactory)
+
+        ExoPlayer.Builder(context)
+            .setTrackSelector(trackSelector)
+            .setMediaSourceFactory(mediaSourceFactory)
+            .build()
+    }
 
     private val _isPlaying = MutableStateFlow(true)
     val isPlaying: StateFlow<Boolean> = _isPlaying
@@ -85,6 +96,7 @@ class PlayerViewModel @Inject constructor(
             }
 
             override fun onPlayerError(error: PlaybackException) {
+                // Automatic mirror fallback
                 val nextIndex = currentStreamIndex + 1
                 if (nextIndex < streamList.size) {
                     currentStreamIndex = nextIndex
@@ -213,14 +225,11 @@ class PlayerViewModel @Inject constructor(
 
     @OptIn(UnstableApi::class)
     private fun playStream(url: String) {
-        val httpDataSourceFactory = DefaultHttpDataSource.Factory()
-            .setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
-            .setAllowCrossProtocolRedirects(true)
-
-        val dataSourceFactory = DefaultDataSource.Factory(context, httpDataSourceFactory)
-        val mediaSourceFactory = DefaultMediaSourceFactory(dataSourceFactory)
-
-        val isHls = url.contains("m3u8", ignoreCase = true) || url.contains("hls", ignoreCase = true) || url.contains(".m3u", ignoreCase = true)
+        // Broad HLS detection signatures
+        val isHls = url.contains("m3u8", ignoreCase = true) || 
+                   url.contains("hls", ignoreCase = true) || 
+                   url.contains(".m3u", ignoreCase = true)
+        
         val mimeType = if (isHls) MimeTypes.APPLICATION_M3U8 else MimeTypes.VIDEO_MP4
 
         val mediaItem = MediaItem.Builder()
@@ -228,10 +237,8 @@ class PlayerViewModel @Inject constructor(
             .setMimeType(mimeType)
             .build()
 
-        val mediaSource = mediaSourceFactory.createMediaSource(mediaItem)
-
-        player.setMediaSource(mediaSource)
-        player.prepare()
+        player.setMediaItem(mediaItem)
+        player.prepare() // Ensure player transitions from IDLE to BUFFERING/READY
         player.playWhenReady = true
     }
 
