@@ -123,6 +123,27 @@ fun PlayerScreen(
             is PlayerUiState.Loading -> {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = RoninRed)
             }
+            is PlayerUiState.Mining -> {
+                Column(
+                    modifier = Modifier.align(Alignment.Center),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    CircularProgressIndicator(color = RoninRed)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "Mining stream sources...",
+                        color = Color.White,
+                        fontSize = 16.sp,
+                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Attempt ${state.attempt} of ${state.maxAttempts}",
+                        color = Color.Gray,
+                        fontSize = 14.sp
+                    )
+                }
+            }
             is PlayerUiState.Success -> {
                 AndroidView(
                     factory = { context ->
@@ -193,13 +214,29 @@ fun PlayerScreen(
             }
             is PlayerUiState.Error -> {
                 Column(
-                    modifier = Modifier.align(Alignment.Center),
+                    modifier = Modifier.align(Alignment.Center).padding(24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(text = state.message, color = Color.White)
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Button(onClick = onBackClick, colors = ButtonDefaults.buttonColors(containerColor = RoninRed)) {
-                        Text("Go Back")
+                    Text(
+                        text = state.message,
+                        color = Color.White,
+                        fontSize = 15.sp,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                        Button(
+                            onClick = { viewModel.retry() },
+                            colors = ButtonDefaults.buttonColors(containerColor = RoninRed)
+                        ) {
+                            Text("Retry / Mine Sources")
+                        }
+                        Button(
+                            onClick = onBackClick,
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.2f))
+                        ) {
+                            Text("Go Back")
+                        }
                     }
                 }
             }

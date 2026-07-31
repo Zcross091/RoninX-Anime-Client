@@ -34,8 +34,8 @@ class PlayerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val animeId: Int = checkNotNull(savedStateHandle["animeId"])
-    private val episode: Int = checkNotNull(savedStateHandle["episode"])
+    val animeId: Int = checkNotNull(savedStateHandle["animeId"])
+    val episode: Int = checkNotNull(savedStateHandle["episode"])
 
     private val _uiState = MutableStateFlow<PlayerUiState>(PlayerUiState.Loading)
     val uiState: StateFlow<PlayerUiState> = _uiState
@@ -44,11 +44,16 @@ class PlayerViewModel @Inject constructor(
     private var currentStreamIndex: Int = 0
 
     private val trackSelector = DefaultTrackSelector(context)
-    
-    // Core ExoPlayer instance with globalized network configuration
+
+    // Core ExoPlayer instance with globalized network configuration & headers
     val player: ExoPlayer = run {
+        val headers = mapOf(
+            "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Referer" to "https://ronin-api-proxy.vercel.app/"
+        )
         val httpDataSourceFactory = DefaultHttpDataSource.Factory()
-            .setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+            .setUserAgent(headers["User-Agent"]!!)
+            .setDefaultRequestProperties(headers)
             .setAllowCrossProtocolRedirects(true)
 
         val dataSourceFactory = DefaultDataSource.Factory(context, httpDataSourceFactory)
@@ -71,6 +76,8 @@ class PlayerViewModel @Inject constructor(
 
     private val _availableQualities = MutableStateFlow<List<VideoQuality>>(emptyList())
     val availableQualities: StateFlow<List<VideoQuality>> = _availableQualities
+
+    private var cachedAnime: JikanAnime? = null
 
     init {
         setupPlayerListeners()
@@ -96,33 +103,32 @@ class PlayerViewModel @Inject constructor(
             }
 
             override fun onPlayerError(error: PlaybackException) {
-                // Automatic mirror fallback
+                // Automatic mirror fallback logic
                 val nextIndex = currentStreamIndex + 1
                 if (nextIndex < streamList.size) {
                     currentStreamIndex = nextIndex
                     playStream(streamList[nextIndex].url)
                 } else {
-                    _uiState.value = PlayerUiState.Error("Playback Error: ${error.localizedMessage}")
+                    // All cached streams failed, trigger miner and start polling
+                    triggerMinerAndPoll("Playback error on mirror streams: ${error.localizedMessage}")
                 }
             }
         })
     }
 
     private fun saveProgress() {
-        val state = uiState.value
-        if (state is PlayerUiState.Success) {
-            viewModelScope.launch {
-                repository.upsertWatchHistory(
-                    WatchHistoryEntity(
-                        malId = state.anime.mal_id,
-                        title = state.anime.title_english ?: state.anime.title,
-                        imageUrl = state.anime.images.jpg.large_image_url,
-                        lastEpisodeWatched = state.episode,
-                        progressMs = player.currentPosition,
-                        durationMs = player.duration
-                    )
+        val anime = cachedAnime ?: return
+        viewModelScope.launch {
+            repository.upsertWatchHistory(
+                WatchHistoryEntity(
+                    malId = anime.mal_id,
+                    title = anime.title_english ?: anime.title,
+                    imageUrl = anime.images.jpg.large_image_url,
+                    lastEpisodeWatched = episode,
+                    progressMs = player.currentPosition,
+                    durationMs = player.duration
                 )
-            }
+            )
         }
     }
 
@@ -187,13 +193,19 @@ class PlayerViewModel @Inject constructor(
             .build()
     }
 
+    fun retry() {
+        fetchStreamAndPlay()
+    }
+
     private fun fetchStreamAndPlay() {
         viewModelScope.launch {
             _uiState.value = PlayerUiState.Loading
-            
+
             val animeRes = repository.getAnimeFull(animeId)
             if (animeRes is Resource.Success) {
                 val anime = animeRes.data
+                cachedAnime = anime
+                
                 val streamsRes = repository.getStreamLinks(
                     title = anime.title,
                     originalTitle = anime.title_english ?: anime.title,
@@ -210,12 +222,10 @@ class PlayerViewModel @Inject constructor(
                         _uiState.value = PlayerUiState.Success(anime, episode)
                         saveProgress()
                     } else {
-                        _uiState.value = PlayerUiState.Error("No playable stream found. Miner triggered.")
-                        repository.triggerMiner(anime.title, episode)
+                        triggerMinerAndPoll("No valid stream URLs found")
                     }
                 } else {
-                    _uiState.value = PlayerUiState.Error("No cached stream found. Miner triggered.")
-                    repository.triggerMiner(anime.title, episode)
+                    triggerMinerAndPoll("Mining streams...")
                 }
             } else {
                 _uiState.value = PlayerUiState.Error((animeRes as? Resource.Error)?.message ?: "Failed to load anime metadata")
@@ -223,22 +233,60 @@ class PlayerViewModel @Inject constructor(
         }
     }
 
+    private fun triggerMinerAndPoll(reason: String) {
+        val anime = cachedAnime
+        viewModelScope.launch {
+            if (anime != null) {
+                repository.triggerMiner(anime.title, episode)
+            }
+
+            val maxAttempts = 5
+            for (attempt in 1..maxAttempts) {
+                _uiState.value = PlayerUiState.Mining(attempt, maxAttempts, "$reason - Searching mirrors...")
+                delay(3500)
+
+                val animeTitle = anime?.title ?: ""
+                val animeEngTitle = anime?.title_english ?: animeTitle
+                val pollRes = repository.getStreamLinks(
+                    title = animeTitle,
+                    originalTitle = animeEngTitle,
+                    synonyms = emptyList(),
+                    episode = episode
+                )
+
+                if (pollRes is Resource.Success && pollRes.data.isNotEmpty()) {
+                    val valid = pollRes.data.filter { it.url.startsWith("http") }
+                    if (valid.isNotEmpty()) {
+                        streamList = valid
+                        currentStreamIndex = 0
+                        playStream(streamList[0].url)
+                        if (anime != null) {
+                            _uiState.value = PlayerUiState.Success(anime, episode)
+                            saveProgress()
+                        }
+                        return@launch
+                    }
+                }
+            }
+
+            _uiState.value = PlayerUiState.Error("Streams currently unavailable for Episode $episode. Server is mining sources, please try again in a few moments.")
+        }
+    }
+
     @OptIn(UnstableApi::class)
     private fun playStream(url: String) {
-        // Broad HLS detection signatures
         val isHls = url.contains("m3u8", ignoreCase = true) || 
                    url.contains("hls", ignoreCase = true) || 
                    url.contains(".m3u", ignoreCase = true)
         
-        val mimeType = if (isHls) MimeTypes.APPLICATION_M3U8 else MimeTypes.VIDEO_MP4
-
-        val mediaItem = MediaItem.Builder()
-            .setUri(Uri.parse(url))
-            .setMimeType(mimeType)
-            .build()
+        val mediaItemBuilder = MediaItem.Builder().setUri(Uri.parse(url))
+        if (isHls) {
+            mediaItemBuilder.setMimeType(MimeTypes.APPLICATION_M3U8)
+        }
+        val mediaItem = mediaItemBuilder.build()
 
         player.setMediaItem(mediaItem)
-        player.prepare() // Ensure player transitions from IDLE to BUFFERING/READY
+        player.prepare()
         player.playWhenReady = true
     }
 
@@ -251,6 +299,7 @@ class PlayerViewModel @Inject constructor(
 
 sealed class PlayerUiState {
     object Loading : PlayerUiState()
+    data class Mining(val attempt: Int, val maxAttempts: Int, val message: String) : PlayerUiState()
     data class Success(val anime: JikanAnime, val episode: Int) : PlayerUiState()
     data class Error(val message: String) : PlayerUiState()
 }
