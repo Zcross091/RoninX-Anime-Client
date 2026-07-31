@@ -137,10 +137,43 @@ object AniListQueries {
               idMal
               title { english romaji }
               coverImage { large }
+              bannerImage
               episodes
               averageScore
               description
             }
+          }
+        }
+    """.trimIndent()
+
+    val SEARCH_ANIME = """
+        query (${'$'}search: String) {
+          Page(page: 1, perPage: 24) {
+            media(search: ${'$'}search, type: ANIME) {
+              id
+              idMal
+              title { english romaji }
+              coverImage { large }
+              bannerImage
+              episodes
+              averageScore
+              description
+            }
+          }
+        }
+    """.trimIndent()
+
+    val GET_ANIME_DETAILS = """
+        query (${'$'}id: Int) {
+          Media(idMal: ${'$'}id, type: ANIME) {
+            id
+            idMal
+            title { english romaji }
+            coverImage { large }
+            bannerImage
+            episodes
+            averageScore
+            description
           }
         }
     """.trimIndent()

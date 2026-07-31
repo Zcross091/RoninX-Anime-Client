@@ -15,35 +15,104 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
+import com.roninx.anime.data.api.AniListMedia
+import com.roninx.anime.data.api.JikanImages
+import com.roninx.anime.data.api.JikanJpg
+
 @Singleton
 class AnimeRepository @Inject constructor(
     private val jikanApi: JikanApi,
+    private val aniListRepository: AniListRepository,
     private val roninProxyApi: RoninProxyApi,
     private val animeDao: AnimeDao
 ) {
-    // API Calls
+    // API Calls with Automatic AniList Fallback
     suspend fun getTopAiring(): Resource<List<JikanAnime>> {
-        return safeApiCall { jikanApi.getSeasonNow().data }
+        val jikanRes = safeApiCall { jikanApi.getSeasonNow().data }
+        if (jikanRes is Resource.Success && jikanRes.data.isNotEmpty()) return jikanRes
+        
+        return when (val aniRes = aniListRepository.getTrendingAnime()) {
+            is Resource.Success -> Resource.Success(aniRes.data.map { it.toJikan() })
+            is Resource.Error -> jikanRes
+            else -> jikanRes
+        }
     }
 
     suspend fun getActionAnime(): Resource<List<JikanAnime>> {
-        return safeApiCall { jikanApi.getAnimeByGenre("1").data }
+        val jikanRes = safeApiCall { jikanApi.getAnimeByGenre("1").data }
+        if (jikanRes is Resource.Success && jikanRes.data.isNotEmpty()) return jikanRes
+
+        return when (val aniRes = aniListRepository.getAnimeByGenre("Action")) {
+            is Resource.Success -> Resource.Success(aniRes.data.map { it.toJikan() })
+            is Resource.Error -> jikanRes
+            else -> jikanRes
+        }
     }
 
     suspend fun getRomanceAnime(): Resource<List<JikanAnime>> {
-        return safeApiCall { jikanApi.getAnimeByGenre("22").data }
+        val jikanRes = safeApiCall { jikanApi.getAnimeByGenre("22").data }
+        if (jikanRes is Resource.Success && jikanRes.data.isNotEmpty()) return jikanRes
+
+        return when (val aniRes = aniListRepository.getAnimeByGenre("Romance")) {
+            is Resource.Success -> Resource.Success(aniRes.data.map { it.toJikan() })
+            is Resource.Error -> jikanRes
+            else -> jikanRes
+        }
     }
 
     suspend fun getAnimeByGenre(genreId: String): Resource<List<JikanAnime>> {
-        return safeApiCall { jikanApi.getAnimeByGenre(genreId).data }
+        val jikanRes = safeApiCall { jikanApi.getAnimeByGenre(genreId).data }
+        if (jikanRes is Resource.Success && jikanRes.data.isNotEmpty()) return jikanRes
+
+        val genreName = when (genreId) {
+            "1" -> "Action"
+            "22" -> "Romance"
+            "4" -> "Comedy"
+            "10" -> "Fantasy"
+            "8" -> "Drama"
+            "24" -> "Sci-Fi"
+            else -> "Action"
+        }
+
+        return when (val aniRes = aniListRepository.getAnimeByGenre(genreName)) {
+            is Resource.Success -> Resource.Success(aniRes.data.map { it.toJikan() })
+            is Resource.Error -> jikanRes
+            else -> jikanRes
+        }
     }
 
     suspend fun searchAnime(query: String): Resource<List<JikanAnime>> {
-        return safeApiCall { jikanApi.searchAnime(query).data }
+        val jikanRes = safeApiCall { jikanApi.searchAnime(query).data }
+        if (jikanRes is Resource.Success && jikanRes.data.isNotEmpty()) return jikanRes
+
+        return when (val aniRes = aniListRepository.searchAnime(query)) {
+            is Resource.Success -> Resource.Success(aniRes.data.map { it.toJikan() })
+            is Resource.Error -> jikanRes
+            else -> jikanRes
+        }
     }
 
     suspend fun getAnimeFull(id: Int): Resource<JikanAnime> {
-        return safeApiCall { jikanApi.getAnimeFull(id).data }
+        val jikanRes = safeApiCall { jikanApi.getAnimeFull(id).data }
+        if (jikanRes is Resource.Success) return jikanRes
+
+        return when (val aniRes = aniListRepository.getAnimeDetails(id)) {
+            is Resource.Success -> Resource.Success(aniRes.data.toJikan())
+            is Resource.Error -> jikanRes
+            else -> jikanRes
+        }
+    }
+
+    private fun AniListMedia.toJikan(): JikanAnime {
+        return JikanAnime(
+            mal_id = idMal ?: id,
+            title = title?.romaji ?: title?.english ?: "Unknown",
+            title_english = title?.english,
+            images = JikanImages(JikanJpg(coverImage?.large ?: "")),
+            episodes = episodes ?: chapters,
+            score = (averageScore?.toDouble() ?: 0.0) / 10.0,
+            synopsis = description
+        )
     }
 
     suspend fun getStreamLinks(title: String, originalTitle: String?, synonyms: List<String>, episode: Int): Resource<List<StreamLink>> {

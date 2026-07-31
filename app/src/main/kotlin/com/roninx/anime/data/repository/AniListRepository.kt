@@ -72,4 +72,28 @@ class AniListRepository @Inject constructor(
             response.data.Page?.media ?: emptyList()
         }
     }
+
+    suspend fun searchAnime(query: String): Resource<List<AniListMedia>> {
+        return safeApiCall {
+            val response = aniListApi.query(
+                AniListRequest(
+                    query = AniListQueries.SEARCH_ANIME,
+                    variables = mapOf("search" to query)
+                )
+            )
+            response.data.Page?.media ?: emptyList()
+        }
+    }
+
+    suspend fun getAnimeDetails(idMal: Int): Resource<AniListMedia> {
+        return safeApiCall {
+            val response = aniListApi.query(
+                AniListRequest(
+                    query = AniListQueries.GET_ANIME_DETAILS,
+                    variables = mapOf("id" to idMal)
+                )
+            )
+            response.data.Media ?: throw Exception("Anime details not found in AniList")
+        }
+    }
 }

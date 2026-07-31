@@ -178,17 +178,66 @@ fun DetailContent(
             
             Spacer(modifier = Modifier.height(32.dp))
             
-            Text(
-                text = "Episodes",
-                color = Color.White,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold
-            )
+            val titleName = anime.title_english ?: anime.title
+            val totalEpisodes = when {
+                anime.episodes != null && anime.episodes > 0 -> anime.episodes
+                titleName.contains("One Piece", ignoreCase = true) -> 1100
+                titleName.contains("Conan", ignoreCase = true) -> 1100
+                titleName.contains("Pokemon", ignoreCase = true) || titleName.contains("Pokémon", ignoreCase = true) -> 1200
+                titleName.contains("Naruto", ignoreCase = true) || titleName.contains("Boruto", ignoreCase = true) -> 720
+                titleName.contains("Bleach", ignoreCase = true) -> 366
+                else -> 100
+            }
+
+            var selectedRangeIndex by androidx.compose.runtime.remember { androidx.compose.runtime.mutableIntStateOf(0) }
+            val chunkSize = 50
+            val episodeRanges = (1..totalEpisodes).chunked(chunkSize)
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "Episodes",
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = "($totalEpisodes total)",
+                    color = Color.Gray,
+                    fontSize = 14.sp
+                )
+            }
             
             Spacer(modifier = Modifier.height(16.dp))
-            
-            val episodesCount = anime.episodes ?: 12
-            val chunkedEpisodes = (1..episodesCount).toList().chunked(4)
+
+            if (episodeRanges.size > 1) {
+                ScrollableTabRow(
+                    selectedTabIndex = selectedRangeIndex,
+                    containerColor = RoninSurface,
+                    contentColor = RoninRed,
+                    edgePadding = 0.dp,
+                    modifier = Modifier.fillMaxWidth().height(40.dp)
+                ) {
+                    episodeRanges.forEachIndexed { index, range ->
+                        Tab(
+                            selected = selectedRangeIndex == index,
+                            onClick = { selectedRangeIndex = index },
+                            text = {
+                                Text(
+                                    text = "${range.first} - ${range.last}",
+                                    color = if (selectedRangeIndex == index) RoninRed else Color.Gray,
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
+            val currentEpisodes = episodeRanges.getOrNull(selectedRangeIndex) ?: (1..totalEpisodes).toList()
+            val chunkedEpisodes = currentEpisodes.chunked(4)
             
             chunkedEpisodes.forEach { rowEps ->
                 Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
