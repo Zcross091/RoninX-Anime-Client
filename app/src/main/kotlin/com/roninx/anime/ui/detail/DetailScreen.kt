@@ -13,6 +13,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -189,7 +192,7 @@ fun DetailContent(
                 else -> 100
             }
 
-            var selectedRangeIndex by androidx.compose.runtime.remember { androidx.compose.runtime.mutableIntStateOf(0) }
+            var selectedRangeIndex by remember { mutableIntStateOf(0) }
             val chunkSize = 50
             val episodeRanges = (1..totalEpisodes).chunked(chunkSize)
 
@@ -224,7 +227,7 @@ fun DetailContent(
                             onClick = { selectedRangeIndex = index },
                             text = {
                                 Text(
-                                    text = "${range.first} - ${range.last}",
+                                    text = "${range.first()} - ${range.last()}",
                                     color = if (selectedRangeIndex == index) RoninRed else Color.Gray,
                                     fontSize = 13.sp,
                                     fontWeight = FontWeight.Bold
