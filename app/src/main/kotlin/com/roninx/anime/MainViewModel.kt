@@ -40,7 +40,6 @@ class MainViewModel @Inject constructor(
     }
 
     fun startUpdate(info: UpdateInfo) {
-        updateRepository.markUpdateInstalled(info.commitSha)
         viewModelScope.launch {
             updateManager.downloadAndInstall(info.downloadUrl).collectLatest { status ->
                 when (status) {
@@ -49,6 +48,7 @@ class MainViewModel @Inject constructor(
                     }
                     is DownloadStatus.Finished -> {
                         _downloadProgress.value = 1f
+                        updateRepository.markUpdateInstalled(info.commitSha)
                         updateManager.installApk(status.uri)
                     }
                     is DownloadStatus.Error -> {

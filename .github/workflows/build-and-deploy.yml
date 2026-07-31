@@ -68,27 +68,32 @@ jobs:
         id: vars
         run: |
           if [[ $GITHUB_REF == refs/tags/* ]]; then
-            echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
-            echo "title=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+            TAG_NAME="${GITHUB_REF#refs/tags/}"
           else
-            echo "tag=latest" >> $GITHUB_OUTPUT
-            echo "title=Latest Development Build" >> $GITHUB_OUTPUT
-          fi
+            RAW_VERSION=$(grep -oP 'versionName\s*=\s*"\K[^"]+' app/build.gradle.kts || echo "1.0")
+            if [[ $RAW_VERSION == v* ]]; then
+              BASE_TAG="${RAW_VERSION}"
+            else
+              BASE_TAG="v${RAW_VERSION}"
+            fi
 
-      - name: Update Latest Git Tag
-        if: steps.vars.outputs.tag == 'latest'
+            if git rev-parse "$BASE_TAG" >/dev/null 2>&1; then
+              SHORT_SHA=$(git rev-parse --short HEAD)
+              TAG_NAME="${BASE_TAG}-${SHORT_SHA}"
+            else
+              TAG_NAME="${BASE_TAG}"
+            fi
+          fi
+          echo "tag=${TAG_NAME}" >> $GITHUB_OUTPUT
+          echo "title=RoninX Anime ${TAG_NAME}" >> $GITHUB_OUTPUT
+
+      - name: Create and Push Git Tag
         run: |
+          TAG_NAME="${{ steps.vars.outputs.tag }}"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -f latest ${{ github.sha }}
-          git push -f origin latest
-
-      - name: Refresh Release Timestamp
-        if: steps.vars.outputs.tag == 'latest'
-        run: |
-          gh release delete latest --yes || true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          git tag -f "${TAG_NAME}" ${{ github.sha }}
+          git push -f origin "${TAG_NAME}" || true
 
       - name: Create or Update Release
         uses: softprops/action-gh-release@v2
@@ -96,7 +101,7 @@ jobs:
           tag_name: ${{ steps.vars.outputs.tag }}
           name: ${{ steps.vars.outputs.title }}
           body: |
-            This release contains the latest automated build of the RoninX Anime Android App.
+            Automated Release for RoninX Anime Android App (${{ steps.vars.outputs.tag }}).
             
             **Triggered by:** ${{ github.event.head_commit.message }}
             **Commit:** ${{ github.sha }}

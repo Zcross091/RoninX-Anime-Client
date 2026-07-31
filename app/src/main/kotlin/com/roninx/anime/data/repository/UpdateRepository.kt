@@ -31,15 +31,14 @@ class UpdateRepository @Inject constructor(
 
             val lastInstalledCommit = prefs.getString("last_installed_commit", "") ?: ""
 
-            val isNewer = if (latestRelease.tag_name == "latest") {
-                releaseCommit.isNotEmpty() && releaseCommit != lastInstalledCommit
-            } else {
-                isNewerVersion(currentVersion, latestRelease.tag_name)
-            }
+            val tagIsNewer = isNewerVersion(currentVersion, latestRelease.tag_name)
+            val commitIsNewer = releaseCommit.isNotEmpty() && releaseCommit != lastInstalledCommit && (latestRelease.tag_name == "latest" || latestRelease.tag_name.contains("-"))
+
+            val isNewer = tagIsNewer || commitIsNewer
 
             if (isNewer) {
                 val displayVersion = if (latestRelease.tag_name == "latest") {
-                    "v1.0-${releaseCommit.take(7)}"
+                    "v${currentVersion}-${releaseCommit.take(7)}"
                 } else {
                     latestRelease.tag_name
                 }
@@ -65,16 +64,21 @@ class UpdateRepository @Inject constructor(
 
     private fun isNewerVersion(current: String?, latest: String): Boolean {
         if (current == null) return true
-        val cur = current.replace(Regex("[^0-9.]"), "").split(".").filter { it.isNotEmpty() }
-        val lat = latest.replace(Regex("[^0-9.]"), "").split(".").filter { it.isNotEmpty() }
-        
-        for (i in 0 until minOf(cur.size, lat.size)) {
-            val c = cur[i].toIntOrNull() ?: 0
-            val l = lat[i].toIntOrNull() ?: 0
+        val curParts = current.replace(Regex("[^0-9.]"), "").split(".").filter { it.isNotEmpty() }.mapNotNull { it.toIntOrNull() }
+        val latParts = latest.replace(Regex("[^0-9.]"), "").split(".").filter { it.isNotEmpty() }.mapNotNull { it.toIntOrNull() }
+
+        if (curParts.isEmpty() || latParts.isEmpty()) {
+            return latest.trimStart('v') != current.trimStart('v')
+        }
+
+        val maxLen = maxOf(curParts.size, latParts.size)
+        for (i in 0 until maxLen) {
+            val c = curParts.getOrElse(i) { 0 }
+            val l = latParts.getOrElse(i) { 0 }
             if (l > c) return true
             if (c > l) return false
         }
-        return lat.size > cur.size
+        return false
     }
 }
 
