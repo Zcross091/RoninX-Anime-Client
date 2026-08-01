@@ -1,5 +1,186 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Mobile Menu Toggle ---
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // ============================================================
+    // SCROLL PROGRESS BAR
+    // ============================================================
+    const scrollProgress = document.getElementById('scroll-progress');
+    if (scrollProgress) {
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+            scrollProgress.style.width = progress + '%';
+        }, { passive: true });
+    }
+
+    // ============================================================
+    // 3D PARTICLE CANVAS SYSTEM
+    // ============================================================
+    const canvas = document.getElementById('particle-canvas');
+    if (canvas && !prefersReducedMotion) {
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let mouseX = -1000;
+        let mouseY = -1000;
+        let animationId;
+
+        const resize = () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        };
+        resize();
+        window.addEventListener('resize', resize);
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        document.addEventListener('mouseleave', () => {
+            mouseX = -1000;
+            mouseY = -1000;
+        });
+
+        const PARTICLE_COUNT = Math.min(80, Math.floor(window.innerWidth / 20));
+        const CONNECTION_DISTANCE = 120;
+        const MOUSE_RADIUS = 150;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.radius = Math.random() * 2 + 0.5;
+                // Accent color palette
+                const colors = [
+                    'rgba(244, 63, 94,',   // rose
+                    'rgba(251, 113, 133,',  // pink
+                    'rgba(56, 189, 248,',   // blue
+                    'rgba(168, 85, 247,',   // purple
+                ];
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+                this.opacity = Math.random() * 0.5 + 0.2;
+            }
+
+            update() {
+                // Mouse repulsion
+                const dx = this.x - mouseX;
+                const dy = this.y - mouseY;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < MOUSE_RADIUS && dist > 0) {
+                    const force = (MOUSE_RADIUS - dist) / MOUSE_RADIUS;
+                    this.vx += (dx / dist) * force * 0.8;
+                    this.vy += (dy / dist) * force * 0.8;
+                }
+
+                // Damping
+                this.vx *= 0.98;
+                this.vy *= 0.98;
+
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // Wrap around screen
+                if (this.x < -10) this.x = canvas.width + 10;
+                if (this.x > canvas.width + 10) this.x = -10;
+                if (this.y < -10) this.y = canvas.height + 10;
+                if (this.y > canvas.height + 10) this.y = -10;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color + this.opacity + ')';
+                ctx.fill();
+
+                // Glow
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius * 3, 0, Math.PI * 2);
+                ctx.fillStyle = this.color + (this.opacity * 0.15) + ')';
+                ctx.fill();
+            }
+        }
+
+        // Init particles
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+            particles.push(new Particle());
+        }
+
+        const drawConnections = () => {
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < CONNECTION_DISTANCE) {
+                        const opacity = (1 - dist / CONNECTION_DISTANCE) * 0.15;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(244, 63, 94, ${opacity})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                }
+            }
+        };
+
+        const animate = () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            drawConnections();
+            animationId = requestAnimationFrame(animate);
+        };
+
+        animate();
+
+        // Pause when not visible
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                cancelAnimationFrame(animationId);
+            } else {
+                animate();
+            }
+        });
+    }
+
+    // ============================================================
+    // TYPING ANIMATION ON HERO HEADLINE
+    // ============================================================
+    if (!prefersReducedMotion) {
+        const heroTitle = document.getElementById('hero-title');
+        if (heroTitle) {
+            const originalHTML = heroTitle.innerHTML;
+            const cursor = heroTitle.querySelector('.typing-cursor');
+
+            // The text is already in the DOM for SEO. We animate opacity of the h1 content.
+            heroTitle.style.opacity = '0';
+            
+            setTimeout(() => {
+                heroTitle.style.transition = 'opacity 0.6s ease';
+                heroTitle.style.opacity = '1';
+                
+                // Remove cursor after a delay
+                if (cursor) {
+                    setTimeout(() => {
+                        cursor.style.transition = 'opacity 0.5s ease';
+                        cursor.style.opacity = '0';
+                        setTimeout(() => cursor.remove(), 500);
+                    }, 3000);
+                }
+            }, 300);
+        }
+    }
+
+    // ============================================================
+    // MOBILE MENU TOGGLE
+    // ============================================================
     const menuToggle = document.getElementById('menu-toggle');
     const navLinks = document.getElementById('nav-links');
 
@@ -9,7 +190,6 @@ document.addEventListener('DOMContentLoaded', () => {
             navLinks.classList.toggle('active');
         });
 
-        // Close menu when clicking links
         navLinks.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => {
                 menuToggle.classList.remove('active');
@@ -18,7 +198,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Interactive Phone Mockup Tab Switcher ---
+    // ============================================================
+    // INTERACTIVE PHONE MOCKUP TAB SWITCHER
+    // ============================================================
     const tabBtns = document.querySelectorAll('.mockup-tab-btn');
     const mockupScreens = document.querySelectorAll('.mockup-screen');
 
@@ -37,7 +219,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- Animated Counter on Scroll ---
+    // Auto-cycle tabs
+    if (!prefersReducedMotion) {
+        let tabIndex = 0;
+        const tabNames = ['stream', 'manga', 'anilist'];
+        setInterval(() => {
+            tabIndex = (tabIndex + 1) % tabNames.length;
+            const btn = document.querySelector(`.mockup-tab-btn[data-tab="${tabNames[tabIndex]}"]`);
+            if (btn) btn.click();
+        }, 5000);
+    }
+
+    // ============================================================
+    // ANIMATED COUNTER ON SCROLL
+    // ============================================================
     const statNumbers = document.querySelectorAll('.stat-number');
     let animatedStats = false;
 
@@ -76,7 +271,120 @@ document.addEventListener('DOMContentLoaded', () => {
         statsObserver.observe(statsSection);
     }
 
-    // --- Interactive Discovery Live Search / AniList API Integration ---
+    // ============================================================
+    // 3D TILT EFFECT ON FEATURE CARDS (Holographic Glow)
+    // ============================================================
+    if (!prefersReducedMotion) {
+        const tiltCards = document.querySelectorAll('[data-tilt]');
+
+        tiltCards.forEach(card => {
+            const glowEl = card.querySelector('.card-glow');
+
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+
+                const rotateX = ((y - centerY) / centerY) * -8;
+                const rotateY = ((x - centerX) / centerX) * 8;
+
+                card.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+
+                // Holographic glow follows cursor
+                if (glowEl) {
+                    glowEl.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(244, 63, 94, 0.15) 0%, rgba(56, 189, 248, 0.05) 40%, transparent 70%)`;
+                }
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+                if (glowEl) {
+                    glowEl.style.background = 'transparent';
+                }
+            });
+        });
+    }
+
+    // ============================================================
+    // MAGNETIC HOVER BUTTONS
+    // ============================================================
+    if (!prefersReducedMotion) {
+        const magneticBtns = document.querySelectorAll('.magnetic-btn');
+
+        magneticBtns.forEach(btn => {
+            btn.addEventListener('mousemove', (e) => {
+                const rect = btn.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+
+                btn.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`;
+            });
+
+            btn.addEventListener('mouseleave', () => {
+                btn.style.transform = 'translate(0px, 0px)';
+            });
+        });
+    }
+
+    // ============================================================
+    // SCROLL-DRIVEN PARALLAX LAYERS
+    // ============================================================
+    if (!prefersReducedMotion) {
+        const parallaxElements = document.querySelectorAll('[data-parallax-speed]');
+
+        if (parallaxElements.length > 0) {
+            let ticking = false;
+
+            window.addEventListener('scroll', () => {
+                if (!ticking) {
+                    requestAnimationFrame(() => {
+                        const scrollY = window.scrollY;
+                        parallaxElements.forEach(el => {
+                            const speed = parseFloat(el.getAttribute('data-parallax-speed'));
+                            const yOffset = scrollY * speed;
+                            el.style.transform = `translateY(${yOffset}px)`;
+                        });
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            }, { passive: true });
+        }
+    }
+
+    // ============================================================
+    // 3D TECH STACK ORBIT POSITIONING
+    // ============================================================
+    const techOrbit = document.getElementById('tech-orbit');
+    if (techOrbit) {
+        const techItems = techOrbit.querySelectorAll('.tech-item');
+        const container = techOrbit.parentElement;
+        const radius = Math.min(container.offsetWidth, container.offsetHeight) / 2 - 50;
+
+        techItems.forEach(item => {
+            const angle = parseFloat(item.getAttribute('data-angle')) * (Math.PI / 180);
+            const x = Math.cos(angle) * radius;
+            const z = Math.sin(angle) * radius;
+            item.style.transform = `translate3d(${x}px, 0, ${z}px)`;
+        });
+
+        // Reposition on resize
+        window.addEventListener('resize', () => {
+            const newRadius = Math.min(container.offsetWidth, container.offsetHeight) / 2 - 50;
+            techItems.forEach(item => {
+                const angle = parseFloat(item.getAttribute('data-angle')) * (Math.PI / 180);
+                const x = Math.cos(angle) * newRadius;
+                const z = Math.sin(angle) * newRadius;
+                item.style.transform = `translate3d(${x}px, 0, ${z}px)`;
+            });
+        });
+    }
+
+    // ============================================================
+    // INTERACTIVE DISCOVERY — LIVE SEARCH / ANILIST API
+    // ============================================================
     const fallbackAnimeData = [
         { title: "Dragon Ball Super", category: "Popular", rating: "4.8", eps: "131/131 Sub|Dub", genre: "Action • Martial Arts", tag: "CLASSIC", image: "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx21175-1eEalZ0c8nK4.jpg" },
         { title: "Dragon Ball Z", category: "Top Rated", rating: "4.9", eps: "291/291 Sub|Dub", genre: "Action • Shounen", tag: "LEGENDARY", image: "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx225-2C75lO4p9K4f.png" },
@@ -114,9 +422,10 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        items.forEach(anime => {
+        items.forEach((anime, index) => {
             const card = document.createElement('div');
             card.className = 'demo-anime-card';
+            card.style.animationDelay = `${index * 0.05}s`;
             
             const imageHtml = anime.image ? `<img src="${anime.image}" alt="${anime.title}" loading="lazy" onerror="this.style.display='none'">` : '';
 
@@ -143,7 +452,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let searchQuery = '';
     let searchDebounceTimeout = null;
 
-    // Fetch live search results from AniList GraphQL API
     const fetchAniListSearch = async (query) => {
         if (!animeGrid) return;
         
@@ -230,7 +538,6 @@ document.addEventListener('DOMContentLoaded', () => {
                                   item.title.toLowerCase().includes(query.toLowerCase()) || 
                                   item.genre.toLowerCase().includes(query.toLowerCase());
             
-            // If user typed a search query, prioritize title matching over strict category filtering
             if (query && query.trim().length > 0) {
                 return item.title.toLowerCase().includes(query.toLowerCase()) || 
                        item.genre.toLowerCase().includes(query.toLowerCase());
@@ -275,7 +582,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initial Render
     filterFallbackAnime();
 
-    // --- FAQ Accordion ---
+    // ============================================================
+    // FAQ ACCORDION
+    // ============================================================
     const faqItems = document.querySelectorAll('.faq-item');
 
     faqItems.forEach(item => {
@@ -283,17 +592,17 @@ document.addEventListener('DOMContentLoaded', () => {
         question.addEventListener('click', () => {
             const isOpen = item.classList.contains('open');
             
-            // Close all
             faqItems.forEach(i => i.classList.remove('open'));
 
-            // Toggle clicked
             if (!isOpen) {
                 item.classList.add('open');
             }
         });
     });
 
-    // --- Intersection Observer for Scroll Reveal Animations ---
+    // ============================================================
+    // INTERSECTION OBSERVER — SCROLL REVEAL
+    // ============================================================
     const revealElements = document.querySelectorAll('.reveal');
 
     const revealObserver = new IntersectionObserver((entries) => {
@@ -309,11 +618,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     revealElements.forEach(el => revealObserver.observe(el));
 
-    // --- Interactive Mouse Tilt Effect on Hero Card ---
+    // ============================================================
+    // INTERACTIVE MOUSE TILT ON HERO PHONE
+    // ============================================================
     const heroVisual = document.querySelector('.hero-visual');
     const mockupContainer = document.querySelector('.app-mockup-wrapper');
 
-    if (heroVisual && mockupContainer) {
+    if (heroVisual && mockupContainer && !prefersReducedMotion) {
         heroVisual.addEventListener('mousemove', (e) => {
             const rect = heroVisual.getBoundingClientRect();
             const x = e.clientX - rect.left - rect.width / 2;
@@ -328,5 +639,23 @@ document.addEventListener('DOMContentLoaded', () => {
         heroVisual.addEventListener('mouseleave', () => {
             mockupContainer.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
         });
+    }
+
+    // ============================================================
+    // HEADER HIDE/SHOW ON SCROLL
+    // ============================================================
+    let lastScrollY = 0;
+    const header = document.querySelector('header');
+    if (header) {
+        window.addEventListener('scroll', () => {
+            const currentScrollY = window.scrollY;
+            if (currentScrollY > lastScrollY && currentScrollY > 100) {
+                header.style.transform = 'translateY(-100%)';
+                header.style.transition = 'transform 0.3s ease';
+            } else {
+                header.style.transform = 'translateY(0)';
+            }
+            lastScrollY = currentScrollY;
+        }, { passive: true });
     }
 });
