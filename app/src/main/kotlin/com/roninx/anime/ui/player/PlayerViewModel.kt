@@ -272,7 +272,7 @@ class PlayerViewModel @Inject constructor(
 
             if (minedResult != null && !minedResult.url.isNullOrBlank()) {
                 val minedUrl = minedResult.url
-                streamList = listOf(StreamLink(quality = "Auto", url = minedUrl))
+                streamList = listOf(StreamLink(title = animeTitle, url = minedUrl, type = "mined"))
                 currentStreamIndex = 0
                 playStream(minedUrl)
                 _uiState.value = PlayerUiState.Success(anime, episode)
