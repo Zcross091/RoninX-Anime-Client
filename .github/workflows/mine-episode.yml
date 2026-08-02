@@ -1,0 +1,48 @@
+name: Mine Anime Episode Stream
+
+on:
+  workflow_dispatch:
+    inputs:
+      anime_title:
+        description: 'Anime Title'
+        required: true
+        type: string
+      episode_number:
+        description: 'Episode Number'
+        required: true
+        type: string
+
+jobs:
+  mine-stream:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Scraper Dependencies
+        run: |
+          npm install axios cheerio dotenv @supabase/supabase-js puppeteer puppeteer-extra puppeteer-extra-plugin-stealth typescript ts-node @types/node @types/cheerio
+
+      - name: Execute Stream Scraper
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          GOGO_DOMAINS: ${{ secrets.GOGO_DOMAINS }}
+        run: |
+          npx ts-node scrapers/mine.ts "${{ github.event.inputs.anime_title }}" "${{ github.event.inputs.episode_number }}"
+
+      - name: Commit and Push Mined Stream Link
+        run: |
+          git config --global user.name "RoninX Cloud Miner"
+          git config --global user.email "actions@github.com"
+          git add cache/latest_stream.json
+          git diff-index --quiet HEAD || git commit -m "chore(miner): update stream link for [${{ github.event.inputs.anime_title }}] Ep ${{ github.event.inputs.episode_number }}"
+          git push origin main

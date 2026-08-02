@@ -17,6 +17,7 @@ import com.roninx.anime.data.api.JikanAnime
 import com.roninx.anime.data.api.StreamLink
 import com.roninx.anime.data.local.entities.WatchHistoryEntity
 import com.roninx.anime.data.repository.AnimeRepository
+import com.roninx.anime.data.repository.GitHubMinerRepository
 import com.roninx.anime.data.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -30,6 +31,7 @@ import javax.inject.Inject
 @HiltViewModel
 class PlayerViewModel @Inject constructor(
     private val repository: AnimeRepository,
+    private val gitHubMinerRepository: GitHubMinerRepository,
     @ApplicationContext private val context: Context,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -234,42 +236,71 @@ class PlayerViewModel @Inject constructor(
     }
 
     private fun triggerMinerAndPoll(reason: String) {
-        val anime = cachedAnime
+        val anime = cachedAnime ?: return
+        val animeTitle = anime.title_english ?: anime.title
+
         viewModelScope.launch {
-            if (anime != null) {
-                repository.triggerMiner(anime.title, episode)
+            _uiState.value = PlayerUiState.Mining(0, 45, "Launching GitHub Cloud Mining Runner...")
+
+            val startTimeMs = System.currentTimeMillis()
+
+            // 1. Also trigger Ronin API backend miner as secondary backup
+            repository.triggerMiner(anime.title, episode)
+
+            // 2. Dispatch GitHub Action Workflow
+            val dispatched = gitHubMinerRepository.dispatchMiningJob(animeTitle, episode)
+
+            val statusHeader = if (dispatched) {
+                "🚀 GitHub Cloud Runner Dispatched!"
+            } else {
+                "⚡ Searching Cloud Stream Sources..."
             }
 
-            val maxAttempts = 5
-            for (attempt in 1..maxAttempts) {
-                _uiState.value = PlayerUiState.Mining(attempt, maxAttempts, "$reason - Searching mirrors...")
-                delay(3500)
-
-                val animeTitle = anime?.title ?: ""
-                val animeEngTitle = anime?.title_english ?: animeTitle
-                val pollRes = repository.getStreamLinks(
-                    title = animeTitle,
-                    originalTitle = animeEngTitle,
-                    synonyms = emptyList(),
-                    episode = episode
+            // 3. Poll raw GitHub content
+            val minedResult = gitHubMinerRepository.pollMinedStream(
+                animeTitle = animeTitle,
+                episodeNumber = episode,
+                startTimeMs = startTimeMs,
+                maxWaitSeconds = 45
+            ) { elapsedSec ->
+                _uiState.value = PlayerUiState.Mining(
+                    attempt = elapsedSec,
+                    maxAttempts = 45,
+                    message = "$statusHeader Please keep screen open (${elapsedSec}s / 45s)"
                 )
+            }
 
-                if (pollRes is Resource.Success && pollRes.data.isNotEmpty()) {
-                    val valid = pollRes.data.filter { it.url.startsWith("http") }
-                    if (valid.isNotEmpty()) {
-                        streamList = valid
-                        currentStreamIndex = 0
-                        playStream(streamList[0].url)
-                        if (anime != null) {
-                            _uiState.value = PlayerUiState.Success(anime, episode)
-                            saveProgress()
-                        }
-                        return@launch
-                    }
+            if (minedResult != null && !minedResult.url.isNullOrBlank()) {
+                val minedUrl = minedResult.url
+                streamList = listOf(StreamLink(quality = "Auto", url = minedUrl))
+                currentStreamIndex = 0
+                playStream(minedUrl)
+                _uiState.value = PlayerUiState.Success(anime, episode)
+                saveProgress()
+                return@launch
+            }
+
+            // Secondary check on backend repository if GitHub polling reached 45s without commit
+            val pollRes = repository.getStreamLinks(
+                title = animeTitle,
+                originalTitle = anime.title,
+                synonyms = emptyList(),
+                episode = episode
+            )
+
+            if (pollRes is Resource.Success && pollRes.data.isNotEmpty()) {
+                val valid = pollRes.data.filter { it.url.startsWith("http") }
+                if (valid.isNotEmpty()) {
+                    streamList = valid
+                    currentStreamIndex = 0
+                    playStream(streamList[0].url)
+                    _uiState.value = PlayerUiState.Success(anime, episode)
+                    saveProgress()
+                    return@launch
                 }
             }
 
-            _uiState.value = PlayerUiState.Error("Streams currently unavailable for Episode $episode. Server is mining sources, please try again in a few moments.")
+            _uiState.value = PlayerUiState.Error("Streams currently unavailable for Episode $episode. Cloud runner is processing request, please tap Retry.")
         }
     }
 

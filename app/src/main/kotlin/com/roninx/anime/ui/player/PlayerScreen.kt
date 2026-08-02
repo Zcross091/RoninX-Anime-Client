@@ -125,22 +125,26 @@ fun PlayerScreen(
             }
             is PlayerUiState.Mining -> {
                 Column(
-                    modifier = Modifier.align(Alignment.Center),
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(horizontal = 32.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     CircularProgressIndicator(color = RoninRed)
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
                     Text(
-                        text = "Mining stream sources...",
+                        text = state.message,
                         color = Color.White,
                         fontSize = 16.sp,
-                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
                     Text(
-                        text = "Attempt ${state.attempt} of ${state.maxAttempts}",
-                        color = Color.Gray,
-                        fontSize = 14.sp
+                        text = "GitHub Action Cloud Runner active • Please keep app open",
+                        color = Color.LightGray,
+                        fontSize = 13.sp,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
                     )
                 }
             }
