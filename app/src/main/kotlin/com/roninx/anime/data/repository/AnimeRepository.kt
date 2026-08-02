@@ -18,49 +18,58 @@ import javax.inject.Singleton
 import com.roninx.anime.data.api.AniListMedia
 import com.roninx.anime.data.api.JikanImages
 import com.roninx.anime.data.api.JikanJpg
+import com.roninx.anime.data.api.KitsuAnime
+import com.roninx.anime.data.api.KitsuApi
+import com.roninx.anime.data.api.ShikimoriAnime
+import com.roninx.anime.data.api.ShikimoriApi
 
 @Singleton
 class AnimeRepository @Inject constructor(
     private val jikanApi: JikanApi,
     private val aniListRepository: AniListRepository,
+    private val kitsuApi: KitsuApi,
+    private val shikimoriApi: ShikimoriApi,
     private val roninProxyApi: RoninProxyApi,
     private val animeDao: AnimeDao
 ) {
-    // API Calls with Automatic AniList Fallback
+    // 4-Tier Fallback Chain: Jikan -> AniList -> Kitsu -> Shikimori
+
     suspend fun getTopAiring(): Resource<List<JikanAnime>> {
+        // 1. Jikan
         val jikanRes = safeApiCall { jikanApi.getSeasonNow().data }
         if (jikanRes is Resource.Success && jikanRes.data.isNotEmpty()) return jikanRes
-        
-        return when (val aniRes = aniListRepository.getTrendingAnime()) {
-            is Resource.Success -> Resource.Success(aniRes.data.map { it.toJikan() })
-            is Resource.Error -> jikanRes
-            else -> jikanRes
+
+        // 2. AniList
+        val aniRes = aniListRepository.getTrendingAnime()
+        if (aniRes is Resource.Success && aniRes.data.isNotEmpty()) {
+            return Resource.Success(aniRes.data.map { it.toJikan() })
         }
+
+        // 3. Kitsu
+        val kitsuRes = safeApiCall { kitsuApi.getTrending().data }
+        if (kitsuRes is Resource.Success && kitsuRes.data.isNotEmpty()) {
+            return Resource.Success(kitsuRes.data.map { it.toJikan() })
+        }
+
+        // 4. Shikimori
+        val shikiRes = safeApiCall { shikimoriApi.getTrending() }
+        if (shikiRes is Resource.Success && shikiRes.data.isNotEmpty()) {
+            return Resource.Success(shikiRes.data.map { it.toJikan() })
+        }
+
+        return jikanRes
     }
 
     suspend fun getActionAnime(): Resource<List<JikanAnime>> {
-        val jikanRes = safeApiCall { jikanApi.getAnimeByGenre("1").data }
-        if (jikanRes is Resource.Success && jikanRes.data.isNotEmpty()) return jikanRes
-
-        return when (val aniRes = aniListRepository.getAnimeByGenre("Action")) {
-            is Resource.Success -> Resource.Success(aniRes.data.map { it.toJikan() })
-            is Resource.Error -> jikanRes
-            else -> jikanRes
-        }
+        return getAnimeByGenre("1")
     }
 
     suspend fun getRomanceAnime(): Resource<List<JikanAnime>> {
-        val jikanRes = safeApiCall { jikanApi.getAnimeByGenre("22").data }
-        if (jikanRes is Resource.Success && jikanRes.data.isNotEmpty()) return jikanRes
-
-        return when (val aniRes = aniListRepository.getAnimeByGenre("Romance")) {
-            is Resource.Success -> Resource.Success(aniRes.data.map { it.toJikan() })
-            is Resource.Error -> jikanRes
-            else -> jikanRes
-        }
+        return getAnimeByGenre("22")
     }
 
     suspend fun getAnimeByGenre(genreId: String): Resource<List<JikanAnime>> {
+        // 1. Jikan
         val jikanRes = safeApiCall { jikanApi.getAnimeByGenre(genreId).data }
         if (jikanRes is Resource.Success && jikanRes.data.isNotEmpty()) return jikanRes
 
@@ -74,33 +83,71 @@ class AnimeRepository @Inject constructor(
             else -> "Action"
         }
 
-        return when (val aniRes = aniListRepository.getAnimeByGenre(genreName)) {
-            is Resource.Success -> Resource.Success(aniRes.data.map { it.toJikan() })
-            is Resource.Error -> jikanRes
-            else -> jikanRes
+        // 2. AniList
+        val aniRes = aniListRepository.getAnimeByGenre(genreName)
+        if (aniRes is Resource.Success && aniRes.data.isNotEmpty()) {
+            return Resource.Success(aniRes.data.map { it.toJikan() })
         }
+
+        // 3. Kitsu
+        val kitsuRes = safeApiCall { kitsuApi.getByCategory(genreName.lowercase()).data }
+        if (kitsuRes is Resource.Success && kitsuRes.data.isNotEmpty()) {
+            return Resource.Success(kitsuRes.data.map { it.toJikan() })
+        }
+
+        // 4. Shikimori
+        val shikiRes = safeApiCall { shikimoriApi.getByGenre(genreId) }
+        if (shikiRes is Resource.Success && shikiRes.data.isNotEmpty()) {
+            return Resource.Success(shikiRes.data.map { it.toJikan() })
+        }
+
+        return jikanRes
     }
 
     suspend fun searchAnime(query: String): Resource<List<JikanAnime>> {
+        // 1. Jikan
         val jikanRes = safeApiCall { jikanApi.searchAnime(query).data }
         if (jikanRes is Resource.Success && jikanRes.data.isNotEmpty()) return jikanRes
 
-        return when (val aniRes = aniListRepository.searchAnime(query)) {
-            is Resource.Success -> Resource.Success(aniRes.data.map { it.toJikan() })
-            is Resource.Error -> jikanRes
-            else -> jikanRes
+        // 2. AniList
+        val aniRes = aniListRepository.searchAnime(query)
+        if (aniRes is Resource.Success && aniRes.data.isNotEmpty()) {
+            return Resource.Success(aniRes.data.map { it.toJikan() })
         }
+
+        // 3. Kitsu
+        val kitsuRes = safeApiCall { kitsuApi.searchAnime(query).data }
+        if (kitsuRes is Resource.Success && kitsuRes.data.isNotEmpty()) {
+            return Resource.Success(kitsuRes.data.map { it.toJikan() })
+        }
+
+        // 4. Shikimori
+        val shikiRes = safeApiCall { shikimoriApi.searchAnime(query) }
+        if (shikiRes is Resource.Success && shikiRes.data.isNotEmpty()) {
+            return Resource.Success(shikiRes.data.map { it.toJikan() })
+        }
+
+        return jikanRes
     }
 
     suspend fun getAnimeFull(id: Int): Resource<JikanAnime> {
+        // 1. Jikan
         val jikanRes = safeApiCall { jikanApi.getAnimeFull(id).data }
         if (jikanRes is Resource.Success) return jikanRes
 
-        return when (val aniRes = aniListRepository.getAnimeDetails(id)) {
-            is Resource.Success -> Resource.Success(aniRes.data.toJikan())
-            is Resource.Error -> jikanRes
-            else -> jikanRes
-        }
+        // 2. AniList
+        val aniRes = aniListRepository.getAnimeDetails(id)
+        if (aniRes is Resource.Success) return Resource.Success(aniRes.data.toJikan())
+
+        // 3. Kitsu
+        val kitsuRes = safeApiCall { kitsuApi.getAnimeById(id.toString()).data }
+        if (kitsuRes is Resource.Success) return Resource.Success(kitsuRes.data.toJikan())
+
+        // 4. Shikimori
+        val shikiRes = safeApiCall { shikimoriApi.getAnimeById(id) }
+        if (shikiRes is Resource.Success) return Resource.Success(shikiRes.data.toJikan())
+
+        return jikanRes
     }
 
     private fun AniListMedia.toJikan(): JikanAnime {
@@ -112,6 +159,44 @@ class AnimeRepository @Inject constructor(
             episodes = episodes ?: chapters,
             score = (averageScore?.toDouble() ?: 0.0) / 10.0,
             synopsis = description
+        )
+    }
+
+    private fun KitsuAnime.toJikan(): JikanAnime {
+        val attr = attributes
+        val kitsuTitle = attr?.canonicalTitle 
+            ?: attr?.titles?.en 
+            ?: attr?.titles?.en_jp 
+            ?: "Unknown"
+        val imageUrl = attr?.posterImage?.large 
+            ?: attr?.posterImage?.medium 
+            ?: attr?.posterImage?.original 
+            ?: ""
+        val rating = attr?.averageRating?.toDoubleOrNull()?.let { it / 10.0 } ?: 0.0
+
+        return JikanAnime(
+            mal_id = id.toIntOrNull() ?: id.hashCode(),
+            title = kitsuTitle,
+            title_english = attr?.titles?.en,
+            images = JikanImages(JikanJpg(imageUrl)),
+            episodes = attr?.episodeCount,
+            score = rating,
+            synopsis = attr?.synopsis
+        )
+    }
+
+    private fun ShikimoriAnime.toJikan(): JikanAnime {
+        val imgPath = image?.original ?: image?.preview ?: ""
+        val fullImageUrl = if (imgPath.startsWith("http")) imgPath else "https://shikimori.one$imgPath"
+
+        return JikanAnime(
+            mal_id = id,
+            title = name,
+            title_english = name,
+            images = JikanImages(JikanJpg(fullImageUrl)),
+            episodes = episodes,
+            score = score?.toDoubleOrNull() ?: 0.0,
+            synopsis = description ?: russian
         )
     }
 
