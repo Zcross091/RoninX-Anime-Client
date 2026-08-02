@@ -2,6 +2,7 @@ package com.roninx.anime.data.util
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import retrofit2.HttpException
 import java.io.IOException
 import java.net.SocketTimeoutException
@@ -22,11 +23,45 @@ suspend fun <T> safeApiCall(apiCall: suspend () -> T): Resource<T> {
                 is SocketTimeoutException -> Resource.Error("Connection Timeout", throwable)
                 is HttpException -> {
                     val code = throwable.code()
-                    val errorResponse = throwable.response()?.errorBody()?.string()
-                    Resource.Error("Network Error $code: $errorResponse", throwable)
+                    val rawBody = throwable.response()?.errorBody()?.string()
+                    val cleanMsg = parseCleanErrorMessage(code, rawBody)
+                    Resource.Error(cleanMsg, throwable)
                 }
-                else -> Resource.Error("Unknown Error: ${throwable.localizedMessage}", throwable)
+                else -> Resource.Error(throwable.localizedMessage ?: "Unknown Error occurred", throwable)
             }
         }
     }
 }
+
+private fun parseCleanErrorMessage(code: Int, rawBody: String?): String {
+    if (rawBody.isNullOrBlank()) return "Server Error ($code)"
+    return try {
+        val json = JSONObject(rawBody)
+        if (json.has("errors")) {
+            val errorsArray = json.optJSONArray("errors")
+            if (errorsArray != null && errorsArray.length() > 0) {
+                val firstError = errorsArray.optJSONObject(0)
+                val msg = firstError?.optString("message")
+                if (!msg.isNullOrBlank()) {
+                    if (msg.contains("AniList API has been temporarily disabled", ignoreCase = true) ||
+                        msg.contains("disabled due to severe stability issues", ignoreCase = true)
+                    ) {
+                        return "AniList API is temporarily undergoing maintenance ($code)"
+                    }
+                    return msg
+                }
+            }
+        }
+        if (json.has("message")) {
+            val msg = json.getString("message")
+            if (msg.contains("AniList API has been temporarily disabled", ignoreCase = true)) {
+                return "AniList API is temporarily undergoing maintenance ($code)"
+            }
+            return msg
+        }
+        "Server Error ($code)"
+    } catch (e: Exception) {
+        "Server Error ($code)"
+    }
+}
+

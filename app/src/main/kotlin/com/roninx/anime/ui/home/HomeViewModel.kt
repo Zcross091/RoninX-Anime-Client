@@ -38,20 +38,24 @@ class HomeViewModel @Inject constructor(
             val actionRes = repository.getActionAnime()
             val romanceRes = repository.getRomanceAnime()
 
-            if (topAiringRes is Resource.Success && actionRes is Resource.Success && romanceRes is Resource.Success) {
-                val heroList = topAiringRes.data.take(5)
+            val topAiringData = (topAiringRes as? Resource.Success)?.data ?: emptyList()
+            val actionData = (actionRes as? Resource.Success)?.data ?: emptyList()
+            val romanceData = (romanceRes as? Resource.Success)?.data ?: emptyList()
+
+            if (topAiringData.isNotEmpty()) {
+                val heroList = topAiringData.take(5)
                 val bannersRes = aniListRepository.getBanners(heroList.map { it.mal_id })
                 val banners = if (bannersRes is Resource.Success) bannersRes.data else emptyMap()
 
                 _uiState.value = HomeUiState.Success(
                     heroAnime = heroList,
                     heroBanners = banners,
-                    topAiring = topAiringRes.data.drop(5),
-                    actionAnime = actionRes.data,
-                    romanceAnime = romanceRes.data
+                    topAiring = topAiringData.drop(5),
+                    actionAnime = actionData.ifEmpty { topAiringData.shuffled() },
+                    romanceAnime = romanceData.ifEmpty { topAiringData.shuffled() }
                 )
             } else {
-                // Fallback: Try AniList API if Jikan fails (e.g. 504 error)
+                // Fallback: Try AniList API if Jikan fails
                 fetchFallbackHomeData()
             }
         }
@@ -62,19 +66,25 @@ class HomeViewModel @Inject constructor(
         val actionRes = aniListRepository.getAnimeByGenre("Action")
         val romanceRes = aniListRepository.getAnimeByGenre("Romance")
 
-        if (trendingRes is Resource.Success && actionRes is Resource.Success && romanceRes is Resource.Success) {
-            val heroList = trendingRes.data.take(5).map { it.toJikan() }
-            val heroBanners = trendingRes.data.take(5).associate { (it.idMal ?: 0) to it.bannerImage }
+        val trendingData = (trendingRes as? Resource.Success)?.data ?: emptyList()
+        val actionData = (actionRes as? Resource.Success)?.data ?: emptyList()
+        val romanceData = (romanceRes as? Resource.Success)?.data ?: emptyList()
+
+        if (trendingData.isNotEmpty()) {
+            val heroList = trendingData.take(5).map { it.toJikan() }
+            val heroBanners = trendingData.take(5).associate { (it.idMal ?: 0) to it.bannerImage }
 
             _uiState.value = HomeUiState.Success(
                 heroAnime = heroList,
                 heroBanners = heroBanners,
-                topAiring = trendingRes.data.drop(5).map { it.toJikan() },
-                actionAnime = actionRes.data.map { it.toJikan() },
-                romanceAnime = romanceRes.data.map { it.toJikan() }
+                topAiring = trendingData.drop(5).map { it.toJikan() },
+                actionAnime = actionData.ifEmpty { trendingData.shuffled() }.map { it.toJikan() },
+                romanceAnime = romanceData.ifEmpty { trendingData.shuffled() }.map { it.toJikan() }
             )
         } else {
-            val errorMsg = (trendingRes as? Resource.Error)?.message ?: "Critical: Both Jikan and AniList failed."
+            val errorMsg = (trendingRes as? Resource.Error)?.message 
+                ?: (trendingRes as? Resource.Error)?.message 
+                ?: "Anime services are currently undergoing maintenance. Please tap Retry."
             _uiState.value = HomeUiState.Error(errorMsg)
         }
     }
