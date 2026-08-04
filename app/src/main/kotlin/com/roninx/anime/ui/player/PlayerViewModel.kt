@@ -71,6 +71,9 @@ class PlayerViewModel @Inject constructor(
     private val _isPlaying = MutableStateFlow(true)
     val isPlaying: StateFlow<Boolean> = _isPlaying
 
+    private val _isBuffering = MutableStateFlow(true)
+    val isBuffering: StateFlow<Boolean> = _isBuffering
+
     private val _currentPosition = MutableStateFlow(0L)
     val currentPosition: StateFlow<Long> = _currentPosition
 
@@ -81,6 +84,7 @@ class PlayerViewModel @Inject constructor(
     val availableQualities: StateFlow<List<VideoQuality>> = _availableQualities
 
     private var cachedAnime: JikanAnime? = null
+    private var bufferingTimeoutJob: kotlinx.coroutines.Job? = null
 
     init {
         setupPlayerListeners()
@@ -96,8 +100,20 @@ class PlayerViewModel @Inject constructor(
             }
 
             override fun onPlaybackStateChanged(state: Int) {
-                if (state == Player.STATE_READY) {
-                    _duration.value = player.duration
+                when (state) {
+                    Player.STATE_BUFFERING -> {
+                        _isBuffering.value = true
+                        startBufferingTimeoutGuard()
+                    }
+                    Player.STATE_READY -> {
+                        _isBuffering.value = false
+                        _duration.value = player.duration
+                        cancelBufferingTimeoutGuard()
+                    }
+                    Player.STATE_ENDED, Player.STATE_IDLE -> {
+                        _isBuffering.value = false
+                        cancelBufferingTimeoutGuard()
+                    }
                 }
             }
 
@@ -106,6 +122,7 @@ class PlayerViewModel @Inject constructor(
             }
 
             override fun onPlayerError(error: PlaybackException) {
+                cancelBufferingTimeoutGuard()
                 // Prevent re-entrant error handling while mining is in progress
                 if (isMining) return
 
@@ -120,6 +137,27 @@ class PlayerViewModel @Inject constructor(
                 }
             }
         })
+    }
+
+    private fun startBufferingTimeoutGuard() {
+        bufferingTimeoutJob?.cancel()
+        bufferingTimeoutJob = viewModelScope.launch {
+            delay(12000)
+            if (_isBuffering.value && !isMining) {
+                val nextIndex = currentStreamIndex + 1
+                if (nextIndex < streamList.size) {
+                    currentStreamIndex = nextIndex
+                    playStream(streamList[nextIndex].url)
+                } else {
+                    triggerMinerAndPoll("Stream buffering timed out. Mining fresh stream mirrors...")
+                }
+            }
+        }
+    }
+
+    private fun cancelBufferingTimeoutGuard() {
+        bufferingTimeoutJob?.cancel()
+        bufferingTimeoutJob = null
     }
 
     private fun saveProgress() {
@@ -354,9 +392,20 @@ class PlayerViewModel @Inject constructor(
 
     private fun isValidStreamUrl(url: String): Boolean {
         if (!url.startsWith("http")) return false
-        // Reject HTML pages, embeds, and non-video URLs
-        val rejectPatterns = listOf(".html", ".php", "/embed", "javascript:", "<html", "<script")
-        return rejectPatterns.none { url.contains(it, ignoreCase = true) }
+
+        val rejectPatterns = listOf(
+            ".html", ".php", "/embed", "embedplus", "streaming.php", 
+            "javascript:", "<html", "<script", "search.html", "/category/", "/anime/"
+        )
+        if (rejectPatterns.any { url.contains(it, ignoreCase = true) }) {
+            return false
+        }
+
+        val validPatterns = listOf(
+            ".m3u8", ".mp4", ".m3u", "hls", "master", "index", 
+            "googlevideo", "cdn", "stream", "video", "media"
+        )
+        return validPatterns.any { url.contains(it, ignoreCase = true) }
     }
 
     override fun onCleared() {

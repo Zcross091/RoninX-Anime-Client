@@ -44,6 +44,7 @@ fun PlayerScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val isPlaying by viewModel.isPlaying.collectAsState()
+    val isBuffering by viewModel.isBuffering.collectAsState()
     val currentPosition by viewModel.currentPosition.collectAsState()
     val duration by viewModel.duration.collectAsState()
     val qualities by viewModel.availableQualities.collectAsState()
@@ -158,6 +159,26 @@ fun PlayerScreen(
                     },
                     modifier = Modifier.fillMaxSize()
                 )
+
+                if (isBuffering) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black.copy(alpha = 0.5f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            CircularProgressIndicator(color = RoninRed)
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Text(
+                                text = "Loading video stream...",
+                                color = Color.White,
+                                fontSize = 14.sp,
+                                fontWeight = androidx.compose.ui.text.font.FontWeight.Medium
+                            )
+                        }
+                    }
+                }
 
                 AnimatedVisibility(
                     visible = showControls,

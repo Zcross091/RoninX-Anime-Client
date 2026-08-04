@@ -42,11 +42,14 @@ class NativeGogoScraper @Inject constructor(
                 val directUrl = "$domain/$querySlug-episode-$episodeNumber"
                 val directIframe = fetchIframeFromPage(directUrl, domain)
                 if (!directIframe.isNullOrBlank()) {
-                    return@withContext StreamLink(
-                        title = "$query - Ep $episodeNumber",
-                        url = directIframe,
-                        type = "native_direct"
-                    )
+                    val mediaUrl = extractDirectMediaFromIframe(directIframe, directUrl)
+                    if (!mediaUrl.isNullOrBlank()) {
+                        return@withContext StreamLink(
+                            title = "$query - Ep $episodeNumber",
+                            url = mediaUrl,
+                            type = "native_direct"
+                        )
+                    }
                 }
 
                 // ── Stage 2: Catalogue Search via HTTP ──
@@ -104,14 +107,17 @@ class NativeGogoScraper @Inject constructor(
                     exactEpUrl = "$domain/$seriesSlug-episode-$episodeNumber"
                 }
 
-                // ── Stage 4: Extract Stream Iframe ──
+                // ── Stage 4: Extract Stream Iframe and parse direct video media ──
                 val streamIframe = fetchIframeFromPage(exactEpUrl!!, categoryUrl)
                 if (!streamIframe.isNullOrBlank()) {
-                    return@withContext StreamLink(
-                        title = "$query - Ep $episodeNumber",
-                        url = streamIframe,
-                        type = "native_ajax"
-                    )
+                    val mediaUrl = extractDirectMediaFromIframe(streamIframe, exactEpUrl!!)
+                    if (!mediaUrl.isNullOrBlank()) {
+                        return@withContext StreamLink(
+                            title = "$query - Ep $episodeNumber",
+                            url = mediaUrl,
+                            type = "native_ajax"
+                        )
+                    }
                 }
             } catch (e: Exception) {
                 // Try next mirror domain
@@ -129,6 +135,34 @@ class NativeGogoScraper @Inject constructor(
         if (!iframe.isNullOrBlank()) {
             return if (iframe.startsWith("http")) iframe else "https:$iframe"
         }
+        return null
+    }
+
+    private fun extractDirectMediaFromIframe(iframeUrl: String, pageUrl: String): String? {
+        if (iframeUrl.contains(".m3u8", ignoreCase = true) || iframeUrl.contains(".mp4", ignoreCase = true)) {
+            return iframeUrl
+        }
+
+        val iframeHtml = fetchHtml(iframeUrl, pageUrl) ?: return null
+
+        val fileRegex = Regex("""(?:file|source|src)\s*:\s*["'](https?://[^"']+\.(?:m3u8|mp4)[^"']*)["']""", RegexOption.IGNORE_CASE)
+        val match1 = fileRegex.find(iframeHtml)
+        if (match1 != null) {
+            return match1.groupValues[1]
+        }
+
+        val m3u8Regex = Regex("""(https?://[^\s"'<>]+\.m3u8[^\s"'<>]*)""", RegexOption.IGNORE_CASE)
+        val match2 = m3u8Regex.find(iframeHtml)
+        if (match2 != null) {
+            return match2.groupValues[1]
+        }
+
+        val mp4Regex = Regex("""(https?://[^\s"'<>]+\.mp4[^\s"'<>]*)""", RegexOption.IGNORE_CASE)
+        val match3 = mp4Regex.find(iframeHtml)
+        if (match3 != null) {
+            return match3.groupValues[1]
+        }
+
         return null
     }
 
