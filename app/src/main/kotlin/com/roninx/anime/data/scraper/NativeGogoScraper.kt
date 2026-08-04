@@ -1,13 +1,18 @@
 package com.roninx.anime.data.scraper
 
+import android.util.Base64
 import com.roninx.anime.data.api.StreamLink
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import org.json.JSONObject
 import org.jsoup.Jsoup
 import java.net.URLEncoder
 import java.util.concurrent.TimeUnit
+import javax.crypto.Cipher
+import javax.crypto.spec.IvParameterSpec
+import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -30,11 +35,17 @@ class NativeGogoScraper @Inject constructor(
     private val userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
 
     /**
-     * Mines stream link directly on-device in < 1-2 seconds.
+     * Mines stream link directly on-device in < 1-2 seconds (AniBay architecture).
      */
     suspend fun extractStreamLink(query: String, episodeNumber: Int): StreamLink? = withContext(Dispatchers.IO) {
         val cleanQuery = query.lowercase().trim()
         val querySlug = cleanQuery.replace(Regex("[^a-z0-9]+"), "-").replace(Regex("^-+|-+$"), "")
+
+        // ⚡ Stage 0: Instant Consumet / Anime API Provider (~200ms AniBay speed)
+        val apiStream = fetchFromConsumetApi(querySlug, episodeNumber)
+        if (apiStream != null) {
+            return@withContext apiStream
+        }
 
         for (domain in defaultDomains) {
             try {
@@ -163,6 +174,44 @@ class NativeGogoScraper @Inject constructor(
             return match3.groupValues[1]
         }
 
+        return null
+    }
+
+    private fun fetchFromConsumetApi(slug: String, episodeNumber: Int): StreamLink? {
+        val endpoints = listOf(
+            "https://api.consumet.org/anime/gogoanime/watch/$slug-episode-$episodeNumber",
+            "https://consumet-api-clone.vercel.app/anime/gogoanime/watch/$slug-episode-$episodeNumber",
+            "https://gogoanime.consumet.stream/vidcdn/watch/$slug-episode-$episodeNumber"
+        )
+
+        for (url in endpoints) {
+            try {
+                val request = Request.Builder()
+                    .url(url)
+                    .header("User-Agent", userAgent)
+                    .build()
+                fastClient.newCall(request).execute().use { response ->
+                    if (response.isSuccessful) {
+                        val body = response.body?.string() ?: return@use
+                        val json = JSONObject(body)
+                        val sources = json.optJSONArray("sources")
+                        if (sources != null && sources.length() > 0) {
+                            val firstSource = sources.getJSONObject(0)
+                            val streamUrl = firstSource.optString("url")
+                            if (!streamUrl.isNullOrBlank() && streamUrl.contains(".m3u8")) {
+                                return StreamLink(
+                                    title = "$slug - Ep $episodeNumber",
+                                    url = streamUrl,
+                                    type = "consumet_api"
+                                )
+                            }
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                continue
+            }
+        }
         return null
     }
 
