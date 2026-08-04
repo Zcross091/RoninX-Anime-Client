@@ -44,6 +44,7 @@ class PlayerViewModel @Inject constructor(
 
     private var streamList: List<StreamLink> = emptyList()
     private var currentStreamIndex: Int = 0
+    private var isMining: Boolean = false
 
     private val trackSelector = DefaultTrackSelector(context)
 
@@ -105,6 +106,9 @@ class PlayerViewModel @Inject constructor(
             }
 
             override fun onPlayerError(error: PlaybackException) {
+                // Prevent re-entrant error handling while mining is in progress
+                if (isMining) return
+
                 // Automatic mirror fallback logic
                 val nextIndex = currentStreamIndex + 1
                 if (nextIndex < streamList.size) {
@@ -236,7 +240,9 @@ class PlayerViewModel @Inject constructor(
     }
 
     private fun triggerMinerAndPoll(reason: String) {
+        if (isMining) return
         val anime = cachedAnime ?: return
+        isMining = true
         val animeTitle = anime.title_english ?: anime.title
 
         viewModelScope.launch {
@@ -270,11 +276,12 @@ class PlayerViewModel @Inject constructor(
                 )
             }
 
-            if (minedResult != null && !minedResult.url.isNullOrBlank()) {
+            if (minedResult != null && !minedResult.url.isNullOrBlank() && isValidStreamUrl(minedResult.url)) {
                 val minedUrl = minedResult.url
                 streamList = listOf(StreamLink(title = animeTitle, url = minedUrl, type = "mined"))
                 currentStreamIndex = 0
                 playStream(minedUrl)
+                isMining = false
                 _uiState.value = PlayerUiState.Success(anime, episode)
                 saveProgress()
                 return@launch
@@ -289,36 +296,52 @@ class PlayerViewModel @Inject constructor(
             )
 
             if (pollRes is Resource.Success && pollRes.data.isNotEmpty()) {
-                val valid = pollRes.data.filter { it.url.startsWith("http") }
+                val valid = pollRes.data.filter { isValidStreamUrl(it.url) }
                 if (valid.isNotEmpty()) {
                     streamList = valid
                     currentStreamIndex = 0
                     playStream(streamList[0].url)
+                    isMining = false
                     _uiState.value = PlayerUiState.Success(anime, episode)
                     saveProgress()
                     return@launch
                 }
             }
 
+            isMining = false
             _uiState.value = PlayerUiState.Error("Streams currently unavailable for Episode $episode. Cloud runner is processing request, please tap Retry.")
         }
     }
 
     @OptIn(UnstableApi::class)
     private fun playStream(url: String) {
-        val isHls = url.contains("m3u8", ignoreCase = true) || 
-                   url.contains("hls", ignoreCase = true) || 
-                   url.contains(".m3u", ignoreCase = true)
-        
-        val mediaItemBuilder = MediaItem.Builder().setUri(Uri.parse(url))
-        if (isHls) {
-            mediaItemBuilder.setMimeType(MimeTypes.APPLICATION_M3U8)
-        }
-        val mediaItem = mediaItemBuilder.build()
+        try {
+            val isHls = url.contains("m3u8", ignoreCase = true) || 
+                       url.contains("hls", ignoreCase = true) || 
+                       url.contains(".m3u", ignoreCase = true)
+            
+            val mediaItemBuilder = MediaItem.Builder().setUri(Uri.parse(url))
+            if (isHls) {
+                mediaItemBuilder.setMimeType(MimeTypes.APPLICATION_M3U8)
+            }
+            val mediaItem = mediaItemBuilder.build()
 
-        player.setMediaItem(mediaItem)
-        player.prepare()
-        player.playWhenReady = true
+            player.stop()
+            player.clearMediaItems()
+            player.setMediaItem(mediaItem)
+            player.prepare()
+            player.playWhenReady = true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            _uiState.value = PlayerUiState.Error("Failed to play stream: ${e.localizedMessage}")
+        }
+    }
+
+    private fun isValidStreamUrl(url: String): Boolean {
+        if (!url.startsWith("http")) return false
+        // Reject HTML pages, embeds, and non-video URLs
+        val rejectPatterns = listOf(".html", ".php", "/embed", "javascript:", "<html", "<script")
+        return rejectPatterns.none { url.contains(it, ignoreCase = true) }
     }
 
     override fun onCleared() {

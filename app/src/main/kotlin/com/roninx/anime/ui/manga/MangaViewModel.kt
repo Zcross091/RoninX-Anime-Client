@@ -3,8 +3,13 @@ package com.roninx.anime.ui.manga
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.roninx.anime.data.api.AniListMedia
+import com.roninx.anime.data.api.AniListTitle
+import com.roninx.anime.data.api.AniListCoverImage
+import com.roninx.anime.data.api.KitsuAnime
+import com.roninx.anime.data.api.KitsuApi
 import com.roninx.anime.data.repository.AniListRepository
 import com.roninx.anime.data.util.Resource
+import com.roninx.anime.data.util.safeApiCall
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MangaViewModel @Inject constructor(
-    private val aniListRepository: AniListRepository
+    private val aniListRepository: AniListRepository,
+    private val kitsuApi: KitsuApi
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<MangaUiState>(MangaUiState.Loading)
@@ -28,24 +34,72 @@ class MangaViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = MangaUiState.Loading
             
-            val trendingDeferred = async { aniListRepository.getTrendingManga() }
-            val popularDeferred = async { aniListRepository.getPopularManga() }
+            val trendingDeferred = async { fetchTrendingManga() }
+            val popularDeferred = async { fetchPopularManga() }
 
-            val trendingRes = trendingDeferred.await()
-            val popularRes = popularDeferred.await()
+            val trending = trendingDeferred.await()
+            val popular = popularDeferred.await()
 
-            if (trendingRes is Resource.Success && popularRes is Resource.Success) {
+            if (trending.isNotEmpty() || popular.isNotEmpty()) {
                 _uiState.value = MangaUiState.Success(
-                    trendingManga = trendingRes.data,
-                    popularManga = popularRes.data
+                    trendingManga = trending,
+                    popularManga = popular
                 )
             } else {
-                val errorMsg = (trendingRes as? Resource.Error)?.message 
-                    ?: (popularRes as? Resource.Error)?.message 
-                    ?: "Failed to load Manga data"
-                _uiState.value = MangaUiState.Error(errorMsg)
+                _uiState.value = MangaUiState.Error("Failed to load Manga data from all sources")
             }
         }
+    }
+
+    private suspend fun fetchTrendingManga(): List<AniListMedia> {
+        // 1. AniList
+        val aniRes = aniListRepository.getTrendingManga()
+        if (aniRes is Resource.Success && aniRes.data.isNotEmpty()) return aniRes.data
+
+        // 2. Kitsu fallback
+        val kitsuRes = safeApiCall { kitsuApi.getTrendingManga().data }
+        if (kitsuRes is Resource.Success && kitsuRes.data.isNotEmpty()) {
+            return kitsuRes.data.map { it.toAniListMedia() }
+        }
+
+        return emptyList()
+    }
+
+    private suspend fun fetchPopularManga(): List<AniListMedia> {
+        // 1. AniList
+        val aniRes = aniListRepository.getPopularManga()
+        if (aniRes is Resource.Success && aniRes.data.isNotEmpty()) return aniRes.data
+
+        // 2. Kitsu fallback
+        val kitsuRes = safeApiCall { kitsuApi.getPopularManga().data }
+        if (kitsuRes is Resource.Success && kitsuRes.data.isNotEmpty()) {
+            return kitsuRes.data.map { it.toAniListMedia() }
+        }
+
+        return emptyList()
+    }
+
+    private fun KitsuAnime.toAniListMedia(): AniListMedia {
+        val attr = attributes
+        return AniListMedia(
+            id = id.toIntOrNull() ?: id.hashCode(),
+            idMal = null,
+            title = AniListTitle(
+                english = attr?.titles?.en,
+                romaji = attr?.canonicalTitle ?: attr?.titles?.en_jp
+            ),
+            coverImage = AniListCoverImage(
+                large = attr?.posterImage?.large ?: attr?.posterImage?.medium
+            ),
+            bannerImage = attr?.coverImage?.large,
+            episodes = null,
+            chapters = attr?.chapterCount,
+            volumes = attr?.volumeCount,
+            averageScore = attr?.averageRating?.toDoubleOrNull()?.toInt(),
+            description = attr?.synopsis,
+            genres = null,
+            status = attr?.status
+        )
     }
 }
 

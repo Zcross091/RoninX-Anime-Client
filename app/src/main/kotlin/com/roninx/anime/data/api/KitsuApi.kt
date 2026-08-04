@@ -34,6 +34,25 @@ interface KitsuApi {
     suspend fun getAnimeById(
         @Path("id") id: String
     ): KitsuSingleResponse
+
+    // --- Manga Endpoints ---
+
+    @GET("manga")
+    suspend fun getTrendingManga(
+        @Query("sort") sort: String = "-userCount",
+        @Query("page[limit]") limit: Int = 15
+    ): KitsuResponse
+
+    @GET("manga")
+    suspend fun getPopularManga(
+        @Query("sort") sort: String = "-averageRating",
+        @Query("page[limit]") limit: Int = 15
+    ): KitsuResponse
+
+    @GET("manga/{id}")
+    suspend fun getMangaById(
+        @Path("id") id: String
+    ): KitsuSingleResponse
 }
 
 // --- Data Classes (JSON:API envelope) ---
@@ -57,6 +76,8 @@ data class KitsuAttributes(
     val synopsis: String?,
     val averageRating: String?,
     val episodeCount: Int?,
+    val chapterCount: Int?,
+    val volumeCount: Int?,
     val posterImage: KitsuPosterImage?,
     val coverImage: KitsuCoverImage?,
     val status: String?
