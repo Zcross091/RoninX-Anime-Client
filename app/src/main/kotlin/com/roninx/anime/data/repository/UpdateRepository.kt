@@ -2,6 +2,7 @@ package com.roninx.anime.data.repository
 
 import android.content.Context
 import android.content.pm.PackageManager
+import com.roninx.anime.BuildConfig
 import com.roninx.anime.data.api.GitHubApi
 import com.roninx.anime.data.api.GitHubRelease
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -20,8 +21,9 @@ class UpdateRepository @Inject constructor(
             val latestRelease = gitHubApi.getLatestRelease()
             val apkAsset = latestRelease.assets.find { it.name.endsWith(".apk") } ?: return null
 
-            val releaseCommit = Regex("""\*\*Commit:\*\*\s*([a-f0-9]+)""").find(latestRelease.body)?.groupValues?.get(1) 
-                ?: latestRelease.tag_name
+            val bodyCommit = Regex("""\*\*Commit:\*\*\s*([a-f0-9]+)""").find(latestRelease.body)?.groupValues?.get(1)
+            val tagCommit = if (latestRelease.tag_name.contains("-")) latestRelease.tag_name.substringAfter("-") else ""
+            val releaseCommit = bodyCommit ?: tagCommit
 
             val currentVersion = try {
                 context.packageManager.getPackageInfo(context.packageName, 0).versionName
@@ -29,10 +31,26 @@ class UpdateRepository @Inject constructor(
                 "1.0"
             }
 
-            val lastInstalledCommit = prefs.getString("last_installed_commit", "") ?: ""
+            val currentSha = try { BuildConfig.COMMIT_SHA } catch (e: Exception) { "" }
 
-            val tagIsNewer = isNewerVersion(currentVersion, latestRelease.tag_name)
-            val commitIsNewer = releaseCommit.isNotEmpty() && releaseCommit != lastInstalledCommit && (latestRelease.tag_name == "latest" || latestRelease.tag_name.contains("-"))
+            // 1. If running current build SHA, user is already on this exact build
+            if (currentSha.isNotEmpty() && currentSha != "unknown") {
+                if ((releaseCommit.isNotEmpty() && releaseCommit.startsWith(currentSha)) ||
+                    (tagCommit.isNotEmpty() && tagCommit.startsWith(currentSha)) ||
+                    (currentSha.startsWith(tagCommit) && tagCommit.isNotEmpty())) {
+                    return null
+                }
+            }
+
+            // 2. Base version comparison (clean semver without -commit suffix)
+            val cleanTagName = latestRelease.tag_name.trimStart('v').substringBefore('-')
+            val tagIsNewer = isNewerVersion(currentVersion, cleanTagName)
+
+            // 3. Commit SHA comparison if version is same but commit is newer
+            val lastInstalledCommit = prefs.getString("last_installed_commit", "") ?: ""
+            val commitIsNewer = !tagIsNewer && cleanTagName == currentVersion.trimStart('v') &&
+                    releaseCommit.isNotEmpty() && releaseCommit != lastInstalledCommit &&
+                    (currentSha.isEmpty() || currentSha == "unknown" || !releaseCommit.startsWith(currentSha))
 
             val isNewer = tagIsNewer || commitIsNewer
 
@@ -64,11 +82,14 @@ class UpdateRepository @Inject constructor(
 
     private fun isNewerVersion(current: String?, latest: String): Boolean {
         if (current == null) return true
-        val curParts = current.replace(Regex("[^0-9.]"), "").split(".").filter { it.isNotEmpty() }.mapNotNull { it.toIntOrNull() }
-        val latParts = latest.replace(Regex("[^0-9.]"), "").split(".").filter { it.isNotEmpty() }.mapNotNull { it.toIntOrNull() }
+        val cleanCurrent = current.trimStart('v').substringBefore('-')
+        val cleanLatest = latest.trimStart('v').substringBefore('-')
+
+        val curParts = cleanCurrent.split(".").mapNotNull { it.toIntOrNull() }
+        val latParts = cleanLatest.split(".").mapNotNull { it.toIntOrNull() }
 
         if (curParts.isEmpty() || latParts.isEmpty()) {
-            return latest.trimStart('v') != current.trimStart('v')
+            return cleanLatest != cleanCurrent
         }
 
         val maxLen = maxOf(curParts.size, latParts.size)

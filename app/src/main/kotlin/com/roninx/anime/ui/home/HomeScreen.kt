@@ -35,13 +35,17 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 fun HomeScreen(
     viewModel: HomeViewModel,
     onAnimeClick: (JikanAnime) -> Unit,
-    onHistoryClick: (Int) -> Unit
+    onHistoryClick: (WatchHistoryEntity) -> Unit
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val state by viewModel.uiState.collectAsState()
     val watchHistory by viewModel.watchHistory.collectAsState()
 
-    Box(modifier = Modifier.fillMaxSize().background(RoninBase)) {
-        when (val state = uiState) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(RoninBase)
+    ) {
+        when (val uiState = state) {
             is HomeUiState.Loading -> {
                 CircularProgressIndicator(
                     modifier = Modifier.align(Alignment.Center),
@@ -50,7 +54,7 @@ fun HomeScreen(
             }
             is HomeUiState.Success -> {
                 HomeContent(
-                    state = state,
+                    state = uiState,
                     watchHistory = watchHistory,
                     onAnimeClick = onAnimeClick,
                     onHistoryClick = onHistoryClick
@@ -61,10 +65,16 @@ fun HomeScreen(
                     modifier = Modifier.align(Alignment.Center),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(text = state.message, color = Color.Red, fontWeight = FontWeight.Bold)
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = uiState.message,
+                        color = RoninRed,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
                     Button(
-                        onClick = { viewModel.fetchHomeData() },
+                        onClick = { viewModel.retry() },
                         colors = ButtonDefaults.buttonColors(containerColor = RoninRed)
                     ) {
                         Text("Retry")
@@ -80,14 +90,12 @@ fun HomeContent(
     state: HomeUiState.Success,
     watchHistory: List<WatchHistoryEntity>,
     onAnimeClick: (JikanAnime) -> Unit,
-    onHistoryClick: (Int) -> Unit
+    onHistoryClick: (WatchHistoryEntity) -> Unit
 ) {
-    val scrollState = rememberScrollState()
-
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(scrollState)
+            .verticalScroll(rememberScrollState())
     ) {
         // Hero Carousel Section
         if (state.heroAnime.isNotEmpty()) {
@@ -137,7 +145,7 @@ fun HomeContent(
 @Composable
 fun ContinueWatchingRow(
     history: List<WatchHistoryEntity>,
-    onItemClick: (Int) -> Unit
+    onItemClick: (WatchHistoryEntity) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
@@ -158,7 +166,7 @@ fun ContinueWatchingRow(
                     modifier = Modifier
                         .width(280.dp)
                         .height(160.dp)
-                        .clickable { onItemClick(item.malId) },
+                        .clickable { onItemClick(item) },
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Box(modifier = Modifier.fillMaxSize()) {

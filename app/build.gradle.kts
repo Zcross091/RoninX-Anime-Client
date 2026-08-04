@@ -17,6 +17,15 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        val gitCommitSha = try {
+            providers.exec {
+                commandLine("git", "rev-parse", "--short", "HEAD")
+            }.standardOutput.asText.get().trim().ifEmpty { "unknown" }
+        } catch (e: Exception) {
+            "unknown"
+        }
+        buildConfigField("String", "COMMIT_SHA", "\"$gitCommitSha\"")
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
@@ -51,6 +60,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     packaging {
         resources {

@@ -220,6 +220,11 @@ class AnimeRepository @Inject constructor(
     fun getWatchHistory(): Flow<List<WatchHistoryEntity>> = animeDao.getAllHistory()
 
     suspend fun upsertWatchHistory(history: WatchHistoryEntity) {
+        val cleanTitle = history.title.lowercase().trim()
+        val existing = animeDao.getHistoryByTitleOrId(cleanTitle, history.malId)
+        if (existing != null && existing.malId != history.malId) {
+            animeDao.deleteHistory(existing.malId)
+        }
         animeDao.upsertHistory(history)
     }
 

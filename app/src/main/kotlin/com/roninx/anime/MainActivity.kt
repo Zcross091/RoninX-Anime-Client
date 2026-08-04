@@ -189,8 +189,8 @@ fun MainScreen() {
                     onAnimeClick = { anime ->
                         navController.navigate(Screen.Detail.createRoute(anime.mal_id))
                     },
-                    onHistoryClick = { malId ->
-                        navController.navigate(Screen.Detail.createRoute(malId))
+                    onHistoryClick = { historyItem ->
+                        navController.navigate(Screen.Player.createRoute(historyItem.malId, historyItem.lastEpisodeWatched))
                     }
                 )
             }
@@ -279,6 +279,9 @@ fun MainScreen() {
                     viewModel = viewModel,
                     onAnimeClick = { animeId ->
                         navController.navigate(Screen.Detail.createRoute(animeId))
+                    },
+                    onHistoryClick = { animeId, episode ->
+                        navController.navigate(Screen.Player.createRoute(animeId, episode))
                     }
                 )
             }

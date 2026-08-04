@@ -30,7 +30,8 @@ import com.roninx.anime.ui.theme.RoninSurface
 @Composable
 fun MyListScreen(
     viewModel: MyListViewModel,
-    onAnimeClick: (Int) -> Unit
+    onAnimeClick: (Int) -> Unit,
+    onHistoryClick: (Int, Int) -> Unit = { animeId, _ -> onAnimeClick(animeId) }
 ) {
     val history by viewModel.watchHistory.collectAsState()
     val watchlist by viewModel.watchlist.collectAsState()
@@ -85,7 +86,7 @@ fun MyListScreen(
             } else {
                 HistoryGrid(
                     items = history,
-                    onItemClick = onAnimeClick,
+                    onItemClick = onHistoryClick,
                     onDelete = { viewModel.deleteHistory(it) }
                 )
             }
@@ -151,7 +152,7 @@ fun WatchlistGrid(
 @Composable
 fun HistoryGrid(
     items: List<WatchHistoryEntity>,
-    onItemClick: (Int) -> Unit,
+    onItemClick: (Int, Int) -> Unit,
     onDelete: (Int) -> Unit
 ) {
     if (items.isEmpty()) {
@@ -168,7 +169,7 @@ fun HistoryGrid(
                     Column(
                         modifier = Modifier
                             .width(150.dp)
-                            .clickable { onItemClick(item.malId) }
+                            .clickable { onItemClick(item.malId, item.lastEpisodeWatched) }
                     ) {
                         Card(
                             shape = RoundedCornerShape(8.dp),

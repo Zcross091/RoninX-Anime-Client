@@ -11,6 +11,9 @@ interface AnimeDao {
     @Query("SELECT * FROM watch_history ORDER BY timestamp DESC")
     fun getAllHistory(): Flow<List<WatchHistoryEntity>>
 
+    @Query("SELECT * FROM watch_history WHERE LOWER(TRIM(title)) = :cleanTitle OR malId = :malId LIMIT 1")
+    suspend fun getHistoryByTitleOrId(cleanTitle: String, malId: Int): WatchHistoryEntity?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertHistory(history: WatchHistoryEntity)
 
