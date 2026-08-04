@@ -33,8 +33,6 @@ jobs:
 
       - name: Execute Stream Scraper
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
           GOGO_DOMAINS: ${{ secrets.GOGO_DOMAINS }}
         run: |
           npx ts-node scrapers/mine.ts "${{ github.event.inputs.anime_title }}" "${{ github.event.inputs.episode_number }}"

@@ -270,27 +270,7 @@ class PlayerViewModel @Inject constructor(
                     return@launch
                 }
 
-                // ⚡ Stage 2: Check cached stream links
-                val streamsRes = repository.getStreamLinks(
-                    title = anime.title,
-                    originalTitle = animeTitle,
-                    synonyms = emptyList(),
-                    episode = episode
-                )
-
-                if (streamsRes is Resource.Success && streamsRes.data.isNotEmpty()) {
-                    val validStreams = streamsRes.data.filter { isValidStreamUrl(it.url) }
-                    if (validStreams.isNotEmpty()) {
-                        streamList = validStreams
-                        currentStreamIndex = 0
-                        playStream(streamList[0].url)
-                        _uiState.value = PlayerUiState.Success(anime, episode)
-                        saveProgress()
-                        return@launch
-                    }
-                }
-
-                // ⚡ Stage 3: Fallback to GitHub Cloud Runner
+                // ⚡ Stage 2: Fallback to App's Own GitHub Cloud Mining Runner
                 triggerMinerAndPoll("Mining streams...")
             } else {
                 _uiState.value = PlayerUiState.Error((animeRes as? Resource.Error)?.message ?: "Failed to load anime metadata")
@@ -309,10 +289,7 @@ class PlayerViewModel @Inject constructor(
 
             val startTimeMs = System.currentTimeMillis()
 
-            // 1. Also trigger Ronin API backend miner as secondary backup
-            repository.triggerMiner(anime.title, episode)
-
-            // 2. Dispatch GitHub Action Workflow
+            // Dispatch App's Own GitHub Action Workflow (.github/workflows/mine-episode.yml -> scrapers/gogoanimeLight.ts)
             val dispatched = gitHubMinerRepository.dispatchMiningJob(animeTitle, episode)
 
             val statusHeader = if (dispatched) {
@@ -321,7 +298,7 @@ class PlayerViewModel @Inject constructor(
                 "⚡ Searching Cloud Stream Sources..."
             }
 
-            // 3. Poll raw GitHub content
+            // Poll raw GitHub cache file (cache/latest_stream.json)
             val minedResult = gitHubMinerRepository.pollMinedStream(
                 animeTitle = animeTitle,
                 episodeNumber = episode,
@@ -344,27 +321,6 @@ class PlayerViewModel @Inject constructor(
                 _uiState.value = PlayerUiState.Success(anime, episode)
                 saveProgress()
                 return@launch
-            }
-
-            // Secondary check on backend repository if GitHub polling reached 45s without commit
-            val pollRes = repository.getStreamLinks(
-                title = animeTitle,
-                originalTitle = anime.title,
-                synonyms = emptyList(),
-                episode = episode
-            )
-
-            if (pollRes is Resource.Success && pollRes.data.isNotEmpty()) {
-                val valid = pollRes.data.filter { isValidStreamUrl(it.url) }
-                if (valid.isNotEmpty()) {
-                    streamList = valid
-                    currentStreamIndex = 0
-                    playStream(streamList[0].url)
-                    isMining = false
-                    _uiState.value = PlayerUiState.Success(anime, episode)
-                    saveProgress()
-                    return@launch
-                }
             }
 
             isMining = false
