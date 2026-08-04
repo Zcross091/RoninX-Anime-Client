@@ -74,7 +74,7 @@ fun HomeScreen(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Button(
-                        onClick = { viewModel.retry() },
+                        onClick = { viewModel.fetchHomeData() },
                         colors = ButtonDefaults.buttonColors(containerColor = RoninRed)
                     ) {
                         Text("Retry")
