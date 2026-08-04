@@ -1,5 +1,6 @@
 package com.roninx.anime.data.repository
 
+import com.roninx.anime.BuildConfig
 import com.roninx.anime.data.api.GitHubApi
 import com.roninx.anime.data.api.GitHubDispatchPayload
 import com.roninx.anime.data.api.MinedStreamPayload
@@ -16,8 +17,9 @@ class GitHubMinerRepository @Inject constructor(
      */
     suspend fun dispatchMiningJob(animeTitle: String, episodeNumber: Int, token: String? = null): Boolean {
         return try {
-            val authHeader = if (!token.isNullOrBlank()) {
-                if (token.startsWith("Bearer ") || token.startsWith("token ")) token else "Bearer $token"
+            val activeToken = token?.ifBlank { null } ?: BuildConfig.GITHUB_PAT.ifBlank { null }
+            val authHeader = if (!activeToken.isNullOrBlank()) {
+                if (activeToken.startsWith("Bearer ") || activeToken.startsWith("token ")) activeToken else "Bearer $activeToken"
             } else null
 
             val payload = GitHubDispatchPayload(

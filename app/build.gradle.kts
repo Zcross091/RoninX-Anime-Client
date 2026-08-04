@@ -26,6 +26,9 @@ android {
         }
         buildConfigField("String", "COMMIT_SHA", "\"$gitCommitSha\"")
 
+        val githubPat = System.getenv("GITHUB_PAT") ?: (project.findProperty("GITHUB_PAT") as? String) ?: ""
+        buildConfigField("String", "GITHUB_PAT", "\"$githubPat\"")
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true

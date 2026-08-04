@@ -292,11 +292,13 @@ class PlayerViewModel @Inject constructor(
             // Dispatch App's Own GitHub Action Workflow (.github/workflows/mine-episode.yml -> scrapers/gogoanimeLight.ts)
             val dispatched = gitHubMinerRepository.dispatchMiningJob(animeTitle, episode)
 
-            val statusHeader = if (dispatched) {
-                "🚀 GitHub Cloud Runner Dispatched!"
-            } else {
-                "⚡ Searching Cloud Stream Sources..."
+            if (!dispatched) {
+                isMining = false
+                _uiState.value = PlayerUiState.Error("Cloud miner dispatch failed (GitHub Personal Access Token required to trigger workflow_dispatch API). Please verify GitHub PAT configuration.")
+                return@launch
             }
+
+            val statusHeader = "🚀 GitHub Cloud Runner Dispatched!"
 
             // Poll raw GitHub cache file (cache/latest_stream.json)
             val minedResult = gitHubMinerRepository.pollMinedStream(
