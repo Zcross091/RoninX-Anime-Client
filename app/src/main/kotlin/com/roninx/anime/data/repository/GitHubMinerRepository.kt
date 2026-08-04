@@ -4,34 +4,45 @@ import com.roninx.anime.BuildConfig
 import com.roninx.anime.data.api.GitHubApi
 import com.roninx.anime.data.api.GitHubDispatchPayload
 import com.roninx.anime.data.api.MinedStreamPayload
+import com.roninx.anime.data.api.RoninProxyApi
 import kotlinx.coroutines.delay
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class GitHubMinerRepository @Inject constructor(
-    private val gitHubApi: GitHubApi
+    private val gitHubApi: GitHubApi,
+    private val roninProxyApi: RoninProxyApi
 ) {
     /**
      * Dispatches the GitHub Actions workflow to mine the specified anime episode on cloud runner.
      */
     suspend fun dispatchMiningJob(animeTitle: String, episodeNumber: Int, token: String? = null): Boolean {
-        return try {
+        // 1. Try direct GitHub API dispatch if PAT token exists
+        try {
             val activeToken = token?.ifBlank { null } ?: BuildConfig.GITHUB_PAT.ifBlank { null }
-            val authHeader = if (!activeToken.isNullOrBlank()) {
-                if (activeToken.startsWith("Bearer ") || activeToken.startsWith("token ")) activeToken else "Bearer $activeToken"
-            } else null
-
-            val payload = GitHubDispatchPayload(
-                ref = "main",
-                inputs = mapOf(
-                    "anime_title" to animeTitle,
-                    "episode_number" to episodeNumber.toString()
+            if (!activeToken.isNullOrBlank()) {
+                val authHeader = if (activeToken.startsWith("Bearer ") || activeToken.startsWith("token ")) activeToken else "Bearer $activeToken"
+                val payload = GitHubDispatchPayload(
+                    ref = "main",
+                    inputs = mapOf(
+                        "anime_title" to animeTitle,
+                        "episode_number" to episodeNumber.toString()
+                    )
                 )
-            )
+                val response = gitHubApi.dispatchMineWorkflow(authHeader, payload)
+                if (response.isSuccessful || response.code() == 204) {
+                    return true
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 
-            val response = gitHubApi.dispatchMineWorkflow(authHeader, payload)
-            response.isSuccessful || response.code() == 204
+        // 2. Fallback: Dispatch via Ronin Proxy Vercel Relay (server-side GitHub secret token)
+        return try {
+            roninProxyApi.triggerMiner(animeTitle, episodeNumber)
+            true
         } catch (e: Exception) {
             e.printStackTrace()
             false
