@@ -26,16 +26,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
 
       - name: Install Scraper Dependencies
-        run: |
-          npm install axios cheerio dotenv @supabase/supabase-js puppeteer puppeteer-extra puppeteer-extra-plugin-stealth typescript ts-node @types/node @types/cheerio
+        run: npm ci || npm install
 
       - name: Execute Stream Scraper
         env:
           GOGO_DOMAINS: ${{ secrets.GOGO_DOMAINS }}
         run: |
-          npx ts-node scrapers/mine.ts "${{ github.event.inputs.anime_title }}" "${{ github.event.inputs.episode_number }}"
+          npx tsx scrapers/mine.ts "${{ github.event.inputs.anime_title }}" "${{ github.event.inputs.episode_number }}"
 
       - name: Commit and Push Mined Stream Link
         run: |

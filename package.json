@@ -1,0 +1,23 @@
+{
+  "name": "roninx-anime-client-scrapers",
+  "version": "1.0.0",
+  "description": "Lightweight Node/TypeScript scraper for RoninX Anime Client",
+  "main": "scrapers/mine.ts",
+  "scripts": {
+    "mine": "tsx scrapers/mine.ts"
+  },
+  "dependencies": {
+    "axios": "^1.7.0",
+    "cheerio": "^1.0.0-rc.12",
+    "dotenv": "^16.4.5",
+    "puppeteer": "^22.10.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
+  },
+  "devDependencies": {
+    "@types/cheerio": "^0.22.35",
+    "@types/node": "^20.12.12",
+    "typescript": "^5.4.5",
+    "tsx": "^4.10.5"
+  }
+}
