@@ -22,6 +22,7 @@ import com.roninx.anime.data.api.KitsuAnime
 import com.roninx.anime.data.api.KitsuApi
 import com.roninx.anime.data.api.ShikimoriAnime
 import com.roninx.anime.data.api.ShikimoriApi
+import com.roninx.anime.data.scraper.NativeGogoScraper
 
 @Singleton
 class AnimeRepository @Inject constructor(
@@ -30,6 +31,7 @@ class AnimeRepository @Inject constructor(
     private val kitsuApi: KitsuApi,
     private val shikimoriApi: ShikimoriApi,
     private val roninProxyApi: RoninProxyApi,
+    private val nativeGogoScraper: NativeGogoScraper,
     private val animeDao: AnimeDao
 ) {
     // 4-Tier Fallback Chain: Jikan -> AniList -> Kitsu -> Shikimori
@@ -198,6 +200,10 @@ class AnimeRepository @Inject constructor(
             score = score?.toDoubleOrNull() ?: 0.0,
             synopsis = description ?: russian
         )
+    }
+
+    suspend fun extractDirectStream(title: String, episode: Int): StreamLink? {
+        return nativeGogoScraper.extractStreamLink(title, episode)
     }
 
     suspend fun getStreamLinks(title: String, originalTitle: String?, synonyms: List<String>, episode: Int): Resource<List<StreamLink>> {

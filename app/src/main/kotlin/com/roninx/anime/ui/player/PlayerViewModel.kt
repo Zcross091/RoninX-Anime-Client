@@ -211,28 +211,43 @@ class PlayerViewModel @Inject constructor(
             if (animeRes is Resource.Success) {
                 val anime = animeRes.data
                 cachedAnime = anime
-                
+                val animeTitle = anime.title_english ?: anime.title
+
+                // ⚡ Stage 1: Instant Native Extraction on device (< 1.5s AniBay speed)
+                val nativeStream = repository.extractDirectStream(animeTitle, episode) 
+                    ?: repository.extractDirectStream(anime.title, episode)
+
+                if (nativeStream != null && isValidStreamUrl(nativeStream.url)) {
+                    streamList = listOf(nativeStream)
+                    currentStreamIndex = 0
+                    playStream(nativeStream.url)
+                    _uiState.value = PlayerUiState.Success(anime, episode)
+                    saveProgress()
+                    return@launch
+                }
+
+                // ⚡ Stage 2: Check cached stream links
                 val streamsRes = repository.getStreamLinks(
                     title = anime.title,
-                    originalTitle = anime.title_english ?: anime.title,
+                    originalTitle = animeTitle,
                     synonyms = emptyList(),
                     episode = episode
                 )
 
                 if (streamsRes is Resource.Success && streamsRes.data.isNotEmpty()) {
-                    val validStreams = streamsRes.data.filter { it.url.startsWith("http") }
+                    val validStreams = streamsRes.data.filter { isValidStreamUrl(it.url) }
                     if (validStreams.isNotEmpty()) {
                         streamList = validStreams
                         currentStreamIndex = 0
                         playStream(streamList[0].url)
                         _uiState.value = PlayerUiState.Success(anime, episode)
                         saveProgress()
-                    } else {
-                        triggerMinerAndPoll("No valid stream URLs found")
+                        return@launch
                     }
-                } else {
-                    triggerMinerAndPoll("Mining streams...")
                 }
+
+                // ⚡ Stage 3: Fallback to GitHub Cloud Runner
+                triggerMinerAndPoll("Mining streams...")
             } else {
                 _uiState.value = PlayerUiState.Error((animeRes as? Resource.Error)?.message ?: "Failed to load anime metadata")
             }
