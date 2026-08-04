@@ -251,6 +251,12 @@ class PlayerViewModel @Inject constructor(
                 cachedAnime = anime
                 val animeTitle = anime.title_english ?: anime.title
 
+                // Check if the title is actually a Manga series with no anime video adaptation
+                if (anime.episodes == 0) {
+                    _uiState.value = PlayerUiState.Error("\"$animeTitle\" is a Manga series without an anime video adaptation yet! You can read it in the Manga tab.")
+                    return@launch
+                }
+
                 // ⚡ Stage 1: Instant Native Extraction on device (< 1.5s AniBay speed)
                 val nativeStream = repository.extractDirectStream(animeTitle, episode) 
                     ?: repository.extractDirectStream(anime.title, episode)
