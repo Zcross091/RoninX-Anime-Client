@@ -197,11 +197,20 @@ class NativeGogoScraper @Inject constructor(
                     val json = JSONObject(body)
                     val streamUrl = json.optString("url")
                     if (!streamUrl.isNullOrBlank()) {
-                        StreamLink(
-                            title = "$query - Ep $episodeNumber",
-                            url = streamUrl,
-                            type = "roninx_vercel_api"
-                        )
+                        val mediaUrl = if (streamUrl.contains("m3u8") || streamUrl.contains("mp4")) {
+                            streamUrl
+                        } else {
+                            val iframeHtml = fetchHtml(streamUrl, "https://anitaku.pe/")
+                            if (iframeHtml != null) extractDirectMediaFromIframe(iframeHtml, streamUrl) else null
+                        }
+
+                        if (!mediaUrl.isNullOrBlank()) {
+                            StreamLink(
+                                title = "$query - Ep $episodeNumber",
+                                url = mediaUrl,
+                                type = "roninx_vercel_api"
+                            )
+                        } else null
                     } else null
                 } else null
             }
