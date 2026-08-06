@@ -4,7 +4,6 @@ import com.roninx.anime.data.api.AniListApi
 import com.roninx.anime.data.api.GitHubApi
 import com.roninx.anime.data.api.JikanApi
 import com.roninx.anime.data.api.KitsuApi
-import com.roninx.anime.data.api.RoninProxyApi
 import com.roninx.anime.data.api.ShikimoriApi
 import dagger.Module
 import dagger.Provides
@@ -40,17 +39,6 @@ object NetworkModule {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(JikanApi::class.java)
-    }
-
-    @Provides
-    @Singleton
-    fun provideRoninProxyApi(okHttpClient: OkHttpClient): RoninProxyApi {
-        return Retrofit.Builder()
-            .baseUrl("https://ronin-api-proxy.vercel.app/")
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(RoninProxyApi::class.java)
     }
 
     @Provides

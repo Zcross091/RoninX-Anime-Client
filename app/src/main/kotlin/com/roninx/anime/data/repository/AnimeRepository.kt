@@ -2,7 +2,6 @@ package com.roninx.anime.data.repository
 
 import com.roninx.anime.data.api.JikanApi
 import com.roninx.anime.data.api.JikanAnime
-import com.roninx.anime.data.api.RoninProxyApi
 import com.roninx.anime.data.api.StreamLink
 import com.roninx.anime.data.local.dao.AnimeDao
 import com.roninx.anime.data.local.entities.WatchHistoryEntity
@@ -30,7 +29,6 @@ class AnimeRepository @Inject constructor(
     private val aniListRepository: AniListRepository,
     private val kitsuApi: KitsuApi,
     private val shikimoriApi: ShikimoriApi,
-    private val roninProxyApi: RoninProxyApi,
     private val nativeGogoScraper: NativeGogoScraper,
     private val animeDao: AnimeDao
 ) {
@@ -204,16 +202,6 @@ class AnimeRepository @Inject constructor(
 
     suspend fun extractDirectStream(title: String, episode: Int): StreamLink? {
         return nativeGogoScraper.extractStreamLink(title, episode)
-    }
-
-    suspend fun getStreamLinks(title: String, originalTitle: String?, synonyms: List<String>, episode: Int): Resource<List<StreamLink>> {
-        val variants = TitleUtils.buildVariants(listOf(title, originalTitle) + synonyms)
-        val variantsJson = Gson().toJson(variants)
-        return safeApiCall { roninProxyApi.getStreamLinks(episode, originalTitle ?: title, variantsJson) }
-    }
-
-    suspend fun triggerMiner(title: String, episode: Int) {
-        safeApiCall { roninProxyApi.triggerMiner(title, episode) }
     }
 
     // Local DB - Watch History
