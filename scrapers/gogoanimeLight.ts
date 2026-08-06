@@ -2,7 +2,6 @@ import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
-import { fetchWithStealthBrowser } from './browserManager';
 
 dotenv.config();
 
@@ -26,7 +25,7 @@ export async function scrapeGogoanimeLight(query: string, epNum: number, domains
 
     for (const domain of domains) {
         try {
-            // ── Stage 1: Try direct episode URL prediction first for maximum speed ──
+            // ── Stage 1: Direct episode URL prediction (~200ms) ──
             const directEpUrl = `${domain}/${querySlug}-episode-${epNum}`;
             try {
                 const epRes = await axios.get(directEpUrl, {
@@ -45,17 +44,7 @@ export async function scrapeGogoanimeLight(query: string, epNum: number, domains
                     return videoUrl;
                 }
             } catch (directErr: any) {
-                // If 403 or blocked, fallback to Puppeteer Stealth
-                if (directErr.response?.status === 403 || directErr.response?.status === 503) {
-                    console.log(`⚠️ Stage 1 GET 403/503 on ${directEpUrl}. Triggering Puppeteer Stealth fallback...`);
-                    const { iframeSrc } = await fetchWithStealthBrowser(directEpUrl, '.play-video iframe, div.anime_video_body iframe, iframe');
-                    if (iframeSrc) {
-                        const videoUrl = iframeSrc.startsWith('http') ? iframeSrc : `https:${iframeSrc}`;
-                        console.log(`⚡ Stealth Browser Direct Match: [${query}] Ep ${epNum} -> ${videoUrl}`);
-                        await saveToSupabase(query, epNum, "embed", videoUrl);
-                        return videoUrl;
-                    }
-                }
+                // Continue to search catalogue
             }
 
             // ── Stage 2: Search Gogoanime catalogue via HTTP ──
@@ -71,9 +60,7 @@ export async function scrapeGogoanimeLight(query: string, epNum: number, domains
                 });
                 searchHtml = res.data;
             } catch (e: any) {
-                console.log(`⚠️ Search HTTP failed on ${searchUrl} (${e.message}). Falling back to Stealth Browser search...`);
-                const stealthRes = await fetchWithStealthBrowser(searchUrl, 'ul.items li p.name a');
-                searchHtml = stealthRes.html;
+                continue;
             }
 
             if (!searchHtml) continue;
@@ -100,23 +87,17 @@ export async function scrapeGogoanimeLight(query: string, epNum: number, domains
                 : `${domain}${categoryHref.startsWith('/') ? '' : '/'}${categoryHref}`;
             const seriesSlug = categoryHref.replace('/category/', '').replace('/anime/', '').replace(/\/$/, '');
 
-            // ── Stage 3: Query Gogo AJAX Engine for True Episode Links (Handles Ongoing Shows & Non-standard URLs) ──
+            // ── Stage 3: Query Gogo AJAX Engine for Episode Link ──
             let exactEpisodeUrl: string | null = null;
             try {
-                let catHtml = '';
-                try {
-                    const catRes = await axios.get(categoryUrl, {
-                        timeout: 7000,
-                        headers: {
-                            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-                            'Referer': searchUrl
-                        }
-                    });
-                    catHtml = catRes.data;
-                } catch (catErr: any) {
-                    const stealthCat = await fetchWithStealthBrowser(categoryUrl, '#movie_id');
-                    catHtml = stealthCat.html;
-                }
+                const catRes = await axios.get(categoryUrl, {
+                    timeout: 7000,
+                    headers: {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+                        'Referer': searchUrl
+                    }
+                });
+                const catHtml = catRes.data;
 
                 if (catHtml) {
                     const cat$ = cheerio.load(catHtml);
@@ -127,20 +108,14 @@ export async function scrapeGogoanimeLight(query: string, epNum: number, domains
 
                     if (movieId) {
                         const ajaxUrl = `https://ajax.gogocdn.net/ajax/load-list-episode?ep_start=0&ep_end=${epEnd}&id=${movieId}&default_ep=0&alias=${aliasId}`;
-                        let ajaxHtml = '';
-                        try {
-                            const ajaxRes = await axios.get(ajaxUrl, {
-                                timeout: 7000,
-                                headers: {
-                                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-                                    'Referer': categoryUrl
-                                }
-                            });
-                            ajaxHtml = ajaxRes.data;
-                        } catch (ajaxErr: any) {
-                            const stealthAjax = await fetchWithStealthBrowser(ajaxUrl, '#episode_related li a');
-                            ajaxHtml = stealthAjax.html;
-                        }
+                        const ajaxRes = await axios.get(ajaxUrl, {
+                            timeout: 7000,
+                            headers: {
+                                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+                                'Referer': categoryUrl
+                            }
+                        });
+                        const ajaxHtml = ajaxRes.data;
 
                         if (ajaxHtml) {
                             const ajax$ = cheerio.load(ajaxHtml);
@@ -158,7 +133,6 @@ export async function scrapeGogoanimeLight(query: string, epNum: number, domains
                 console.warn(`⚠️ Category AJAX pipeline issue for ${seriesSlug}: ${ajaxPipelineErr.message}`);
             }
 
-            // Fallback to speculative slug URL if AJAX pinpointing yields no match
             if (!exactEpisodeUrl) {
                 exactEpisodeUrl = `${domain}/${seriesSlug}-episode-${epNum}`;
             }
@@ -180,12 +154,7 @@ export async function scrapeGogoanimeLight(query: string, epNum: number, domains
                     iframeUrl = iframe.startsWith('http') ? iframe : `https:${iframe}`;
                 }
             } catch (epErr: any) {
-                // Fallback to Stealth Browser for episode page
-                console.log(`⚠️ Episode HTTP GET failed on ${exactEpisodeUrl}. Retrying via Stealth Browser...`);
-                const stealthRes = await fetchWithStealthBrowser(exactEpisodeUrl, '.play-video iframe, div.anime_video_body iframe, iframe');
-                if (stealthRes.iframeSrc) {
-                    iframeUrl = stealthRes.iframeSrc.startsWith('http') ? stealthRes.iframeSrc : `https:${stealthRes.iframeSrc}`;
-                }
+                // Ignore
             }
 
             if (iframeUrl) {
