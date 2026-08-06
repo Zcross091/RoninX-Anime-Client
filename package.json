@@ -17,6 +17,7 @@
   "devDependencies": {
     "@types/cheerio": "^0.22.35",
     "@types/node": "^20.12.12",
+    "@vercel/node": "^3.0.0",
     "typescript": "^5.4.5",
     "tsx": "^4.10.5"
   }
