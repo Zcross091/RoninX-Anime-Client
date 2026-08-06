@@ -26,7 +26,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalContext
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.roninx.anime.ui.theme.RoninRed
 import kotlinx.coroutines.delay
 
@@ -39,6 +41,7 @@ fun MangaReaderScreen(
     val uiState by viewModel.uiState.collectAsState()
     val currentChapter by viewModel.currentChapter.collectAsState()
     val readerMode by viewModel.readerMode.collectAsState()
+    val context = LocalContext.current
 
     var showControls by remember { mutableStateOf(true) }
 
@@ -64,8 +67,6 @@ fun MangaReaderScreen(
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = RoninRed)
             }
             is MangaReaderUiState.Success -> {
-                val coverUrl = state.manga.coverImage?.large ?: ""
-                
                 if (readerMode == ReaderMode.PAGED) {
                     val pagerState = rememberPagerState(pageCount = { state.totalPages })
                     
@@ -77,9 +78,15 @@ fun MangaReaderScreen(
                         state = pagerState,
                         modifier = Modifier.fillMaxSize()
                     ) { page ->
+                        val pageUrl = state.pageUrls.getOrElse(page) { state.manga.coverImage?.large ?: "" }
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                             AsyncImage(
-                                model = coverUrl,
+                                model = ImageRequest.Builder(context)
+                                    .data(pageUrl)
+                                    .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
+                                    .addHeader("Referer", "https://mangapill.com/")
+                                    .crossfade(true)
+                                    .build(),
                                 contentDescription = "Page ${page + 1}",
                                 contentScale = ContentScale.Fit,
                                 modifier = Modifier.fillMaxSize()
@@ -101,8 +108,14 @@ fun MangaReaderScreen(
                 } else {
                     LazyColumn(modifier = Modifier.fillMaxSize()) {
                         items(state.totalPages) { pageIndex ->
+                            val pageUrl = state.pageUrls.getOrElse(pageIndex) { state.manga.coverImage?.large ?: "" }
                             AsyncImage(
-                                model = coverUrl,
+                                model = ImageRequest.Builder(context)
+                                    .data(pageUrl)
+                                    .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
+                                    .addHeader("Referer", "https://mangapill.com/")
+                                    .crossfade(true)
+                                    .build(),
                                 contentDescription = "Page ${pageIndex + 1}",
                                 contentScale = ContentScale.FillWidth,
                                 modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
