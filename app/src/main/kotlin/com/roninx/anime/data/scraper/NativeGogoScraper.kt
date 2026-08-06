@@ -41,7 +41,13 @@ class NativeGogoScraper @Inject constructor(
         val cleanQuery = query.lowercase().trim()
         val querySlug = cleanQuery.replace(Regex("[^a-z0-9]+"), "-").replace(Regex("^-+|-+$"), "")
 
-        // ⚡ Stage 0: Instant Consumet / Anime API Provider (~200ms AniBay speed)
+        // ⚡ Stage 0: RoninX Vercel Serverless Scraper (< 1 sec)
+        val vercelStream = fetchFromRoninVercelApi(query, episodeNumber)
+        if (vercelStream != null) {
+            return@withContext vercelStream
+        }
+
+        // ⚡ Stage 0.5: Instant Consumet / Anime API Provider (~200ms AniBay speed)
         val apiStream = fetchFromConsumetApi(querySlug, episodeNumber)
         if (apiStream != null) {
             return@withContext apiStream
@@ -175,6 +181,33 @@ class NativeGogoScraper @Inject constructor(
         }
 
         return null
+    }
+
+    private fun fetchFromRoninVercelApi(query: String, episodeNumber: Int): StreamLink? {
+        return try {
+            val encodedTitle = URLEncoder.encode(query, "UTF-8")
+            val url = "https://roninx-app.vercel.app/api/stream?title=$encodedTitle&episode=$episodeNumber"
+            val request = Request.Builder()
+                .url(url)
+                .header("User-Agent", userAgent)
+                .build()
+            fastClient.newCall(request).execute().use { response ->
+                if (response.isSuccessful) {
+                    val body = response.body?.string() ?: return null
+                    val json = JSONObject(body)
+                    val streamUrl = json.optString("url")
+                    if (!streamUrl.isNullOrBlank()) {
+                        StreamLink(
+                            title = "$query - Ep $episodeNumber",
+                            url = streamUrl,
+                            type = "roninx_vercel_api"
+                        )
+                    } else null
+                } else null
+            }
+        } catch (e: Exception) {
+            null
+        }
     }
 
     private fun fetchFromConsumetApi(slug: String, episodeNumber: Int): StreamLink? {
