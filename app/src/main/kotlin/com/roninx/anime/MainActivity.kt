@@ -190,7 +190,7 @@ fun MainScreen() {
                         navController.navigate(Screen.Detail.createRoute(anime.mal_id))
                     },
                     onHistoryClick = { history ->
-                        navController.navigate(Screen.Detail.createRoute(history.animeId))
+                        navController.navigate(Screen.Detail.createRoute(history.malId))
                     }
                 )
             }
