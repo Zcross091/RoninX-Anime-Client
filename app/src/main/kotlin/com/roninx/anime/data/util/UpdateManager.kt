@@ -39,36 +39,40 @@ class UpdateManager @Inject constructor(
         timer.scheduleAtFixedRate(object : java.util.TimerTask() {
             override fun run() {
                 val query = DownloadManager.Query().setFilterById(downloadId)
-                val cursor = downloadManager.query(query)
-                if (cursor != null && cursor.moveToFirst()) {
-                    val statusIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)
-                    val downloadedIndex = cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR)
-                    val totalIndex = cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES)
+                try {
+                    downloadManager.query(query)?.use { cursor ->
+                        if (cursor.moveToFirst()) {
+                            val statusIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)
+                            val downloadedIndex = cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR)
+                            val totalIndex = cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES)
 
-                    val status = if (statusIndex != -1) cursor.getInt(statusIndex) else -1
-                    val downloaded = if (downloadedIndex != -1) cursor.getLong(downloadedIndex) else 0L
-                    val total = if (totalIndex != -1) cursor.getLong(totalIndex) else 0L
-                    
-                    if (total > 0) {
-                        trySend(DownloadStatus.Progress(downloaded.toFloat() / total.toFloat()))
-                    }
+                            val status = if (statusIndex != -1) cursor.getInt(statusIndex) else -1
+                            val downloaded = if (downloadedIndex != -1) cursor.getLong(downloadedIndex) else 0L
+                            val total = if (totalIndex != -1) cursor.getLong(totalIndex) else 0L
+                            
+                            if (total > 0) {
+                                trySend(DownloadStatus.Progress(downloaded.toFloat() / total.toFloat()))
+                            }
 
-                    if (status == DownloadManager.STATUS_SUCCESSFUL) {
-                        timer.cancel()
-                        val contentUri = FileProvider.getUriForFile(
-                            context,
-                            "${context.packageName}.fileprovider",
-                            destinationFile
-                        )
-                        trySend(DownloadStatus.Finished(contentUri))
-                        close()
-                    } else if (status == DownloadManager.STATUS_FAILED) {
-                        timer.cancel()
-                        trySend(DownloadStatus.Error("Download failed"))
-                        close()
+                            if (status == DownloadManager.STATUS_SUCCESSFUL) {
+                                timer.cancel()
+                                val contentUri = FileProvider.getUriForFile(
+                                    context,
+                                    "${context.packageName}.fileprovider",
+                                    destinationFile
+                                )
+                                trySend(DownloadStatus.Finished(contentUri))
+                                close()
+                            } else if (status == DownloadManager.STATUS_FAILED) {
+                                timer.cancel()
+                                trySend(DownloadStatus.Error("Download failed"))
+                                close()
+                            }
+                        }
                     }
+                } catch (e: Exception) {
+                    // Ignore timer polling errors
                 }
-                cursor?.close()
             }
         }, 0, 500)
 

@@ -40,7 +40,13 @@ data class AniListMedia(
     val averageScore: Int?,
     val description: String?,
     val genres: List<String>? = null,
-    val status: String? = null
+    val status: String? = null,
+    val studios: AniListStudios? = null,
+    val season: String? = null,
+    val seasonYear: Int? = null,
+    val characters: AniListCharactersConnection? = null,
+    val recommendations: AniListRecommendationsConnection? = null,
+    val relations: AniListRelationsConnection? = null
 )
 
 data class AniListTitle(
@@ -50,6 +56,53 @@ data class AniListTitle(
 
 data class AniListCoverImage(
     val large: String?
+)
+
+data class AniListStudios(
+    val nodes: List<AniListStudio>?
+)
+
+data class AniListStudio(
+    val name: String
+)
+
+data class AniListCharactersConnection(
+    val edges: List<AniListCharacterEdge>?
+)
+
+data class AniListCharacterEdge(
+    val role: String?,
+    val node: AniListCharacterNode?
+)
+
+data class AniListCharacterNode(
+    val name: AniListCharacterName?,
+    val image: AniListCharacterImage?
+)
+
+data class AniListCharacterName(
+    val full: String?
+)
+
+data class AniListCharacterImage(
+    val medium: String?
+)
+
+data class AniListRecommendationsConnection(
+    val nodes: List<AniListRecommendationNode>?
+)
+
+data class AniListRecommendationNode(
+    val mediaRecommendation: AniListMedia?
+)
+
+data class AniListRelationsConnection(
+    val edges: List<AniListRelationEdge>?
+)
+
+data class AniListRelationEdge(
+    val relationType: String?,
+    val node: AniListMedia?
 )
 
 object AniListQueries {
@@ -201,6 +254,48 @@ object AniListQueries {
             episodes
             averageScore
             description
+            status
+            season
+            seasonYear
+            genres
+            studios(isMain: true) {
+              nodes { name }
+            }
+            characters(sort: ROLE, perPage: 8) {
+              edges {
+                role
+                node {
+                  name { full }
+                  image { medium }
+                }
+              }
+            }
+            recommendations(sort: RATING_DESC, perPage: 12) {
+              nodes {
+                mediaRecommendation {
+                  id
+                  idMal
+                  title { english romaji }
+                  coverImage { large }
+                  averageScore
+                  episodes
+                }
+              }
+            }
+            relations {
+              edges {
+                relationType
+                node {
+                  id
+                  idMal
+                  title { english romaji }
+                  coverImage { large }
+                  episodes
+                  averageScore
+                  type
+                }
+              }
+            }
           }
         }
     """.trimIndent()

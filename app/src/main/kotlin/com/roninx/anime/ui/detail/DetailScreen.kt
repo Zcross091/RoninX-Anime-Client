@@ -1,8 +1,12 @@
 package com.roninx.anime.ui.detail
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -13,19 +17,21 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.roninx.anime.data.api.AniListMedia
 import com.roninx.anime.data.api.JikanAnime
+import com.roninx.anime.ui.components.AnimeCard
 import com.roninx.anime.ui.theme.RoninBase
 import com.roninx.anime.ui.theme.RoninRed
 import com.roninx.anime.ui.theme.RoninSurface
@@ -34,7 +40,8 @@ import com.roninx.anime.ui.theme.RoninSurface
 fun DetailScreen(
     viewModel: DetailViewModel,
     onBackClick: () -> Unit,
-    onEpisodeClick: (JikanAnime, Int) -> Unit
+    onEpisodeClick: (JikanAnime, Int) -> Unit,
+    onAnimeClick: (Int) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val isInWatchlist by viewModel.isInWatchlist.collectAsState()
@@ -47,10 +54,12 @@ fun DetailScreen(
             is DetailUiState.Success -> {
                 DetailContent(
                     anime = state.anime,
+                    aniListDetails = state.aniListDetails,
                     isInWatchlist = isInWatchlist,
                     onWatchlistToggle = { viewModel.toggleWatchlist() },
                     onEpisodeClick = onEpisodeClick,
-                    onBackClick = onBackClick
+                    onBackClick = onBackClick,
+                    onAnimeClick = onAnimeClick
                 )
             }
             is DetailUiState.Error -> {
@@ -75,18 +84,21 @@ fun DetailScreen(
 @Composable
 fun DetailContent(
     anime: JikanAnime,
+    aniListDetails: AniListMedia?,
     isInWatchlist: Boolean,
     onWatchlistToggle: () -> Unit,
     onEpisodeClick: (JikanAnime, Int) -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onAnimeClick: (Int) -> Unit
 ) {
     val scrollState = rememberScrollState()
+    val bannerUrl = aniListDetails?.bannerImage ?: anime.images.jpg.large_image_url
 
     Column(modifier = Modifier.fillMaxSize().verticalScroll(scrollState)) {
         // Banner/Header
         Box(modifier = Modifier.fillMaxWidth().height(350.dp)) {
             AsyncImage(
-                model = anime.images.jpg.large_image_url,
+                model = bannerUrl,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
@@ -116,7 +128,9 @@ fun DetailContent(
                     color = Color.White,
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Black,
-                    lineHeight = 34.sp
+                    lineHeight = 34.sp,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
                 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -158,7 +172,7 @@ fun DetailContent(
                         modifier = Modifier.size(18.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(if (isInWatchlist) "Added to List" else "Add to List", fontWeight = FontWeight.Bold)
+                    Text(if (isInWatchlist) "In Watchlist" else "Add to List", fontWeight = FontWeight.Bold)
                 }
             }
         }
@@ -173,64 +187,48 @@ fun DetailContent(
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = anime.synopsis ?: "No synopsis available.",
+                text = anime.synopsis?.replace(Regex("<[^>]*>"), "") ?: "No synopsis available.",
                 color = Color.Gray,
                 fontSize = 14.sp,
                 lineHeight = 22.sp
             )
             
-            Spacer(modifier = Modifier.height(32.dp))
-            
-            val totalEpisodes = calculateTotalEpisodes(anime)
-            var selectedRangeIndex by remember { mutableIntStateOf(0) }
-            val chunkSize = 50
-            val episodeRanges = (1..totalEpisodes).chunked(chunkSize)
+            // Metadata Grid (Studio, Status, Season)
+            if (aniListDetails != null) {
+                Spacer(modifier = Modifier.height(24.dp))
+                MetadataGrid(aniListDetails)
+            }
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            // Characters Row
+            val charEdges = aniListDetails?.characters?.edges
+            if (!charEdges.isNullOrEmpty()) {
+                Spacer(modifier = Modifier.height(32.dp))
                 Text(
-                    text = "Episodes",
+                    text = "Characters",
                     color = Color.White,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(
-                    text = "($totalEpisodes total)",
-                    color = Color.Gray,
-                    fontSize = 14.sp
-                )
-            }
-            
-            Spacer(modifier = Modifier.height(16.dp))
-
-            if (episodeRanges.size > 1) {
-                ScrollableTabRow(
-                    selectedTabIndex = selectedRangeIndex,
-                    containerColor = RoninSurface,
-                    contentColor = RoninRed,
-                    edgePadding = 0.dp,
-                    modifier = Modifier.fillMaxWidth().height(40.dp)
-                ) {
-                    episodeRanges.forEachIndexed { index, range ->
-                        Tab(
-                            selected = selectedRangeIndex == index,
-                            onClick = { selectedRangeIndex = index },
-                            text = {
-                                Text(
-                                    text = "${range.first()} - ${range.last()}",
-                                    color = if (selectedRangeIndex == index) RoninRed else Color.Gray,
-                                    fontSize = 13.sp,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
-                        )
+                Spacer(modifier = Modifier.height(16.dp))
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    items(charEdges) { edge ->
+                        CharacterItem(edge)
                     }
                 }
-                Spacer(modifier = Modifier.height(16.dp))
             }
 
-            val currentEpisodes = episodeRanges.getOrNull(selectedRangeIndex) ?: (1..totalEpisodes).toList()
-            val chunkedEpisodes = currentEpisodes.chunked(4)
+            // Episodes
+            Spacer(modifier = Modifier.height(32.dp))
+            Text(
+                text = "Episodes",
+                color = Color.White,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            val episodesCount = anime.episodes ?: 12
+            val chunkedEpisodes = (1..episodesCount).toList().chunked(4)
             
             chunkedEpisodes.forEach { rowEps ->
                 Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
@@ -246,9 +244,99 @@ fun DetailContent(
                     }
                 }
             }
+
+            // Recommendations
+            val recs = aniListDetails?.recommendations?.nodes?.mapNotNull { it.mediaRecommendation }
+            if (!recs.isNullOrEmpty()) {
+                Spacer(modifier = Modifier.height(40.dp))
+                Text(
+                    text = "Recommended for You",
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    items(recs) { rec ->
+                        RecommendationItem(rec, onAnimeClick)
+                    }
+                }
+            }
         }
         
         Spacer(modifier = Modifier.height(100.dp))
+    }
+}
+
+@Composable
+fun MetadataGrid(media: AniListMedia) {
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+        MetadataItem("Studio", media.studios?.nodes?.firstOrNull()?.name ?: "N/A")
+        MetadataItem("Status", media.status ?: "N/A")
+        MetadataItem("Season", "${media.season ?: ""} ${media.seasonYear ?: ""}")
+    }
+}
+
+@Composable
+fun MetadataItem(label: String, value: String) {
+    Column {
+        Text(text = label, color = Color.Gray, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+        Text(text = value, color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Medium)
+    }
+}
+
+@Composable
+fun CharacterItem(edge: com.roninx.anime.data.api.AniListCharacterEdge) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(80.dp)) {
+        AsyncImage(
+            model = edge.node?.image?.medium,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.size(70.dp).clip(CircleShape)
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = edge.node?.name?.full ?: "Unknown",
+            color = Color.White,
+            fontSize = 11.sp,
+            textAlign = TextAlign.Center,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            lineHeight = 13.sp
+        )
+        Text(
+            text = edge.role ?: "",
+            color = Color.Gray,
+            fontSize = 10.sp,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
+fun RecommendationItem(media: AniListMedia, onClick: (Int) -> Unit) {
+    Column(modifier = Modifier.width(140.dp).clickable { onClick(media.idMal ?: media.id) }) {
+        Card(
+            shape = RoundedCornerShape(8.dp),
+            modifier = Modifier.aspectRatio(2f / 3f).fillMaxWidth()
+        ) {
+            AsyncImage(
+                model = media.coverImage?.large,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = media.title?.english ?: media.title?.romaji ?: "Unknown",
+            color = Color.White,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Bold,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            lineHeight = 16.sp
+        )
     }
 }
 
@@ -272,18 +360,5 @@ fun EpisodeButton(
                 fontSize = 16.sp
             )
         }
-    }
-}
-
-private fun calculateTotalEpisodes(anime: JikanAnime): Int {
-    if (anime.episodes != null && anime.episodes > 0) return anime.episodes
-    val titleName = anime.title_english ?: anime.title
-    return when {
-        titleName.contains("One Piece", ignoreCase = true) -> 1100
-        titleName.contains("Conan", ignoreCase = true) -> 1100
-        titleName.contains("Pokemon", ignoreCase = true) || titleName.contains("Pokémon", ignoreCase = true) -> 1200
-        titleName.contains("Naruto", ignoreCase = true) || titleName.contains("Boruto", ignoreCase = true) -> 720
-        titleName.contains("Bleach", ignoreCase = true) -> 366
-        else -> 50
     }
 }

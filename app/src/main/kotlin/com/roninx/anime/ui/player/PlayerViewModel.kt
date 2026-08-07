@@ -83,6 +83,9 @@ class PlayerViewModel @Inject constructor(
     private val _availableQualities = MutableStateFlow<List<VideoQuality>>(emptyList())
     val availableQualities: StateFlow<List<VideoQuality>> = _availableQualities
 
+    private val _hasNextEpisode = MutableStateFlow(false)
+    val hasNextEpisode: StateFlow<Boolean> = _hasNextEpisode
+
     private var cachedAnime: JikanAnime? = null
     private var bufferingTimeoutJob: kotlinx.coroutines.Job? = null
 
@@ -249,6 +252,7 @@ class PlayerViewModel @Inject constructor(
             if (animeRes is Resource.Success) {
                 val anime = animeRes.data
                 cachedAnime = anime
+                _hasNextEpisode.value = anime.episodes != null && episode < anime.episodes
                 val animeTitle = anime.title_english ?: anime.title
 
                 // Check if the title is actually a Manga series with no anime video adaptation
@@ -257,7 +261,7 @@ class PlayerViewModel @Inject constructor(
                     return@launch
                 }
 
-                // ⚡ Stage 1: Instant Native Extraction on device (< 1.5s AniBay speed)
+                // ⚡ Stage 1: Instant Native Extraction on device
                 val nativeStream = repository.extractDirectStream(animeTitle, episode) 
                     ?: repository.extractDirectStream(anime.title, episode)
 
@@ -270,7 +274,7 @@ class PlayerViewModel @Inject constructor(
                     return@launch
                 }
 
-                // ⚡ Stage 2: Fallback to App's Own GitHub Cloud Mining Runner
+                // ⚡ Stage 2: Fallback to Cloud Mining
                 triggerMinerAndPoll("Mining streams...")
             } else {
                 _uiState.value = PlayerUiState.Error((animeRes as? Resource.Error)?.message ?: "Failed to load anime metadata")
@@ -288,19 +292,14 @@ class PlayerViewModel @Inject constructor(
             _uiState.value = PlayerUiState.Mining(0, 45, "Launching GitHub Cloud Mining Runner...")
 
             val startTimeMs = System.currentTimeMillis()
-
-            // Dispatch App's Own GitHub Action Workflow (.github/workflows/mine-episode.yml -> scrapers/gogoanimeLight.ts)
             val dispatched = gitHubMinerRepository.dispatchMiningJob(animeTitle, episode)
 
             if (!dispatched) {
                 isMining = false
-                _uiState.value = PlayerUiState.Error("Cloud miner dispatch failed (GitHub Personal Access Token required to trigger workflow_dispatch API). Please verify GitHub PAT configuration.")
+                _uiState.value = PlayerUiState.Error("Cloud miner dispatch failed.")
                 return@launch
             }
 
-            val statusHeader = "🚀 GitHub Cloud Runner Dispatched!"
-
-            // Poll raw GitHub cache file (cache/latest_stream.json)
             val minedResult = gitHubMinerRepository.pollMinedStream(
                 animeTitle = animeTitle,
                 episodeNumber = episode,
@@ -310,7 +309,7 @@ class PlayerViewModel @Inject constructor(
                 _uiState.value = PlayerUiState.Mining(
                     attempt = elapsedSec,
                     maxAttempts = 45,
-                    message = "$statusHeader Please keep screen open (${elapsedSec}s / 45s)"
+                    message = "🚀 Cloud Runner Working... (${elapsedSec}s / 45s)"
                 )
             }
 
@@ -326,7 +325,7 @@ class PlayerViewModel @Inject constructor(
             }
 
             isMining = false
-            _uiState.value = PlayerUiState.Error("Streams currently unavailable for Episode $episode. Cloud runner is processing request, please tap Retry.")
+            _uiState.value = PlayerUiState.Error("Streams currently unavailable. Please tap Retry.")
         }
     }
 
@@ -356,20 +355,9 @@ class PlayerViewModel @Inject constructor(
 
     private fun isValidStreamUrl(url: String): Boolean {
         if (!url.startsWith("http")) return false
-
-        val rejectPatterns = listOf(
-            ".html", ".php", "/embed", "embedplus", "streaming.php", 
-            "javascript:", "<html", "<script", "search.html", "/category/", "/anime/"
-        )
-        if (rejectPatterns.any { url.contains(it, ignoreCase = true) }) {
-            return false
-        }
-
-        val validPatterns = listOf(
-            ".m3u8", ".mp4", ".m3u", "hls", "master", "index", 
-            "googlevideo", "cdn", "stream", "video", "media"
-        )
-        return validPatterns.any { url.contains(it, ignoreCase = true) }
+        val rejectPatterns = listOf(".html", ".php", "/embed", "javascript:", "<html")
+        if (rejectPatterns.any { url.contains(it, ignoreCase = true) }) return false
+        return true
     }
 
     override fun onCleared() {

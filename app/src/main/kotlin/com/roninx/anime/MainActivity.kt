@@ -92,7 +92,7 @@ class MainActivity : ComponentActivity() {
                             confirmButton = {
                                 if (downloadProgress == null) {
                                     Button(onClick = {
-                                        mainViewModel.startUpdate(info)
+                                        mainViewModel.startUpdate(info.downloadUrl)
                                     }, colors = ButtonDefaults.buttonColors(containerColor = RoninRed)) {
                                         Text("Download & Install")
                                     }
@@ -189,8 +189,8 @@ fun MainScreen() {
                     onAnimeClick = { anime ->
                         navController.navigate(Screen.Detail.createRoute(anime.mal_id))
                     },
-                    onHistoryClick = { historyItem ->
-                        navController.navigate(Screen.Player.createRoute(historyItem.malId, historyItem.lastEpisodeWatched))
+                    onHistoryClick = { malId ->
+                        navController.navigate(Screen.Detail.createRoute(malId))
                     }
                 )
             }
@@ -204,6 +204,9 @@ fun MainScreen() {
                     onBackClick = { navController.popBackStack() },
                     onEpisodeClick = { anime, episode ->
                         navController.navigate(Screen.Player.createRoute(anime.mal_id, episode))
+                    },
+                    onAnimeClick = { animeId ->
+                        navController.navigate(Screen.Detail.createRoute(animeId))
                     }
                 )
             }
@@ -217,7 +220,12 @@ fun MainScreen() {
                 val viewModel: PlayerViewModel = hiltViewModel()
                 PlayerScreen(
                     viewModel = viewModel,
-                    onBackClick = { navController.popBackStack() }
+                    onBackClick = { navController.popBackStack() },
+                    onNextEpisodeClick = { animeId, nextEp ->
+                        navController.navigate(Screen.Player.createRoute(animeId, nextEp)) {
+                            popUpTo(Screen.Player.route) { inclusive = true }
+                        }
+                    }
                 )
             }
             composable(Screen.Manga.route) {
@@ -279,9 +287,6 @@ fun MainScreen() {
                     viewModel = viewModel,
                     onAnimeClick = { animeId ->
                         navController.navigate(Screen.Detail.createRoute(animeId))
-                    },
-                    onHistoryClick = { animeId, episode ->
-                        navController.navigate(Screen.Player.createRoute(animeId, episode))
                     }
                 )
             }

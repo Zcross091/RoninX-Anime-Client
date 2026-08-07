@@ -200,8 +200,7 @@ class NativeGogoScraper @Inject constructor(
                         val mediaUrl = if (streamUrl.contains("m3u8") || streamUrl.contains("mp4")) {
                             streamUrl
                         } else {
-                            val iframeHtml = fetchHtml(streamUrl, "https://anitaku.pe/")
-                            if (iframeHtml != null) extractDirectMediaFromIframe(iframeHtml, streamUrl) else null
+                            extractDirectMediaFromIframe(streamUrl, "https://anitaku.pe/")
                         }
 
                         if (!mediaUrl.isNullOrBlank()) {

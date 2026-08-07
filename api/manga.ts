@@ -11,7 +11,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const title = (req.query.title as string) || "";
-    const chapter = parseInt((req.query.chapter as string) || "1", 10);
+    const rawChapter = parseInt((req.query.chapter as string) || "1", 10);
+    const chapter = isNaN(rawChapter) || rawChapter < 1 ? 1 : rawChapter;
 
     if (!title) {
         return res.status(400).json({ error: "Missing title query parameter" });

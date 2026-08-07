@@ -26,21 +26,12 @@ import androidx.media3.ui.PlayerView
 import com.roninx.anime.ui.theme.RoninRed
 import kotlinx.coroutines.delay
 
-import android.app.Activity
-import android.content.pm.ActivityInfo
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
-
 @OptIn(UnstableApi::class)
 @Composable
 fun PlayerScreen(
     viewModel: PlayerViewModel,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onNextEpisodeClick: (Int, Int) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val isPlaying by viewModel.isPlaying.collectAsState()
@@ -48,51 +39,14 @@ fun PlayerScreen(
     val currentPosition by viewModel.currentPosition.collectAsState()
     val duration by viewModel.duration.collectAsState()
     val qualities by viewModel.availableQualities.collectAsState()
+    val hasNextEpisode by viewModel.hasNextEpisode.collectAsState()
 
     var showControls by remember { mutableStateOf(true) }
     var showQualityMenu by remember { mutableStateOf(false) }
 
-    val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
-
-    DisposableEffect(lifecycleOwner) {
-        val activity = context as? Activity
-        val originalOrientation = activity?.requestedOrientation ?: ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-
-        // Lock screen to sensor landscape & hide system bars
-        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
-        activity?.window?.let { window ->
-            val insetsController = WindowCompat.getInsetsController(window, window.decorView)
-            insetsController.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-            insetsController.hide(WindowInsetsCompat.Type.systemBars())
-        }
-
-        val observer = LifecycleEventObserver { _, event ->
-            when (event) {
-                Lifecycle.Event.ON_PAUSE -> {
-                    viewModel.player.pause()
-                }
-                Lifecycle.Event.ON_RESUME -> {
-                    viewModel.player.play()
-                }
-                else -> {}
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-            activity?.requestedOrientation = originalOrientation
-            activity?.window?.let { window ->
-                val insetsController = WindowCompat.getInsetsController(window, window.decorView)
-                insetsController.show(WindowInsetsCompat.Type.systemBars())
-            }
-        }
-    }
-
     LaunchedEffect(showControls) {
         if (showControls && !showQualityMenu) {
-            delay(3000)
+            delay(4000)
             showControls = false
         }
     }
@@ -125,28 +79,10 @@ fun PlayerScreen(
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = RoninRed)
             }
             is PlayerUiState.Mining -> {
-                Column(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(horizontal = 32.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
+                Column(modifier = Modifier.align(Alignment.Center), horizontalAlignment = Alignment.CenterHorizontally) {
                     CircularProgressIndicator(color = RoninRed)
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Text(
-                        text = state.message,
-                        color = Color.White,
-                        fontSize = 16.sp,
-                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                    )
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Text(
-                        text = "GitHub Action Cloud Runner active • Please keep app open",
-                        color = Color.LightGray,
-                        fontSize = 13.sp,
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(text = state.message, color = Color.White, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
                 }
             }
             is PlayerUiState.Success -> {
@@ -160,24 +96,8 @@ fun PlayerScreen(
                     modifier = Modifier.fillMaxSize()
                 )
 
-                if (isBuffering) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.Black.copy(alpha = 0.5f)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            CircularProgressIndicator(color = RoninRed)
-                            Spacer(modifier = Modifier.height(12.dp))
-                            Text(
-                                text = "Loading video stream...",
-                                color = Color.White,
-                                fontSize = 14.sp,
-                                fontWeight = androidx.compose.ui.text.font.FontWeight.Medium
-                            )
-                        }
-                    }
+                if (isBuffering && !showControls) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = RoninRed)
                 }
 
                 AnimatedVisibility(
@@ -189,13 +109,16 @@ fun PlayerScreen(
                         animeTitle = state.anime.title_english ?: state.anime.title,
                         episode = state.episode,
                         isPlaying = isPlaying,
+                        isBuffering = isBuffering,
                         currentPosition = currentPosition,
                         duration = duration,
+                        hasNextEpisode = hasNextEpisode,
                         onPlayPauseToggle = { viewModel.togglePlayPause() },
                         onSeek = { viewModel.seekTo(it) },
                         onSkipIntro = { viewModel.skipIntro() },
                         onBackClick = onBackClick,
-                        onQualityClick = { showQualityMenu = true }
+                        onQualityClick = { showQualityMenu = true },
+                        onNextEpisode = { onNextEpisodeClick(state.anime.mal_id, state.episode + 1) }
                     )
                 }
 
@@ -219,6 +142,9 @@ fun PlayerScreen(
                                     fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
                                     modifier = Modifier.padding(bottom = 12.dp)
                                 )
+                                if (qualities.isEmpty()) {
+                                    Text("Detecting qualities...", color = Color.Gray, fontSize = 12.sp)
+                                }
                                 qualities.forEach { quality ->
                                     Text(
                                         text = quality.label,
@@ -239,28 +165,17 @@ fun PlayerScreen(
             }
             is PlayerUiState.Error -> {
                 Column(
-                    modifier = Modifier.align(Alignment.Center).padding(24.dp),
+                    modifier = Modifier.align(Alignment.Center),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(
-                        text = state.message,
-                        color = Color.White,
-                        fontSize = 15.sp,
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                    )
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Text(text = state.message, color = Color.White, textAlign = androidx.compose.ui.text.style.TextAlign.Center, modifier = Modifier.padding(24.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                        Button(
-                            onClick = { viewModel.retry() },
-                            colors = ButtonDefaults.buttonColors(containerColor = RoninRed)
-                        ) {
-                            Text("Retry / Mine Sources")
-                        }
-                        Button(
-                            onClick = onBackClick,
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.2f))
-                        ) {
+                        Button(onClick = onBackClick, colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray)) {
                             Text("Go Back")
+                        }
+                        Button(onClick = { viewModel.retry() }, colors = ButtonDefaults.buttonColors(containerColor = RoninRed)) {
+                            Text("Retry")
                         }
                     }
                 }
@@ -274,13 +189,16 @@ fun PlayerControls(
     animeTitle: String,
     episode: Int,
     isPlaying: Boolean,
+    isBuffering: Boolean,
     currentPosition: Long,
     duration: Long,
+    hasNextEpisode: Boolean,
     onPlayPauseToggle: () -> Unit,
     onSeek: (Long) -> Unit,
     onSkipIntro: () -> Unit,
     onBackClick: () -> Unit,
-    onQualityClick: () -> Unit
+    onQualityClick: () -> Unit,
+    onNextEpisode: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -288,9 +206,9 @@ fun PlayerControls(
             .background(
                 Brush.verticalGradient(
                     colors = listOf(
-                        Color.Black.copy(alpha = 0.6f),
+                        Color.Black.copy(alpha = 0.7f),
                         Color.Transparent,
-                        Color.Black.copy(alpha = 0.6f)
+                        Color.Black.copy(alpha = 0.7f)
                     )
                 )
             )
@@ -307,7 +225,7 @@ fun PlayerControls(
             }
             Spacer(modifier = Modifier.width(8.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = animeTitle, color = Color.White, fontSize = 18.sp, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold, maxLines = 1)
+                Text(text = animeTitle, color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 Text(text = "Episode $episode", color = Color.Gray, fontSize = 14.sp)
             }
             IconButton(onClick = onQualityClick) {
@@ -321,13 +239,25 @@ fun PlayerControls(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(48.dp)
         ) {
-            IconButton(onClick = onPlayPauseToggle, modifier = Modifier.size(64.dp)) {
-                Icon(
-                    if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
-                    contentDescription = "Play/Pause",
-                    tint = Color.White,
-                    modifier = Modifier.size(48.dp)
-                )
+            IconButton(onClick = { onSeek((currentPosition - 10000L).coerceAtLeast(0L)) }) {
+                Icon(Icons.Default.Replay10, contentDescription = null, tint = Color.White, modifier = Modifier.size(36.dp))
+            }
+
+            if (isBuffering) {
+                CircularProgressIndicator(color = RoninRed, modifier = Modifier.size(48.dp))
+            } else {
+                IconButton(onClick = onPlayPauseToggle, modifier = Modifier.size(64.dp)) {
+                    Icon(
+                        if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
+                        contentDescription = "Play/Pause",
+                        tint = Color.White,
+                        modifier = Modifier.size(56.dp)
+                    )
+                }
+            }
+
+            IconButton(onClick = { onSeek((currentPosition + 10000L).coerceAtMost(duration)) }) {
+                Icon(Icons.Default.Forward10, contentDescription = null, tint = Color.White, modifier = Modifier.size(36.dp))
             }
         }
 
@@ -339,14 +269,28 @@ fun PlayerControls(
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Button(
                     onClick = onSkipIntro,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.2f)),
-                    shape = RoundedCornerShape(4.dp)
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.15f)),
+                    shape = RoundedCornerShape(4.dp),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
                 ) {
-                    Text("Skip Intro", color = Color.White)
+                    Text("Skip Intro (85s)", color = Color.White, fontSize = 12.sp)
+                }
+
+                if (hasNextEpisode) {
+                    Button(
+                        onClick = onNextEpisode,
+                        colors = ButtonDefaults.buttonColors(containerColor = RoninRed),
+                        shape = RoundedCornerShape(4.dp),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                    ) {
+                        Text("Next Episode", color = Color.White, fontSize = 12.sp)
+                        Icon(Icons.Default.SkipNext, contentDescription = null, modifier = Modifier.size(16.dp))
+                    }
                 }
             }
 
@@ -359,7 +303,7 @@ fun PlayerControls(
                 colors = SliderDefaults.colors(
                     thumbColor = RoninRed,
                     activeTrackColor = RoninRed,
-                    inactiveTrackColor = Color.Gray
+                    inactiveTrackColor = Color.White.copy(alpha = 0.2f)
                 )
             )
 
@@ -367,8 +311,8 @@ fun PlayerControls(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = formatTime(currentPosition), color = Color.White, fontSize = 12.sp)
-                Text(text = formatTime(duration), color = Color.White, fontSize = 12.sp)
+                Text(text = formatTime(currentPosition), color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Medium)
+                Text(text = formatTime(duration), color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Medium)
             }
         }
     }
