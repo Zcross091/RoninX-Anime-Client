@@ -41,7 +41,7 @@ class MangaRepository @Inject constructor(
                         Resource.Error("No pages found for chapter $chapter")
                     }
                 } else {
-                    Resource.Error("HTTP Error ${response.code()}")
+                    Resource.Error("HTTP Error ${response.code}")
                 }
             }
         } catch (e: Exception) {

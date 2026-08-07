@@ -92,7 +92,7 @@ class MainActivity : ComponentActivity() {
                             confirmButton = {
                                 if (downloadProgress == null) {
                                     Button(onClick = {
-                                        mainViewModel.startUpdate(info.downloadUrl)
+                                        mainViewModel.startUpdate(info)
                                     }, colors = ButtonDefaults.buttonColors(containerColor = RoninRed)) {
                                         Text("Download & Install")
                                     }
@@ -189,8 +189,8 @@ fun MainScreen() {
                     onAnimeClick = { anime ->
                         navController.navigate(Screen.Detail.createRoute(anime.mal_id))
                     },
-                    onHistoryClick = { malId ->
-                        navController.navigate(Screen.Detail.createRoute(malId))
+                    onHistoryClick = { history ->
+                        navController.navigate(Screen.Detail.createRoute(history.animeId))
                     }
                 )
             }
