@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.roninx.anime.data.api.AniListMedia
 import com.roninx.anime.data.local.dao.AnimeDao
 import com.roninx.anime.data.local.entities.MangaHistoryEntity
+import com.roninx.anime.data.repository.AniListRepository
 import com.roninx.anime.data.repository.MangaRepository
 import com.roninx.anime.data.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
