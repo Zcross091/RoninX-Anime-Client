@@ -298,10 +298,14 @@ fun PlayerControls(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            val safeDuration = duration.coerceAtLeast(0L)
+            val maxRange = safeDuration.coerceAtLeast(1L).toFloat()
+            val safePosition = currentPosition.coerceIn(0L, safeDuration.coerceAtLeast(1L)).toFloat()
+
             Slider(
-                value = currentPosition.toFloat(),
+                value = safePosition,
                 onValueChange = { onSeek(it.toLong()) },
-                valueRange = 0f..(duration.coerceAtLeast(1L).toFloat()),
+                valueRange = 0f..maxRange,
                 colors = SliderDefaults.colors(
                     thumbColor = RoninRed,
                     activeTrackColor = RoninRed,
@@ -321,6 +325,7 @@ fun PlayerControls(
 }
 
 private fun formatTime(ms: Long): String {
+    if (ms <= 0L) return "00:00"
     val totalSeconds = ms / 1000
     val minutes = totalSeconds / 60
     val seconds = totalSeconds % 60

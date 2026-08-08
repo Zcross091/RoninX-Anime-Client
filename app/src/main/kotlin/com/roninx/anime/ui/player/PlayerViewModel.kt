@@ -166,14 +166,19 @@ class PlayerViewModel @Inject constructor(
     private fun saveProgress() {
         val anime = cachedAnime ?: return
         viewModelScope.launch {
+            val dur = player.duration
+            val safeDuration = if (dur < 0) 0L else dur
+            val pos = player.currentPosition
+            val safePosition = if (pos < 0) 0L else pos
+
             repository.upsertWatchHistory(
                 WatchHistoryEntity(
                     malId = anime.mal_id,
                     title = anime.title_english ?: anime.title,
                     imageUrl = anime.images.jpg.large_image_url,
                     lastEpisodeWatched = episode,
-                    progressMs = player.currentPosition,
-                    durationMs = player.duration
+                    progressMs = safePosition,
+                    durationMs = safeDuration
                 )
             )
         }
