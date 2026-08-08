@@ -4,9 +4,16 @@
 [![Kotlin](https://img.shields.io/badge/Language-Kotlin-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white)](https://kotlinlang.org/)
 [![Compose](https://img.shields.io/badge/UI-Jetpack_Compose-4285F4?style=for-the-badge&logo=jetpackcompose&logoColor=white)](https://developer.android.com/jetpack/compose)
 [![Vercel](https://img.shields.io/badge/Serverless-Vercel_Edge-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com)
+[![Discord](https://img.shields.io/badge/Discord-Join_Community-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/c2ZD8yEs4D)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 
 Welcome to the official repository of **RoninX Anime Client** — a native Android anime and manga application built using Jetpack Compose, Hilt, Media3 ExoPlayer, and Vercel Serverless Scrapers.
+
+---
+
+## Community & Support
+
+Join our official **[Discord Server](https://discord.gg/c2ZD8yEs4D)** for support, updates, feature requests, and community discussions!
 
 ---
 
