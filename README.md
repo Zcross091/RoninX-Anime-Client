@@ -53,7 +53,7 @@ graph TD
     App[RoninX Native Android App] -->|GET /api/stream| Vercel[Vercel Serverless Engine]
     App -->|GET /api/manga| Vercel
     App -->|Fallback Cloud Runner| GHA[GitHub Actions Runner]
-    Vercel -->|Stream Extraction| Gogo[Consumet / Gogoanime CDN]
+    Vercel -->|Stream Extraction| Gogo[Ronin Engine / Gogoanime CDN]
     Vercel -->|Page Extraction| Manga[Mangapill / MangaDex CDN]
     App -->|Metadata| AniList[AniList GraphQL API]
 ```
@@ -104,7 +104,7 @@ graph TD
 ## Credits & Acknowledgments
 
 - **AniList API**: GraphQL anime & manga database.
-- **Consumet & MangaDex**: Open source scraper protocols and data endpoints.
+- **Ronin API & MangaDex**: Custom serverless scraper engine and data endpoints.
 - **Open Anime API**: Framework reference for stream mining logic.
 
 ---
