@@ -1,727 +1,411 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RoninX Anime | Free Premium Native Android Anime Streaming & Manga Reader App 2026</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RoninX � Fast, Ad-Free Native Anime Streaming & Manga Reader for Android</title>
+    <meta
+      name="description"
+      content="Stream anime in sub-seconds and read manga with zero ads using RoninX. Powered by Vercel Serverless Scrapers, Media3 ExoPlayer, and AniList sync. Free open source Android APK."
+    />
+    <meta
+      name="keywords"
+      content="RoninX, RoninX Anime, Anime Player, Manga Reader, Watch Anime Free, Ad Free Anime App, Solo Leveling, One Piece, AniList Sync, Android Anime APK, Vercel Scraper, Media3 ExoPlayer, Open Anime API"
+    />
+    <meta name="author" content="RoninX Team" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <link rel="canonical" href="https://roninx-app.vercel.app/" />
 
-    <!-- SEO Primary Meta Tags -->
-    <meta name="title" content="RoninX Anime | Free Premium Native Android Anime Streaming & Manga Reader App 2026">
-    <meta name="description" content="Watch anime free online and read manga on Android with RoninX — the best free anime streaming app 2026. No ads, 1080p 60FPS, AniList sync, ExoPlayer engine. Download the anime APK now.">
-    <meta name="keywords" content="RoninX, anime app, free anime streaming, watch anime free online, best anime streaming app 2026, anime app no ads, read manga free android, anilist tracker app, anime apk download safe, native android anime player, manga reader android, anilist sync, jetpack compose anime, exoplayer anime, anime apk download, free anime app android, watch anime without ads, anime streaming app, manga reading app, best anime app for android, anime player no buffer, 1080p anime streaming, anime client open source, offline manga reader, anime tracker app">
-    <meta name="author" content="RoninX Development Team">
-    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
-    <meta name="theme-color" content="#F43F5E">
-    <meta name="google-site-verification" content="">
-    <link rel="canonical" href="https://roninx-anime.app/">
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://roninx-app.vercel.app/" />
+    <meta property="og:title" content="RoninX � Fast, Ad-Free Native Anime Streaming & Manga Reader" />
+    <meta property="og:description" content="Stream anime in sub-seconds and read manga with zero ads. Powered by Vercel Serverless Scrapers, Media3 ExoPlayer, and AniList sync. Free open source Android app." />
+    <meta property="og:image" content="https://roninx-app.vercel.app/logo.png" />
+    <meta property="og:site_name" content="RoninX Anime Client" />
 
-    <!-- OpenGraph Metadata (Facebook, Discord, LinkedIn, Slack) -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://roninx-anime.app/">
-    <meta property="og:site_name" content="RoninX Anime">
-    <meta property="og:title" content="RoninX Anime - Best Free Android Anime Streaming & Manga Reader 2026">
-    <meta property="og:description" content="Lightning-fast, zero-ad native Android app for watching anime and reading manga. Features Media3 ExoPlayer, AniList sync, 1080p streaming, and a high-performance manga reader.">
-    <meta property="og:image" content="https://roninx-anime.app/logo.png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:locale" content="en_US">
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://roninx-app.vercel.app/" />
+    <meta name="twitter:title" content="RoninX � Fast, Ad-Free Native Anime Streaming & Manga Reader" />
+    <meta name="twitter:description" content="Stream anime in sub-seconds and read manga with zero ads. Free open source native Android app." />
+    <meta name="twitter:image" content="https://roninx-app.vercel.app/logo.png" />
 
-    <!-- Twitter Card Metadata -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://roninx-anime.app/">
-    <meta name="twitter:title" content="RoninX Anime - Best Free Android Anime Streaming App 2026">
-    <meta name="twitter:description" content="Zero buffer, zero ads anime player & manga reader built natively with Jetpack Compose. AniList synchronization, 1080p/60FPS streaming.">
-    <meta name="twitter:image" content="https://roninx-anime.app/logo.png">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="logo.png" />
 
-    <!-- Favicon & Touch Icons -->
-    <link rel="icon" type="image/png" href="logo.png">
-    <link rel="apple-touch-icon" href="logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="hero.css" />
 
-    <!-- Fonts & CSS -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-
-    <!-- JSON-LD Structured Data: SoftwareApplication Schema -->
+    <!-- Google Search Structured Data (JSON-LD) -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
       "name": "RoninX Anime Client",
-      "operatingSystem": "ANDROID",
+      "operatingSystem": "Android 8.0+",
       "applicationCategory": "EntertainmentApplication",
-      "downloadUrl": "https://github.com/Zcross091/RoninX-Anime-Client/releases/download/latest/app-debug.apk",
-      "softwareVersion": "1.0.0",
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.9",
-        "ratingCount": "1024",
-        "bestRating": "5",
-        "worstRating": "1"
-      },
       "offers": {
         "@type": "Offer",
         "price": "0",
         "priceCurrency": "USD"
       },
-      "description": "High-performance native Android application for 1080p anime streaming, manga reading, and AniList cloud synchronization. Zero ads, zero buffer."
+      "description": "High-performance native Android application for ad-free anime streaming and manga reading with sub-second Vercel serverless scraper resolution.",
+      "url": "https://roninx-app.vercel.app/",
+      "image": "https://roninx-app.vercel.app/logo.png",
+      "downloadUrl": "https://github.com/Zcross091/RoninX-Anime-Client/releases"
     }
     </script>
+  </head>
 
-    <!-- JSON-LD Structured Data: WebSite Schema with SearchAction -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "url": "https://roninx-anime.app/",
-      "name": "RoninX Anime Platform",
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "https://roninx-anime.app/#discovery?q={search_term_string}",
-        "query-input": "required name=search_term_string"
-      }
-    }
-    </script>
+  <body>
+    <div class="site-shell">
+      <header class="site-header" aria-label="Primary navigation">
+        <a class="brand" href="#top" aria-label="RoninX home">
+          <span class="brand-mark" aria-hidden="true">R</span>
+          <span>RONIN <strong>X</strong></span>
+        </a>
 
-    <!-- JSON-LD Structured Data: BreadcrumbList Schema -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      "itemListElement": [
-        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://roninx-anime.app/" },
-        { "@type": "ListItem", "position": 2, "name": "Features", "item": "https://roninx-anime.app/#features" },
-        { "@type": "ListItem", "position": 3, "name": "Anime Discovery", "item": "https://roninx-anime.app/#discovery" },
-        { "@type": "ListItem", "position": 4, "name": "FAQ", "item": "https://roninx-anime.app/#faq" }
-      ]
-    }
-    </script>
-
-    <!-- JSON-LD Structured Data: FAQPage Schema -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "Is RoninX Anime Client completely free?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes! RoninX Anime is 100% free and open-source under the MIT license, with zero subscription fees or ad bloat."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "What Android versions are supported?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "RoninX supports Android 8.0 (API level 26) and higher, optimized for 60FPS to 120FPS smooth rendering."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Does RoninX support AniList sync?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes, RoninX includes full OAuth2 integration with AniList to automatically update watch history, ratings, and episode progress."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Is RoninX the best free anime app for Android in 2026?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "RoninX is designed to be the fastest, most feature-rich free anime streaming and manga reading app available for Android in 2026, built natively with Kotlin and Jetpack Compose for zero-lag performance."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "How do I watch anime without ads on Android?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Download the RoninX Anime Client APK from GitHub Releases. The app is completely ad-free, open-source, and streams anime in 1080p with zero popups or trackers."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Can I read manga on RoninX?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes! RoninX includes a high-performance manga reader with vertical webtoon scroll, horizontal page mode, pre-fetched chapters, and pinch-to-zoom gestures."
-          }
-        }
-      ]
-    }
-    </script>
-
-    <!-- JSON-LD Structured Data: HowTo Schema (Installation) -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "HowTo",
-      "name": "How to Install RoninX Anime Client on Android",
-      "description": "Step-by-step guide to install the RoninX anime streaming and manga reader app on any Android device.",
-      "step": [
-        {
-          "@type": "HowToStep",
-          "name": "Download APK",
-          "text": "Go to the RoninX GitHub Releases page and download the latest app-debug.apk file."
-        },
-        {
-          "@type": "HowToStep",
-          "name": "Enable Unknown Sources",
-          "text": "Open Android Settings > Security > enable 'Install from Unknown Sources' for your browser."
-        },
-        {
-          "@type": "HowToStep",
-          "name": "Install the APK",
-          "text": "Tap the downloaded APK file and follow the Android installer prompts."
-        },
-        {
-          "@type": "HowToStep",
-          "name": "Launch & Connect AniList",
-          "text": "Open RoninX, optionally connect your AniList account via OAuth, and start streaming anime or reading manga."
-        }
-      ]
-    }
-    </script>
-</head>
-<body>
-
-    <!-- Scroll Progress Bar -->
-    <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
-
-    <!-- 3D Particle Canvas -->
-    <canvas id="particle-canvas" aria-hidden="true"></canvas>
-
-    <!-- Header Navigation -->
-    <header>
-        <nav aria-label="Main Navigation">
-            <a href="#" class="logo">
-                <img src="logo.png" alt="RoninX Logo" width="36" height="36">
-                RONIN<span>X</span>
-            </a>
-            
-            <button class="menu-toggle" id="menu-toggle" aria-label="Toggle navigation menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-
-            <ul class="nav-links" id="nav-links">
-                <li><a href="#features">Features</a></li>
-                <li><a href="#tech-stack">Tech</a></li>
-                <li><a href="#discovery">Live Discovery</a></li>
-                <li><a href="#faq">FAQ</a></li>
-                <li><a href="https://zcross091.github.io/Animetize-API-Play/" target="_blank" rel="noopener">Web App</a></li>
-                <li><a href="https://github.com/Zcross091/RoninX-Anime-Client/releases" class="btn-primary" style="padding: 0.6rem 1.4rem; font-size: 0.85rem;">Download APK</a></li>
-            </ul>
+        <nav class="main-nav" aria-label="Main menu">
+          <a href="#features">Features</a>
+          <a href="#preview">Preview</a>
+          <a href="#tech">Tech</a>
+          <a href="#faq">FAQ</a>
         </nav>
-    </header>
 
-    <main>
-        <!-- Hero Section -->
-        <section class="hero" id="home">
-            <!-- Gradient Orbs -->
-            <div class="orb orb-1" aria-hidden="true"></div>
-            <div class="orb orb-2" aria-hidden="true"></div>
-            <div class="orb orb-3" aria-hidden="true"></div>
+        <a
+          class="button button--small button--primary"
+          href="https://github.com/Zcross091/RoninX-Anime-Client/releases"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Download APK
+        </a>
+      </header>
 
-            <div class="hero-content reveal" data-parallax-speed="0.15">
-                <div class="badge-pill">
-                    <span class="pulse-dot"></span> Built with Kotlin & Jetpack Compose
-                </div>
-                <h1 id="hero-title">Ultimate <span>Anime</span> & Manga Experience.<span class="typing-cursor" aria-hidden="true"></span></h1>
-                <p>RoninX is a next-generation native Android client crafted for extreme speed, fluid 60FPS UI, media3 ExoPlayer engine, and seamless AniList cloud synchronization. Watch anime free online and read manga — all without a single ad.</p>
-                
-                <div class="hero-btns">
-                    <a href="https://github.com/Zcross091/RoninX-Anime-Client/releases/download/latest/app-debug.apk" class="btn-primary magnetic-btn">
-                        <span>📥</span> Download Latest APK
-                    </a>
-                    <a href="https://zcross091.github.io/Animetize-API-Play/" target="_blank" rel="noopener" class="btn-live magnetic-btn">
-                        <span>▶</span> Watch Live Web Demo
-                    </a>
-                    <a href="https://github.com/Zcross091/RoninX-Anime-Client" target="_blank" rel="noopener" class="btn-secondary magnetic-btn">
-                        <span>⭐</span> GitHub Repo
-                    </a>
-                </div>
+      <main id="top">
+        <section class="hero surface-hero" aria-labelledby="hero-title">
+          <div class="hero__glow hero__glow--pink" aria-hidden="true"></div>
+          <div class="hero__glow hero__glow--blue" aria-hidden="true"></div>
+          <div class="slash-layer" aria-hidden="true"></div>
+
+          <div class="hero__copy" data-reveal="left">
+            <div class="eyebrow">
+              <span class="eyebrow__dot" aria-hidden="true"></span>
+              Free, open source, built for Android
             </div>
 
-            <div class="hero-visual reveal" data-parallax-speed="0.08">
-                <div class="app-mockup-wrapper">
-                    <div class="phone-glow"></div>
-                    <div class="app-mockup">
-                        <div class="mockup-body">
-                            <!-- Screen 1: Player View -->
-                            <div class="mockup-screen active" id="screen-stream">
-                                <div class="mock-player">
-                                    <span class="stream-tag">1080P • 60FPS</span>
-                                    <div class="play-icon">▶</div>
-                                </div>
-                                <div class="mock-info">
-                                    <h4>Solo Leveling - Episode 12</h4>
-                                    <p>Auto Skip Intro • Dual Audio (Sub|Dub)</p>
-                                </div>
-                                <div class="mock-stats-list">
-                                    <div class="mock-stat-item">
-                                        <span>ExoPlayer Media3</span>
-                                        <span style="color: #4ADE80;">Zero Latency</span>
-                                    </div>
-                                    <div class="mock-stat-item">
-                                        <span>Subtitle Renderer</span>
-                                        <span style="color: var(--accent-blue);">ASS/SSA Dynamic</span>
-                                    </div>
-                                </div>
-                            </div>
+            <h1 id="hero-title">Anime without<br /><em>the clutter.</em></h1>
 
-                            <!-- Screen 2: Manga View -->
-                            <div class="mockup-screen" id="screen-manga">
-                                <div class="mock-player" style="background: linear-gradient(135deg, #065F46 0%, #047857 100%);">
-                                    <span class="stream-tag" style="color: #FBBF24;">MANGA READER</span>
-                                    <div style="font-size: 2rem;">📖</div>
-                                </div>
-                                <div class="mock-info">
-                                    <h4>Jujutsu Kaisen Ch. 260</h4>
-                                    <p>Vertical & Horizontal Webtoon Modes</p>
-                                </div>
-                                <div class="mock-stats-list">
-                                    <div class="mock-stat-item">
-                                        <span>Pre-fetch Engine</span>
-                                        <span style="color: #4ADE80;">Active</span>
-                                    </div>
-                                    <div class="mock-stat-item">
-                                        <span>Offline Cache</span>
-                                        <span style="color: var(--accent-blue);">Enabled</span>
-                                    </div>
-                                </div>
-                            </div>
+            <p class="hero__description">
+              RoninX is a fast, ad-free Android app for streaming anime, reading manga,
+              and keeping your AniList history in sync.
+            </p>
 
-                            <!-- Screen 3: AniList Sync View -->
-                            <div class="mockup-screen" id="screen-anilist">
-                                <div class="mock-player" style="background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);">
-                                    <span class="stream-tag" style="color: #38BDF8;">ANILIST SYNC</span>
-                                    <div style="font-size: 2rem;">📊</div>
-                                </div>
-                                <div class="mock-info">
-                                    <h4>User Watch History</h4>
-                                    <p>Automatic Episode Progress Logging</p>
-                                </div>
-                                <div class="mock-stats-list">
-                                    <div class="mock-stat-item">
-                                        <span>AniList Status</span>
-                                        <span style="color: #4ADE80;">Connected</span>
-                                    </div>
-                                    <div class="mock-stat-item">
-                                        <span>Favorite Anime</span>
-                                        <span style="color: #F43F5E;">342 Titles</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Interactive Phone Tabs Controls -->
-                        <div class="mockup-tabs">
-                            <button class="mockup-tab-btn active" data-tab="stream">
-                                <span class="icon">📺</span>
-                                Stream
-                            </button>
-                            <button class="mockup-tab-btn" data-tab="manga">
-                                <span class="icon">📚</span>
-                                Manga
-                            </button>
-                            <button class="mockup-tab-btn" data-tab="anilist">
-                                <span class="icon">⚡</span>
-                                AniList
-                            </button>
-                        </div>
-                    </div>
-                </div>
+            <div class="hero__actions" aria-label="Primary actions">
+              <a
+                class="button button--primary"
+                href="https://github.com/Zcross091/RoninX-Anime-Client/releases/download/latest/app-debug.apk"
+              >
+                <span aria-hidden="true">?</span>
+                Download for Android
+              </a>
+              <a
+                class="button button--ghost"
+                href="https://zcross091.github.io/Animetize-API-Play/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Try the web demo
+                <span aria-hidden="true">?</span>
+              </a>
             </div>
+
+            <p class="hero__microcopy">
+              Android 8.0+ <span aria-hidden="true">�</span> No account required
+              <span aria-hidden="true">�</span>
+              <a href="https://github.com/Zcross091/RoninX-Anime-Client" target="_blank" rel="noreferrer">
+                View source on GitHub
+              </a>
+            </p>
+
+            <div class="benefit-row" aria-label="Core benefits">
+              <div class="benefit">
+                <span class="benefit__icon" aria-hidden="true">?</span>
+                <span>Ad-free playback</span>
+              </div>
+              <div class="benefit">
+                <span class="benefit__icon" aria-hidden="true">?</span>
+                <span>Manga reading modes</span>
+              </div>
+              <div class="benefit">
+                <span class="benefit__icon" aria-hidden="true">?</span>
+                <span>AniList sync</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero__visual" id="preview" aria-label="RoninX app preview" data-reveal="right">
+            <div class="swordsman-layer" data-parallax="0.18" aria-hidden="true">
+              <div class="swordsman-aura"></div>
+              <svg class="swordsman" viewBox="0 0 320 520" role="presentation">
+                <defs>
+                  <linearGradient id="swordsman-ink" x1="0" x2="1" y1="0" y2="1">
+                    <stop offset="0" stop-color="#ff8db7" />
+                    <stop offset="0.55" stop-color="#9b7dff" />
+                    <stop offset="1" stop-color="#4e3a9f" />
+                  </linearGradient>
+                  <linearGradient id="swordsman-steel" x1="0" x2="1">
+                    <stop offset="0" stop-color="#a9e5ff" stop-opacity="0.35" />
+                    <stop offset="0.45" stop-color="#ffffff" />
+                    <stop offset="1" stop-color="#9f8cff" stop-opacity="0.25" />
+                  </linearGradient>
+                  <filter id="swordsman-blur"><feGaussianBlur stdDeviation="8" /></filter>
+                </defs>
+                <path class="swordsman-trail" d="M35 92 C118 22 230 30 300 95" />
+                <path class="swordsman-trail swordsman-trail--two" d="M2 140 C107 65 229 68 322 132" />
+                <path class="swordsman-sword-glow" d="M206 238 L302 82" />
+                <path class="swordsman-sword" d="M202 244 L301 79" />
+                <path class="swordsman-sword-hilt" d="M195 249 L218 263 M189 252 L211 267" />
+                <circle class="swordsman-head" cx="150" cy="151" r="25" />
+                <path class="swordsman-hair" d="M126 148 C128 108 176 106 182 145 L167 136 L151 145 L138 134 Z" />
+                <path class="swordsman-body" d="M131 179 C150 166 177 177 187 205 L207 286 L127 286 L113 220 C111 200 119 185 131 179Z" />
+                <path class="swordsman-cloak" d="M125 184 C93 217 62 262 53 341 L120 322 L148 267 L164 323 L252 349 C240 265 209 215 181 188 C166 209 143 208 125 184Z" />
+                <path class="swordsman-arm" d="M178 194 C196 205 212 221 223 240 L199 257 L168 222Z" />
+                <path class="swordsman-arm swordsman-arm--left" d="M128 197 C103 212 86 229 74 250 L96 264 L143 224Z" />
+                <path class="swordsman-leg" d="M139 287 L126 423 L161 423 L177 288Z" />
+                <path class="swordsman-leg swordsman-leg--back" d="M176 288 L201 414 L235 414 L207 279Z" />
+                <path class="swordsman-boot" d="M119 418 L168 418 L176 439 L111 439Z" />
+                <path class="swordsman-boot" d="M196 408 L238 408 L258 427 L198 427Z" />
+                <path class="swordsman-belt" d="M120 274 C143 287 177 288 205 273" />
+              </svg>
+              <span class="swordsman-caption">RONIN / 01</span>
+            </div>
+            <div class="visual-orbit visual-orbit--one" aria-hidden="true"></div>
+            <div class="visual-orbit visual-orbit--two" aria-hidden="true"></div>
+
+            <div class="phone">
+              <div class="phone__speaker" aria-hidden="true"></div>
+              <div class="phone__screen">
+                <div class="app-bar">
+                  <span class="app-logo">R<span>X</span></span>
+                  <span class="app-avatar" aria-hidden="true">?</span>
+                </div>
+
+                <div class="screen-heading">
+                  <span>Good evening</span>
+                  <strong>Find something to watch</strong>
+                </div>
+
+                <div class="screen-search">
+                  <span aria-hidden="true">?</span>
+                  <span>Search anime or manga</span>
+                </div>
+
+                <div class="featured-art">
+                  <div class="featured-art__copy">
+                    <span class="featured-art__label">Continue watching</span>
+                    <strong>Solo Leveling</strong>
+                    <span>Episode 12 <i>�</i> 1080p</span>
+                  </div>
+                  <span class="play-button" aria-hidden="true">?</span>
+                </div>
+
+                <div class="screen-section-title">
+                  <strong>Popular this week</strong>
+                  <span>See all</span>
+                </div>
+
+                <div class="poster-row" aria-hidden="true">
+                  <div class="poster poster--one">JUJUTSU<br /><small>KAISEN</small></div>
+                  <div class="poster poster--two">ONE<br /><small>PIECE</small></div>
+                  <div class="poster poster--three">DUNE<br /><small>CHRONICLES</small></div>
+                </div>
+
+                <div class="phone-nav" aria-hidden="true">
+                  <span class="phone-nav__item phone-nav__item--active">?<small>Home</small></span>
+                  <span class="phone-nav__item">?<small>Manga</small></span>
+                  <span class="phone-nav__item">?<small>Library</small></span>
+                  <span class="phone-nav__item">?<small>Settings</small></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="floating-card floating-card--sync">
+              <span class="floating-card__icon" aria-hidden="true">?</span>
+              <span><strong>AniList synced</strong><small>Watch history up to date</small></span>
+            </div>
+
+            <div class="floating-card floating-card--quality">
+              <span class="quality-dot" aria-hidden="true"></span>
+              <span><strong>1080p</strong><small>Ad-free playback</small></span>
+            </div>
+          </div>
         </section>
 
-        <!-- Wave Divider: Hero → Stats -->
-        <div class="wave-divider" aria-hidden="true">
-            <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
-                <path class="wave-fill" fill="var(--accent-color)" d="M0,40 C360,80 720,0 1080,40 C1260,60 1380,20 1440,40 L1440,80 L0,80 Z">
-                    <animate attributeName="d" dur="8s" repeatCount="indefinite"
-                        values="M0,40 C360,80 720,0 1080,40 C1260,60 1380,20 1440,40 L1440,80 L0,80 Z;
-                                M0,50 C300,10 600,70 960,30 C1200,10 1350,60 1440,35 L1440,80 L0,80 Z;
-                                M0,40 C360,80 720,0 1080,40 C1260,60 1380,20 1440,40 L1440,80 L0,80 Z" />
-                </path>
-                <path class="wave-path" d="M0,40 C360,80 720,0 1080,40 C1260,60 1380,20 1440,40">
-                    <animate attributeName="d" dur="8s" repeatCount="indefinite"
-                        values="M0,40 C360,80 720,0 1080,40 C1260,60 1380,20 1440,40;
-                                M0,50 C300,10 600,70 960,30 C1200,10 1350,60 1440,35;
-                                M0,40 C360,80 720,0 1080,40 C1260,60 1380,20 1440,40" />
-                </path>
-            </svg>
-        </div>
+        <section class="surface-content demo-band" id="intro" aria-label="Product promise" data-reveal="up">
+          <div>
+            <span class="section-kicker">Built for the experience</span>
+            <h2>Native speed.<br />Quiet by design.</h2>
+          </div>
+          <p>
+            Kotlin, Jetpack Compose, and Media3 come together in a focused interface that
+            keeps the content in front and the clutter out of the way.
+          </p>
+        </section>
+        <section class="story-section surface-showcase" id="features" aria-labelledby="features-title" data-reveal="up">
+          <div class="section-heading">
+            <span class="section-kicker">The RoninX difference</span>
+            <h2 id="features-title">Everything you need.<br /><em>Nothing in the way.</em></h2>
+            <p>Designed around the moments that matter: finding your next show, settling into an episode, and keeping your library perfectly in sync.</p>
+          </div>
 
-        <!-- Stats Counter Bar Section -->
-        <section class="stats-section">
-            <div class="stats-container">
-                <div class="stat-card">
-                    <div class="stat-number" data-target="60" data-suffix=" FPS">0</div>
-                    <div class="stat-label">Fluid Native Rendering</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" data-target="10000" data-suffix="+">0</div>
-                    <div class="stat-label">Anime & Manga Titles</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" data-target="0" data-suffix="ms">0</div>
-                    <div class="stat-label">Buffer Latency</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" data-target="100" data-prefix="" data-suffix="%">0</div>
-                    <div class="stat-label">Free & Open Source</div>
-                </div>
-            </div>
+          <div class="feature-grid">
+            <article class="feature-card feature-card--wide" data-reveal="up">
+              <div class="feature-card__visual feature-card__visual--player">
+                <span class="mini-label">NOW PLAYING</span>
+                <span class="mini-title">Solo Leveling</span>
+                <span class="mini-subtitle">Episode 12 <i>�</i> 1080p <i>�</i> Sub / Dub</span>
+                <span class="mini-play">?</span>
+                <div class="progress-line"><span></span></div>
+              </div>
+              <div class="feature-card__copy">
+                <span class="feature-card__number">01</span>
+                <h3>A player that stays out of the way.</h3>
+                <p>Picture-in-picture, subtitle styling, skip intro controls, and a focused viewing surface built for long sessions.</p>
+              </div>
+            </article>
+
+            <article class="feature-card" data-reveal="up">
+              <div class="feature-icon">?</div>
+              <span class="feature-card__number">02</span>
+              <h3>Read your way.</h3>
+              <p>Switch between webtoon scroll and traditional page mode. Pre-fetching keeps the next panel ready before you reach it.</p>
+              <div class="reading-lines" aria-hidden="true"><span></span><span></span><span></span></div>
+            </article>
+
+            <article class="feature-card" data-reveal="up">
+              <div class="feature-icon feature-icon--blue">?</div>
+              <span class="feature-card__number">03</span>
+              <h3>Your library follows you.</h3>
+              <p>Connect AniList once and keep watched episodes, scores, favorites, and planning lists close at hand.</p>
+              <div class="sync-pulse" aria-hidden="true"><span>ANILIST</span><b>SYNCED</b></div>
+            </article>
+          </div>
         </section>
 
-        <!-- Wave Divider: Stats → Features -->
-        <div class="wave-divider flip" aria-hidden="true">
-            <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
-                <path class="wave-fill" fill="var(--accent-blue)" d="M0,30 C480,70 960,10 1440,50 L1440,80 L0,80 Z">
-                    <animate attributeName="d" dur="10s" repeatCount="indefinite"
-                        values="M0,30 C480,70 960,10 1440,50 L1440,80 L0,80 Z;
-                                M0,50 C400,15 880,65 1440,30 L1440,80 L0,80 Z;
-                                M0,30 C480,70 960,10 1440,50 L1440,80 L0,80 Z" />
-                </path>
-                <path class="wave-path" d="M0,30 C480,70 960,10 1440,50" stroke="rgba(56,189,248,0.15)">
-                    <animate attributeName="d" dur="10s" repeatCount="indefinite"
-                        values="M0,30 C480,70 960,10 1440,50;
-                                M0,50 C400,15 880,65 1440,30;
-                                M0,30 C480,70 960,10 1440,50" />
-                </path>
-            </svg>
-        </div>
-
-        <!-- Features Grid Section -->
-        <section id="features" class="grid-section">
-            <div class="orb orb-features" aria-hidden="true"></div>
-
-            <div class="section-header reveal">
-                <span class="sub-title">Built Without Compromise</span>
-                <h2>Why Anime Fans Choose RoninX</h2>
-                <p>Engineered natively in Kotlin with modern Android architectural patterns for peak efficiency.</p>
+        <section class="discovery-section surface-content" id="discovery" aria-labelledby="discovery-title" data-reveal="up">
+          <div class="section-heading section-heading--row">
+            <div>
+              <span class="section-kicker">Interactive showcase</span>
+              <h2 id="discovery-title">Find something<br /><em>worth watching.</em></h2>
             </div>
+            <p>Browse a small taste of the RoninX discovery experience. Search, filter, and jump straight into a title.</p>
+          </div>
 
-            <div class="features-grid stagger-reveal">
-                <div class="feature-card reveal" data-tilt>
-                    <div class="card-glow"></div>
-                    <div class="icon-box">🚀</div>
-                    <h3>Native Compose Architecture</h3>
-                    <p>Unlike WebView wrappers, RoninX uses 100% native Android UI elements for zero-lag rendering and instant navigation.</p>
-                </div>
+          <div class="discovery-toolbar" role="tablist" aria-label="Discovery categories">
+            <button class="filter-pill is-active" type="button" role="tab" aria-selected="true" data-filter="all">All titles</button>
+            <button class="filter-pill" type="button" role="tab" aria-selected="false" data-filter="trending">Trending</button>
+            <button class="filter-pill" type="button" role="tab" aria-selected="false" data-filter="classic">Classics</button>
+            <button class="filter-pill" type="button" role="tab" aria-selected="false" data-filter="manga">Manga</button>
+          </div>
 
-                <div class="feature-card reveal" data-tilt>
-                    <div class="card-glow"></div>
-                    <div class="icon-box">🎬</div>
-                    <h3>Media3 Cinematic Player</h3>
-                    <p>Hardware-accelerated video decoding, auto skip-intro/outro, picture-in-picture, and custom ASS subtitle styling.</p>
-                </div>
-
-                <div class="feature-card reveal" data-tilt>
-                    <div class="card-glow"></div>
-                    <div class="icon-box">📖</div>
-                    <h3>High-Performance Manga Engine</h3>
-                    <p>Read thousands of manga titles with pre-fetched pages, dual-page mode, webtoon vertical scroll, and zoom gestures.</p>
-                </div>
-
-                <div class="feature-card reveal" data-tilt>
-                    <div class="card-glow"></div>
-                    <div class="icon-box">📊</div>
-                    <h3>Seamless AniList Integration</h3>
-                    <p>Sync watched episodes, score shows, manage planning lists, and receive release notifications directly in-app.</p>
-                </div>
-
-                <div class="feature-card reveal" data-tilt>
-                    <div class="card-glow"></div>
-                    <div class="icon-box">⚡</div>
-                    <h3>Ronin API Multi-Aggregator</h3>
-                    <p>Our intelligent backend parses multiple streaming backends in real time, delivering high-bitrate 1080p links effortlessly.</p>
-                </div>
-
-                <div class="feature-card reveal" data-tilt>
-                    <div class="card-glow"></div>
-                    <div class="icon-box">🛡️</div>
-                    <h3>Zero Ads & Open Source</h3>
-                    <p>No popups, no intrusive ads, and no data tracking. Pure community-driven open-source code on GitHub.</p>
-                </div>
-            </div>
+          <div class="title-grid">
+            <article class="title-card" data-category="trending"><div class="title-art title-art--pink"><span>SOLO<br />LEVELING</span></div><div><span class="title-tag">TRENDING</span><h3>Solo Leveling</h3><p>Action <i>�</i> Fantasy <strong>4.9 ?</strong></p></div></article>
+            <article class="title-card" data-category="classic"><div class="title-art title-art--orange"><span>ONE<br />PIECE</span></div><div><span class="title-tag">CLASSIC</span><h3>One Piece</h3><p>Adventure <i>�</i> Shounen <strong>4.9 ?</strong></p></div></article>
+            <article class="title-card" data-category="manga"><div class="title-art title-art--blue"><span>JUJUTSU<br />KAISEN</span></div><div><span class="title-tag">MANGA</span><h3>Jujutsu Kaisen</h3><p>Dark Fantasy <i>�</i> 260 ch.</p></div></article>
+            <article class="title-card" data-category="classic"><div class="title-art title-art--violet"><span>DEATH<br />NOTE</span></div><div><span class="title-tag">CLASSIC</span><h3>Death Note</h3><p>Thriller <i>�</i> Mystery <strong>4.8 ?</strong></p></div></article>
+          </div>
         </section>
 
-        <!-- SEO Content Block: Why RoninX -->
-        <article class="seo-content-block">
-            <h2>Watch Anime Free Online — No Ads, No Buffer</h2>
-            <p>Looking for the <strong>best free anime streaming app for Android in 2026</strong>? RoninX Anime Client delivers a premium, ad-free anime watching experience with support for 1080p streaming, automatic subtitle rendering (ASS/SSA), and dual audio (Sub & Dub). Unlike web-based anime sites plagued with popups and redirects, RoninX is a <strong>native Android application</strong> built with Kotlin and Jetpack Compose — meaning faster load times, smoother scrolling, and zero browser overhead.</p>
-            <p>Whether you're following seasonal anime like Solo Leveling, Demon Slayer, or Jujutsu Kaisen, or diving into classics like Naruto, One Piece, and Dragon Ball Z, RoninX gives you instant access to over <strong>10,000 anime and manga titles</strong> with a beautiful, responsive interface and <a href="https://anilist.co" target="_blank" rel="noopener">AniList</a> watch history synchronization.</p>
-        </article>
-
-        <!-- Wave Divider: Features → Tech Stack -->
-        <div class="wave-divider" aria-hidden="true">
-            <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
-                <path class="wave-fill" fill="rgba(168,85,247,0.08)" d="M0,45 C240,10 720,70 1200,25 C1360,15 1440,40 1440,40 L1440,80 L0,80 Z">
-                    <animate attributeName="d" dur="12s" repeatCount="indefinite"
-                        values="M0,45 C240,10 720,70 1200,25 C1360,15 1440,40 1440,40 L1440,80 L0,80 Z;
-                                M0,35 C320,65 800,15 1100,55 C1300,70 1400,25 1440,45 L1440,80 L0,80 Z;
-                                M0,45 C240,10 720,70 1200,25 C1360,15 1440,40 1440,40 L1440,80 L0,80 Z" />
-                </path>
-                <path class="wave-path" d="M0,45 C240,10 720,70 1200,25 C1360,15 1440,40 1440,40" stroke="rgba(168,85,247,0.15)">
-                    <animate attributeName="d" dur="12s" repeatCount="indefinite"
-                        values="M0,45 C240,10 720,70 1200,25 C1360,15 1440,40 1440,40;
-                                M0,35 C320,65 800,15 1100,55 C1300,70 1400,25 1440,45;
-                                M0,45 C240,10 720,70 1200,25 C1360,15 1440,40 1440,40" />
-                </path>
-            </svg>
-        </div>
-
-        <!-- 3D Tech Stack Orbit Section -->
-        <section id="tech-stack" class="tech-section">
-            <div class="section-header reveal">
-                <span class="sub-title">Engineering Excellence</span>
-                <h2>Powered by Modern Tech</h2>
-                <p>Every component is carefully chosen for maximum performance and reliability.</p>
-            </div>
-
-            <div class="tech-orbit-container reveal">
-                <div class="tech-center-logo">
-                    <img src="logo.png" alt="RoninX" width="40" height="40">
-                </div>
-
-                <div class="tech-orbit-ring" id="tech-orbit">
-                    <!-- Items positioned via JS -->
-                    <div class="tech-item" data-angle="0">
-                        <div class="tech-item-inner">
-                            <span class="tech-icon">🟣</span>
-                            <span class="tech-name">Kotlin</span>
-                        </div>
-                        <div class="tech-tooltip">
-                            <h5>Kotlin</h5>
-                            <p>Modern, concise language for Android with null-safety and coroutines.</p>
-                        </div>
-                    </div>
-
-                    <div class="tech-item" data-angle="60">
-                        <div class="tech-item-inner">
-                            <span class="tech-icon">🎨</span>
-                            <span class="tech-name">Compose</span>
-                        </div>
-                        <div class="tech-tooltip">
-                            <h5>Jetpack Compose</h5>
-                            <p>Declarative UI toolkit for building native Android interfaces with reactive state.</p>
-                        </div>
-                    </div>
-
-                    <div class="tech-item" data-angle="120">
-                        <div class="tech-item-inner">
-                            <span class="tech-icon">▶️</span>
-                            <span class="tech-name">ExoPlayer</span>
-                        </div>
-                        <div class="tech-tooltip">
-                            <h5>Media3 ExoPlayer</h5>
-                            <p>Google's advanced media playback engine with HLS, DASH, and hardware decoding.</p>
-                        </div>
-                    </div>
-
-                    <div class="tech-item" data-angle="180">
-                        <div class="tech-item-inner">
-                            <span class="tech-icon">🗄️</span>
-                            <span class="tech-name">Room DB</span>
-                        </div>
-                        <div class="tech-tooltip">
-                            <h5>Room Database</h5>
-                            <p>SQLite persistence layer with compile-time query verification and Flow support.</p>
-                        </div>
-                    </div>
-
-                    <div class="tech-item" data-angle="240">
-                        <div class="tech-item-inner">
-                            <span class="tech-icon">💉</span>
-                            <span class="tech-name">Hilt DI</span>
-                        </div>
-                        <div class="tech-tooltip">
-                            <h5>Hilt Dependency Injection</h5>
-                            <p>Compile-time DI framework built on Dagger for clean architecture.</p>
-                        </div>
-                    </div>
-
-                    <div class="tech-item" data-angle="300">
-                        <div class="tech-item-inner">
-                            <span class="tech-icon">📡</span>
-                            <span class="tech-name">AniList</span>
-                        </div>
-                        <div class="tech-tooltip">
-                            <h5>AniList GraphQL</h5>
-                            <p>Real-time anime/manga tracking with OAuth2 sync and GraphQL queries.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <section class="split-section surface-showcase" aria-labelledby="manga-title" data-reveal="up">
+          <div class="split-visual split-visual--manga" aria-hidden="true">
+            <div class="manga-page manga-page--back"><span>CHAPTER<br />260</span></div>
+            <div class="manga-page manga-page--front"><span>JJK</span><b>READ<br />WITHOUT<br />LIMITS</b></div>
+            <div class="manga-badge">VERTICAL<br /><strong>OR</strong><br />PAGES</div>
+          </div>
+          <div class="split-copy">
+            <span class="section-kicker">Manga mode</span>
+            <h2 id="manga-title">A better way<br />to turn the page.</h2>
+            <p>From vertical webtoon flow to two-page spreads, RoninX gives every series the reading mode it deserves. Keep your place, pre-fetch the next pages, and stay immersed.</p>
+            <div class="check-list"><span>?</span> Webtoon and page-by-page modes <span>?</span> Pinch to zoom and pre-fetching <span>?</span> Offline-friendly cache</div>
+          </div>
         </section>
 
-        <!-- Wave Divider: Tech → Discovery -->
-        <div class="wave-divider flip" aria-hidden="true">
-            <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
-                <path class="wave-fill" fill="var(--accent-color)" d="M0,35 C360,65 900,15 1440,45 L1440,80 L0,80 Z">
-                    <animate attributeName="d" dur="9s" repeatCount="indefinite"
-                        values="M0,35 C360,65 900,15 1440,45 L1440,80 L0,80 Z;
-                                M0,50 C480,20 960,60 1440,30 L1440,80 L0,80 Z;
-                                M0,35 C360,65 900,15 1440,45 L1440,80 L0,80 Z" />
-                </path>
-                <path class="wave-path" d="M0,35 C360,65 900,15 1440,45">
-                    <animate attributeName="d" dur="9s" repeatCount="indefinite"
-                        values="M0,35 C360,65 900,15 1440,45;
-                                M0,50 C480,20 960,60 1440,30;
-                                M0,35 C360,65 900,15 1440,45" />
-                </path>
-            </svg>
-        </div>
-
-        <!-- Live Interactive Discovery Demo Section -->
-        <section id="discovery" class="demo-section">
-            <div class="orb orb-discovery" aria-hidden="true"></div>
-
-            <div class="section-header reveal">
-                <span class="sub-title">Interactive Showcase</span>
-                <h2>Explore Anime & Manga Discovery</h2>
-                <p>Try out the fast search and categorization engine powered by our Ronin API directly on this page.</p>
-            </div>
-
-            <div class="demo-controls reveal">
-                <div class="search-box">
-                    <span class="search-icon">🔍</span>
-                    <input type="text" id="anime-search" placeholder="Search anime title or genre (e.g. Solo Leveling, Fantasy)..." aria-label="Search anime title">
-                </div>
-
-                <div class="filter-group">
-                    <button class="filter-btn active" data-filter="All">All</button>
-                    <button class="filter-btn" data-filter="Trending">Trending</button>
-                    <button class="filter-btn" data-filter="Popular">Popular</button>
-                    <button class="filter-btn" data-filter="Top Rated">Top Rated</button>
-                    <button class="filter-btn" data-filter="Movies">Movies</button>
-                </div>
-            </div>
-
-            <div class="demo-anime-grid reveal" id="demo-anime-grid">
-                <!-- Dynamically Populated by script.js -->
-            </div>
+        <section class="sync-section surface-content" aria-labelledby="sync-title" data-reveal="up">
+          <div class="sync-copy">
+            <span class="section-kicker">Always in sync</span>
+            <h2 id="sync-title">Your watchlist,<br /><em>where you left it.</em></h2>
+            <p>RoninX connects to AniList so your progress is not trapped on one screen. Start on your phone, come back later, and pick up exactly where you stopped.</p>
+            <a class="text-link" href="https://anilist.co" target="_blank" rel="noreferrer">Learn about AniList <span>?</span></a>
+          </div>
+          <div class="sync-dashboard" aria-label="AniList sync preview">
+            <div class="dashboard-top"><span>LIBRARY OVERVIEW</span><b>? CONNECTED</b></div>
+            <div class="dashboard-number">342 <small>titles tracked</small></div>
+            <div class="dashboard-bars"><span style="--bar: 72%"><b>Watching</b><i>72%</i></span><span style="--bar: 48%"><b>Planning</b><i>48%</i></span><span style="--bar: 24%"><b>Completed</b><i>24%</i></span></div>
+            <div class="dashboard-footer"><span>Last sync</span><strong>Just now ?</strong></div>
+          </div>
         </section>
 
-        <!-- SEO Content Block: Manga -->
-        <article class="seo-content-block">
-            <h2>Read Manga Free on Android — Webtoon & Traditional Modes</h2>
-            <p>RoninX isn't just an anime player — it's also a powerful <strong>free manga reader for Android</strong>. Browse thousands of manga series, read chapters in vertical webtoon scroll or horizontal page-flip mode, and enjoy pre-fetched pages for instant loading. Whether you prefer reading <strong>One Piece</strong>, <strong>Jujutsu Kaisen</strong>, <strong>Chainsaw Man</strong>, or discovering new manga, RoninX delivers a clean, distraction-free reading experience with pinch-to-zoom and offline caching support.</p>
-        </article>
-
-        <!-- FAQ Section -->
-        <section id="faq" class="faq-section">
-            <div class="section-header reveal">
-                <span class="sub-title">Got Questions?</span>
-                <h2>Frequently Asked Questions</h2>
-                <p>Everything you need to know about installation, safety, and updates.</p>
-            </div>
-
-            <div class="faq-list reveal">
-                <div class="faq-item open">
-                    <div class="faq-question">
-                        <span>Is RoninX Anime Client safe and free to use?</span>
-                        <span class="toggle-icon">+</span>
-                    </div>
-                    <div class="faq-answer">
-                        Yes, RoninX is completely free, open-source, and contains zero ads, spyware, or paid tier paywalls. The full source code is hosted publicly on GitHub.
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <span>How do I install the APK on Android?</span>
-                        <span class="toggle-icon">+</span>
-                    </div>
-                    <div class="faq-answer">
-                        Download the latest <code>app-debug.apk</code> file from our GitHub Releases page, tap on the notification to install, and allow 'Install from unknown sources' when prompted by Android settings.
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <span>Does it support casting to TV (Chromecast)?</span>
-                        <span class="toggle-icon">+</span>
-                    </div>
-                    <div class="faq-answer">
-                        Yes, Media3 ExoPlayer includes native Google Cast support so you can beam 1080p anime directly to your Smart TV or Chromecast device.
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <span>How do I sync with my AniList account?</span>
-                        <span class="toggle-icon">+</span>
-                    </div>
-                    <div class="faq-answer">
-                        Navigate to the Settings tab in the app, select 'Connect AniList', and authenticate via OAuth. Your watchlist and episode counts will update automatically while you stream.
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <span>Is RoninX the best free anime app for Android in 2026?</span>
-                        <span class="toggle-icon">+</span>
-                    </div>
-                    <div class="faq-answer">
-                        RoninX is designed to be the fastest and most feature-rich free anime streaming and manga reading app available for Android. Built natively with Kotlin and Jetpack Compose, it offers zero-lag 60FPS performance, AniList tracking, and 1080p streaming — all without any ads or subscription fees.
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <span>How do I watch anime without ads on my phone?</span>
-                        <span class="toggle-icon">+</span>
-                    </div>
-                    <div class="faq-answer">
-                        Simply download the RoninX Anime Client APK from our GitHub Releases page. The entire app is ad-free by design — no popups, no banners, no video ads. Just pure, uninterrupted anime and manga.
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <span>Can I read manga offline with RoninX?</span>
-                        <span class="toggle-icon">+</span>
-                    </div>
-                    <div class="faq-answer">
-                        RoninX includes a pre-fetch engine that caches manga pages as you read. While full offline download is coming in a future update, the cache system means previously read chapters load instantly without internet.
-                    </div>
-                </div>
-            </div>
+        <section class="proof-section surface-showcase" id="tech" aria-labelledby="proof-title" data-reveal="up">
+          <div class="section-heading section-heading--center">
+            <span class="section-kicker">Built without compromise</span>
+            <h2 id="proof-title">Small details.<br /><em>Serious performance.</em></h2>
+            <p>Native Android architecture keeps the interface quick, the player capable, and the experience yours.</p>
+          </div>
+          <div class="proof-grid">
+            <div class="proof-item"><strong>Kotlin</strong><span>Native foundation</span></div>
+            <div class="proof-item"><strong>Compose</strong><span>Fluid interface</span></div>
+            <div class="proof-item"><strong>Media3</strong><span>Modern playback</span></div>
+            <div class="proof-item"><strong>Open source</strong><span>Built in public</span></div>
+          </div>
         </section>
-    </main>
 
-    <!-- Footer -->
-    <footer>
-        <div class="footer-container">
-            <div class="footer-top">
-                <a href="#" class="logo">
-                    <img src="logo.png" alt="RoninX Logo" width="36" height="36">
-                    RONIN<span>X</span>
-                </a>
+        <section class="faq-section surface-content" id="faq" aria-labelledby="faq-title" data-reveal="up">
+          <div class="section-heading section-heading--center">
+            <span class="section-kicker">Good questions</span>
+            <h2 id="faq-title">Before you<br /><em>download.</em></h2>
+          </div>
+          <div class="faq-list">
+            <details><summary>Is RoninX free and open source?<span>+</span></summary><p>Yes. RoninX is designed as a free community project, with its source available on GitHub.</p></details>
+            <details><summary>What devices does it support?<span>+</span></summary><p>The app is written for Android 8.0 and later. Check the latest release notes for device-specific compatibility.</p></details>
+            <details><summary>Can I use AniList with RoninX?<span>+</span></summary><p>Yes. Connect your AniList account in the app to sync progress, favorites, and planning lists.</p></details>
+            <details><summary>Does the manga reader support different layouts?<span>+</span></summary><p>Yes. The experience is designed for both vertical webtoon reading and traditional page-by-page layouts.</p></details>
+          </div>
+        </section>
 
-                <div class="footer-socials">
-                    <a href="https://github.com/Zcross091/RoninX-Anime-Client" target="_blank" rel="noopener">GitHub</a>
-                    <a href="https://zcross091.github.io/Animetize-API-Play/" target="_blank" rel="noopener">Live Player</a>
-                    <a href="https://github.com/Zcross091/RoninX-Anime-Client/releases" target="_blank" rel="noopener">Releases</a>
-                </div>
+        <section class="final-cta surface-hero" aria-labelledby="final-title" data-reveal="up">
+          <div class="final-cta__glow" aria-hidden="true"></div>
+          <span class="section-kicker">Ready when you are</span>
+          <h2 id="final-title">Your next favorite<br /><em>starts here.</em></h2>
+          <p>Download RoninX, open the web demo, or explore the source and see what the community is building.</p>
+          <div class="release-stats" data-github-stats aria-live="polite">
+            <div class="release-stat">
+              <span class="release-stat__label">Latest release</span>
+              <strong data-release-version>Loading�</strong>
+              <small data-release-date>Checking GitHub</small>
             </div>
-
-            <div class="footer-bottom">
-                <p>&copy; 2026 RoninX Anime Client. Built for the community with native Kotlin & Jetpack Compose. Best free anime app for Android.</p>
+            <div class="release-stat">
+              <span class="release-stat__label">Total downloads</span>
+              <strong data-download-count>�</strong>
+              <small>Across all releases</small>
             </div>
-        </div>
-    </footer>
-
-    <!-- JavaScript -->
-    <script src="script.js" defer></script>
-</body>
+            <div class="release-stat">
+              <span class="release-stat__label">Open source</span>
+              <strong data-star-count>�</strong>
+              <small>GitHub stars</small>
+            </div>
+          </div>
+          <div class="hero__actions"><a class="button button--primary" href="https://github.com/Zcross091/RoninX-Anime-Client/releases/download/latest/app-debug.apk">? Download RoninX</a><a class="button button--ghost" href="https://github.com/Zcross091/RoninX-Anime-Client" target="_blank" rel="noreferrer">View on GitHub ?</a></div>
+          <p class="release-status" data-release-status>Fetching the latest release details�</p>
+        </section>
+      </main>
+    </div>
+    <script src="hero.js" defer></script>
+  </body>
 </html>

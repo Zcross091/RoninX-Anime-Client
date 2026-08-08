@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://roninx-anime.app/sitemap.xml
+Sitemap: https://roninx-app.vercel.app/sitemap.xml
+
